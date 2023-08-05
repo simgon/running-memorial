@@ -1,0 +1,139 @@
+<% content_for :javascript_includes do %>
+  <%# Google Maps API %>
+  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>"></script>
+  <%# SortableJSのCDNリンク %>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+<% end %>
+
+<div class="container-fluid">
+  <div id="site-container" class="row">
+    <%# サイドメニュー %>
+    <aside id="side-menu" class="col-sm-2">
+      <%# ハンバーガーメニュー %>
+      <div class="navbar-header">
+        <button id="hamburger" type="button" class="navbar-toggle collapsed">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <%# メニュー %>
+      <div id="navbar-menu" class="collapse navbar-collapse">
+        <%# ルート登録 %>
+        <section>
+          <%# 新しいルートボタン %>
+          <button id="new_route" class="flat-button">
+            <%= image_tag("plus.svg", alt: "plus") %>
+            新しいルート
+          </button>
+          <%# ルート入力 %>
+          <div id="new_route_text" style="display:none;">
+          <%= form_with(model: @route) do |f| %>
+            <div style="display:flex;">
+              <%# ルート名 %>
+              <%= f.text_field :name, class: 'form-control' %>
+              <%# 確定 %>
+              <%= button_tag(type: 'submit', class: 'icon-submit') do %>
+                <%= image_tag("check.svg", alt: "check") %>
+              <% end %>
+              <%# キャンセル %>
+              <%= button_tag(type: 'button', class: 'icon-submit') do %>
+                <%= image_tag("x.svg", alt: "x", id: "x") %>
+              <% end %>
+            </div>
+          <% end %>
+          </div>
+        </section>
+        <%# ルート一覧 %>
+        <section class="route_info">
+          <ul id="routes-container" class="routes drag-handle">
+          <% @routes.each do |route| %>
+            <li class="route-item" data-route-id="<%= route.id %>" data-visible="<%= route.visible %>">
+              <%# ルート名表示 %>
+              <div class="route-detail">
+                <%# ルート名 %>
+                <div>
+                  <%= route.name %>
+                </div>
+                <%# ルート編集ボタン一覧 %>
+                <div class="route-buttons-container">
+                  <%# 表示／非表示 %>
+                  <%= link_to 'javascript:void(0);', onclick: 'return false;', class: 'eye-toggle' do %>
+                    <%= image_tag("eye.svg", alt: "eye", class: "eye-icon") %>
+                    <%= image_tag("eye-slash.svg", alt: "eye-slash", class: "eye-slash-icon", style: "display:none;") %>
+                    <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon", style: "display:none;") %>
+                  <% end %>
+                  <%# 編集 %>
+                  <%= link_to 'javascript:void(0);', onclick: 'return false;' do %>
+                    <%= image_tag("pencil.svg", alt: "pencil", class: "edit-icon") %>
+                  <% end %>
+                  <%# 削除 %>
+                  <%= link_to route, data: { "turbo-method": :delete, turbo_confirm: "削除します。よろしいですか？" } do %>
+                    <%= image_tag("trash.svg", alt: "trash") %>
+                  <% end %>
+                  <%# コピー %>
+                  <%= form_with(model: route, url: '/routes/copy', method: :post) do |f| %>
+                    <%= f.hidden_field :id %>
+                    <%= button_tag(type: 'submit', class: 'icon-submit' ) do %>
+                      <%= image_tag("files.svg", alt: "files") %>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+              <%# ルート名編集 %>
+              <div class="route-edit" style="display:none;">
+              <%= form_with(model: route) do |f| %>
+                <div style="display:flex;">
+                  <%# ルート名 %>
+                  <%= f.text_field :name, class: 'text-edit' %>
+                  <%# 確定 %>
+                  <%= button_tag(type: 'submit', class: 'icon-submit') do %>
+                    <%= image_tag("check.svg", alt: "check") %>
+                  <% end %>
+                  <%# キャンセル %>
+                  <%= button_tag(type: 'button', class: 'icon-submit cancel') do %>
+                    <%= image_tag("x.svg", alt: "x", id: "x") %>
+                  <% end %>
+                </div>
+              <% end %>
+              </div>
+            </li>
+          <% end %>
+          </ul>
+        </section>
+      </div>
+    </aside>
+    <%# メイン %>
+    <div id="map_contents" class="col-sm-10">
+      <%# マップ %>
+      <div id="map"></div>
+      <div class="crosshair"></div>
+      <%# マップ操作ボタン一覧 %>
+      <div id="map_board">
+        <div class="d-flex justify-content-evenly">
+          <%# 保存 %>
+          <div class="btn" id="save_marker" style="display:flex;flex-flow: column;align-items: center;" disabled>
+            <%= image_tag("save.svg", alt: "plus", style: "width:5vw;") %>
+            <span style="color:#3cb371;margin-top:3px;">保存</span>
+          </div>
+          <%# 追加 %>
+          <div class="btn" id="add_marker" style="display:flex;flex-flow: column;align-items: center;" disabled>
+            <%= image_tag("plus-circle.svg", alt: "plus", style: "width:5vw;") %>
+            <span style="color:#3cb371;margin-top:3px;">追加</span>
+          </div>
+          <%# 1つ戻す %>
+          <div class="btn" id="del_marker" style="display:flex;flex-flow: column;align-items: center;" disabled>
+            <%= image_tag("backspace.svg", alt: "backspace", style: "width:5vw;") %>
+            <span style="color:#3cb371;margin-top:3px;">1つ戻す</span>
+          </div>
+          <%# クリア %>
+          <div class="btn" id="eraser_marker" style="display:flex;flex-flow: column;align-items: center;" disabled>
+            <%= image_tag("eraser.svg", alt: "eraser", style: "width:5vw;") %>
+            <span style="color:#3cb371;margin-top:3px;">クリア</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

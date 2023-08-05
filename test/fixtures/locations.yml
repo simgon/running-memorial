@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  lat_loc: 9.99
+  lon_loc: 9.99
+  loc_order: 1
+  route: one
+
+two:
+  lat_loc: 9.99
+  lon_loc: 9.99
+  loc_order: 1
+  route: two

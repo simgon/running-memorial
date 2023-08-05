@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <ellipse style="fill: rgb(102, 102, 102); stroke: rgb(102, 102, 102);" cx="250" cy="250" rx="112.5" ry="112.5" transform="matrix(1, 0, 0, 1, 0, 3.552713678800501e-15)"/>
+  <ellipse style="fill: rgba(216, 216, 216, 0); paint-order: fill; stroke-width: 20px; stroke: rgb(102, 102, 102);" cx="250" cy="250" rx="162.5" ry="162.5" transform="matrix(1, 0, 0, 1, 0, 3.552713678800501e-15)"/>
+  <rect x="240" width="20" height="40" style="stroke: rgb(102, 102, 102); fill: rgb(102, 102, 102);" y="45" transform="matrix(1, 0, 0, 1, 0, 3.552713678800501e-15)"/>
+  <rect x="240" width="20" height="40" style="stroke: rgb(102, 102, 102); fill: rgb(102, 102, 102);" y="415" transform="matrix(1, 0, 0, 1, 0, 3.552713678800501e-15)"/>
+  <rect x="415" width="40" height="20" style="stroke: rgb(102, 102, 102); fill: rgb(102, 102, 102);" y="240" transform="matrix(1, 0, 0, 1, 0, 3.552713678800501e-15)"/>
+  <rect x="45" width="40" height="20" style="fill: rgb(102, 102, 102); stroke: rgb(102, 102, 102);" y="240" transform="matrix(1, 0, 0, 1, 0, 3.552713678800501e-15)"/>
+</svg>
