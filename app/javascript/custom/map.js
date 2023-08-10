@@ -92,6 +92,37 @@ function initMap() {
     postRoute();
   });
 
+  let zoomChanged = false;
+
+  // 地図ズーム時
+  google.maps.event.addListener(map, 'zoom_changed', function() {
+    // ルート一覧を取得
+    const listContainer = document.getElementById('routes-container');
+    const listItems = listContainer.getElementsByTagName('li');
+
+    for (let i = 0; i < listItems.length; i++) {
+      let routeId = listItems[i].getAttribute('data-route-id');
+      let visible = listItems[i].getAttribute('data-visible');
+
+      routes[routeId].displayMarkers(visible);
+    }
+
+    zoomChanged = true;
+  });
+
+  // 地図変更時
+  google.maps.event.addListener(map, 'bounds_changed', function() {
+
+    if (zoomChanged) {
+      // 選択／未選択ルート
+      Object.values(routes).forEach(r => {
+        // ルート活性／非活性
+        r.disableRoute(r.routeId === route.routeId ? false : true);
+      });
+      zoomChanged = false;
+    }
+  });
+
   // **************
   // サイドメニュー
   // **************
@@ -117,12 +148,12 @@ function initMap() {
     listItems[i].addEventListener('click', function(event) {
       let routeId = this.getAttribute('data-route-id');
       
-      // 全てのルート一覧の背景色を元に戻す
+      // 全ルート一覧の背景色を通常色に戻す
       for (let j = 0; j < listItems.length; j++) {
         listItems[j].style.backgroundColor = '';
       }
 
-      // 選択ルート一覧の背景色を変更
+      // 選択ルートの一覧項目の背景色を変更
       this.style.backgroundColor = '#343641';
       
       // マップボタン一覧を活性化
@@ -134,16 +165,11 @@ function initMap() {
       // 選択ルートを保持
       route = routes[routeId];
 
-      // マップ上ルートを変更
-      for (let key in routes) {
-        // 選択ルート
-        if (key === routeId) {
-          routes[key].disableRoute(false);
-        // 未選択ルート
-        } else {
-          routes[key].disableRoute(true);
-        }
-      }
+      // 選択／未選択ルート
+      Object.values(routes).forEach(route => {
+        // ルート活性／非活性
+        route.disableRoute(route.routeId === routeId ? false : true);
+      });
     });
 
     // 表示／非表示
@@ -154,11 +180,13 @@ function initMap() {
   
     eyeToggle.addEventListener('click', function(event) {
       let routeId = this.closest('[data-route-id]').getAttribute('data-route-id');
+      let visible = this.closest('[data-visible]');
       
       if (eyeIcon.style.display === 'initial') {
         // 表示 → 表示(ルートのみ)
         eyeIcon.style.display = 'none';
         eyeFillIcon.style.display = 'initial';
+        visible.setAttribute('data-visible', Route.VISIBLE_ROUTE);
         // ルートを表示(ルートのみ)
         routes[routeId].displayMarkers(Route.VISIBLE_ROUTE);
         postRouteVisible(routeId, Route.VISIBLE_ROUTE);
@@ -166,6 +194,7 @@ function initMap() {
         // 表示(ルートのみ) → 非表示
         eyeFillIcon.style.display = 'none';
         eyeSlashIcon.style.display = 'initial';
+        visible.setAttribute('data-visible', Route.INVISIBLE);
         // ルートを非表示
         routes[routeId].displayMarkers(Route.INVISIBLE);
         postRouteVisible(routeId, Route.INVISIBLE);
@@ -173,6 +202,7 @@ function initMap() {
         // 非表示 → 表示
         eyeSlashIcon.style.display = 'none';
         eyeIcon.style.display = 'initial';
+        visible.setAttribute('data-visible', Route.VISIBLE_ALL);
         // ルートを表示
         routes[routeId].displayMarkers(Route.VISIBLE_ALL);
         postRouteVisible(routeId, Route.VISIBLE_ALL);
@@ -534,7 +564,7 @@ class Route {
     if (this.markers.length > 1) {
       const prevMarker = this.markers[this.markers.length - 2];
       this.drawLine(prevMarker, dotMarker);
-  
+
       // 距離ラベルを作成
       let distance = this.getDistanceBetweenMarkers(prevMarker, dotMarker);
       const customLabel = new DistanceLabelOverlay(this.map, location, '0m', distance);
@@ -554,6 +584,7 @@ class Route {
       strokeOpacity: 1.0,
       strokeWeight: 4,
       map: this.map,
+      // editable: true, // ライン上の点をドラッグ可能にする
     });
   
     // Polylineのクリックイベントリスナーを設定
@@ -595,7 +626,7 @@ class Route {
   displayMarkers(visible) {
     switch (visible){
       // 非表示
-      case '0':
+      case Route.INVISIBLE:
         // ドットマーカー
         this.markers.forEach((marker) => {
           marker.setMap(null);
@@ -610,22 +641,54 @@ class Route {
         });
         break;
       // 表示
-      case '1':
+      case Route.VISIBLE_ALL:
         // ドットマーカー
         this.markers.forEach((marker) => {
           marker.setMap(this.map);
         });
         // 距離ラベル
-        this.distanceLabels.forEach((label) => {
-          label.setMap(this.map);
-        });
+        if (this.map.getZoom() <= 13) {
+          // **************
+          // ズームアウト時
+          // **************
+          this.distanceLabels.forEach(label => label.setMap(null));
+          // 先頭の距離ラベルを表示
+          this.distanceLabels[0].setMap(this.map);
+          // 末尾の距離ラベルを表示
+          this.distanceLabels[this.distanceLabels.length - 1].setMap(this.map);
+
+          // 1000m単位で距離ラベルを表示
+          let dispDistance = [];
+          for (let i = 1; i <= 40; i++) {
+            dispDistance.push({flg: false, distance: i * 1000});
+          }
+
+          this.distanceLabels.forEach(label => {
+            dispDistance.forEach(d => {
+              if (!d.flg) {
+                if (label.labelContent.slice(0, -1) / d.distance >= 1) {
+                  label.setMap(this.map);
+                  d.flg = true;
+                }
+                return;
+              }
+            });
+          });
+        } else {
+          // **************
+          // ズームイン時
+          // **************
+          this.distanceLabels.forEach((label) => {
+            label.setMap(this.map);
+          });
+        }
         // ルート線
         this.polylines.forEach((line) => {
           line.setMap(this.map);
         });
         break;
       // 表示(ルートのみ)
-      case '2':
+      case Route.VISIBLE_ROUTE:
         // ドットマーカー
         this.markers.forEach((marker) => {
           marker.setMap(this.map);
@@ -642,7 +705,7 @@ class Route {
     }
   }
 
-  // ルートを活性／非活性
+  // ルート活性／非活性
   disableRoute(disable) {
     // ルート線色
     let routeColor;
@@ -705,7 +768,7 @@ class DistanceLabelOverlay extends google.maps.OverlayView {
     const point = this.getProjection().fromLatLngToDivPixel(this.position);
     if (point) {
       this.div.style.left = (point.x - 30) + "px";
-      this.div.style.top = (point.y - 30) + "px";
+      this.div.style.top = (point.y - 28) + "px";
     }
   }
 
