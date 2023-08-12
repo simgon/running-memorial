@@ -140,12 +140,14 @@ function initMap() {
   });
 
   // ルート一覧を取得
-  const listContainer = document.getElementById('routes-container');
-  const listItems = listContainer.getElementsByTagName('li');
+  const listItems = document.getElementById('routes-container').getElementsByTagName('li');
 
   for (let i = 0; i < listItems.length; i++) {
+    // ルート項目
+    const routeItem = document.getElementById('route-item' + i);
+
     // ルート選択時
-    listItems[i].addEventListener('click', function(event) {
+    routeItem.addEventListener('click', function(event) {
       let routeId = this.getAttribute('data-route-id');
       
       // 全ルート一覧の背景色を通常色に戻す
@@ -173,10 +175,10 @@ function initMap() {
     });
 
     // 表示／非表示
-    const eyeToggle = listItems[i].querySelector('.eye-toggle');
-    const eyeIcon = listItems[i].querySelector('.eye-icon');
-    const eyeFillIcon = listItems[i].querySelector('.eye-fill-icon');
-    const eyeSlashIcon = listItems[i].querySelector('.eye-slash-icon');
+    const eyeToggle = routeItem.querySelector('.eye-toggle');
+    const eyeIcon = routeItem.querySelector('.eye-icon');
+    const eyeFillIcon = routeItem.querySelector('.eye-fill-icon');
+    const eyeSlashIcon = routeItem.querySelector('.eye-slash-icon');
   
     eyeToggle.addEventListener('click', function(event) {
       let routeId = this.closest('[data-route-id]').getAttribute('data-route-id');
@@ -210,20 +212,20 @@ function initMap() {
     });
 
     // 編集
-    listItems[i].querySelector('.edit-icon').addEventListener('click', () => {
-      listItems[i].querySelector('.route-detail').style = "display:none;";
-      listItems[i].querySelector('.route-edit').style = "";
+    routeItem.querySelector('.edit-icon').addEventListener('click', () => {
+      routeItem.querySelector('.route-detail').style = "display:none;";
+      routeItem.querySelector('.route-edit').style = "";
 
       // テキストボックスをフォーカス
-      const edit = listItems[i].querySelector('.text-edit');
+      const edit = routeItem.querySelector('.text-edit');
       edit.focus();
       edit.setSelectionRange(edit.value.length, edit.value.length);
     });
 
     // 編集 - キャンセル
-    listItems[i].querySelector('.cancel').addEventListener("click", (event) => {
-      listItems[i].querySelector('.route-detail').style = "";
-      listItems[i].querySelector('.route-edit').style = "display:none;";
+    routeItem.querySelector('.cancel').addEventListener("click", (event) => {
+      routeItem.querySelector('.route-detail').style = "";
+      routeItem.querySelector('.route-edit').style = "display:none;";
     });
   }
 

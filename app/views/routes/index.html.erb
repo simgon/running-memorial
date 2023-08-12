@@ -47,13 +47,17 @@
         </section>
         <%# ルート一覧 %>
         <section class="route_info">
-          <ul id="routes-container" class="routes drag-handle">
-          <% @routes.each do |route| %>
-            <li class="route-item" data-route-id="<%= route.id %>" data-visible="<%= route.visible %>">
+          <ul id="routes-container" class="routes">
+          <% @routes.each_with_index do |route, index| %>
+            <li class="route-item" data-route-id="<%= route.id %>" data-visible="<%= route.visible %>" id="route-item<%= index %>"> 
               <%# ルート名表示 %>
               <div class="route-detail">
-                <%# ルート名 %>
+                <%# ドラッグハンドル %>
                 <div>
+                  <%= image_tag("line.svg", alt: "line", class: "drag-handle") %>
+                </div>
+                <%# ルート名 %>
+                <div class="route-name-container">
                   <%= route.name %>
                 </div>
                 <%# ルート編集ボタン一覧 %>
