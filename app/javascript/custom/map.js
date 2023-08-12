@@ -169,8 +169,17 @@ function initMap() {
 
       // 選択／未選択ルート
       Object.values(routes).forEach(route => {
-        // ルート活性／非活性
-        route.disableRoute(route.routeId === routeId ? false : true);
+        if (route.routeId === routeId) {
+          // ルート活性
+          route.disableRoute(false);
+          // ドラッグ可能
+          route.dotMarkers.forEach(dotMarker => dotMarker.setDraggable(true));
+        } else {
+          // ルート非活性
+          route.disableRoute(true);
+          // ドラッグ不可
+          route.dotMarkers.forEach(dotMarker => dotMarker.setDraggable(false));
+        }
       });
     });
 
@@ -321,7 +330,7 @@ function postRoute() {
     body: JSON.stringify({
       route_param: {
         routeId: route.routeId,
-        locations: route.markers.map((x) => ({ lat_loc: x.position.lat(), lon_loc: x.position.lng() }))
+        locations: route.dotMarkers.map((x) => ({ lat_loc: x.position.lat(), lon_loc: x.position.lng() }))
       }
     })
   })
@@ -500,7 +509,7 @@ class Route {
   constructor(routeId, map) {
     this.routeId = routeId;
     this.map = map;
-    this.markers = [];
+    this.dotMarkers = [];
     this.distanceLabels = [];
     this.polylines = [];
   }
@@ -511,7 +520,7 @@ class Route {
 
   // 全てのマーカーを削除
   clearMarkers() {
-    this.markers.forEach((marker) => {
+    this.dotMarkers.forEach((marker) => {
       marker.setMap(null);
     });
 
@@ -523,14 +532,14 @@ class Route {
       line.setMap(null);
     });
 
-    this.markers = [];
+    this.dotMarkers = [];
     this.distanceLabels = [];
     this.polylines = [];
   }
 
   // 直前に追加したマーカーを削除
   delMarker() {
-    for (const array of [this.markers, this.distanceLabels, this.polylines]) {
+    for (const array of [this.dotMarkers, this.distanceLabels, this.polylines]) {
       if (array.length) {
         array.pop().setMap(null);
       }
@@ -547,24 +556,65 @@ class Route {
       scale: 2, // ドットのサイズを指定
     };
 
-    // マーカーを作成
+    // ドットマーカーを作成
     const dotMarker = new google.maps.Marker({
       position: {lat: location.lat(), lng: location.lng()},
       map: this.map,
-      icon: dotSymbol
+      icon: dotSymbol,
+      draggable: true, // ドラッグ可能にする（イベント追加後にドラッグ不可にする）
     });
-  
+
+    // ドットマーカーをクリック時
     dotMarker.addListener('click', (event) => {
       // マップ上のクリックされた場所にマーカーを追加
       route.addMarker(event.latLng);
     });
 
+    dotMarker.customId = this.routeId + "-" + this.dotMarkers.length;
+  
+    // ドットマーカードラッグ完了時、マーカーを移動
+    dotMarker.addListener('dragend', (event) => {
+      const idx = dotMarker.customId.split('-')[1];
+
+      // ドットマーカー
+      this.dotMarkers[idx].position = event.latLng;
+
+      // ルート線
+      if (idx == 0) {
+        // 先頭
+        this.polylines[idx].setPath([event.latLng, this.polylines[idx].getPath().getAt(1)]);
+      } else if (idx == this.dotMarkers.length - 1) {
+        // 末尾
+        this.polylines[idx - 1].setPath([this.polylines[idx - 1].getPath().getAt(0), event.latLng]);
+      } else {
+        // 上記以外
+        this.polylines[idx - 1].setPath([this.polylines[idx - 1].getPath().getAt(0), event.latLng]);
+        this.polylines[idx].setPath([event.latLng, this.polylines[idx].getPath().getAt(1)]);
+      }
+
+      // 距離ラベル
+      this.distanceLabels[idx].position = event.latLng;
+
+      for (let i = 1; i < this.distanceLabels.length; i++) {
+        this.distanceLabels[i].distanceValue = 0;
+      }
+      for (let i = 1; i < this.distanceLabels.length; i++) {
+        let distance = this.getDistanceBetweenMarkers(this.dotMarkers[i - 1], this.dotMarkers[i]);
+        this.distanceLabels[i].distanceValue = distance;
+        this.distanceLabels[i].labelContent = `${Math.round(this.getTotalDistance() * 1000)}m`;
+        this.distanceLabels[i].setMap(this.map);
+      }
+    });
+
+    // ドラッグ不可
+    dotMarker.setDraggable(false);
+
     // 配列にマーカーを追加
-    this.markers.push(dotMarker);
+    this.dotMarkers.push(dotMarker);
   
     // 2つ以上のマーカーがある場合は、新しく追加されたマーカーと前のマーカー間に直線を引く
-    if (this.markers.length > 1) {
-      const prevMarker = this.markers[this.markers.length - 2];
+    if (this.dotMarkers.length > 1) {
+      const prevMarker = this.dotMarkers[this.dotMarkers.length - 2];
       this.drawLine(prevMarker, dotMarker);
 
       // 距離ラベルを作成
@@ -589,10 +639,21 @@ class Route {
       // editable: true, // ライン上の点をドラッグ可能にする
     });
   
-    // Polylineのクリックイベントリスナーを設定
+    // ライン上をクリック時
     line.addListener('click', (event) => {
       // マップ上のクリックされた場所にマーカーを追加
       route.addMarker(event.latLng);
+    });
+
+    // 右クリック
+    line.addListener('rightclick', (event) => {
+
+      // const marker = new google.maps.Marker({
+      //   position: event.latLng,
+      //   map: this.map,
+      //   title: 'マーカーのタイトル',
+      // });
+      
     });
 
     // 直線を配列に追加
@@ -630,7 +691,7 @@ class Route {
       // 非表示
       case Route.INVISIBLE:
         // ドットマーカー
-        this.markers.forEach((marker) => {
+        this.dotMarkers.forEach((marker) => {
           marker.setMap(null);
         });
         // 距離ラベル
@@ -645,7 +706,7 @@ class Route {
       // 表示
       case Route.VISIBLE_ALL:
         // ドットマーカー
-        this.markers.forEach((marker) => {
+        this.dotMarkers.forEach((marker) => {
           marker.setMap(this.map);
         });
         // 距離ラベル
@@ -692,7 +753,7 @@ class Route {
       // 表示(ルートのみ)
       case Route.VISIBLE_ROUTE:
         // ドットマーカー
-        this.markers.forEach((marker) => {
+        this.dotMarkers.forEach((marker) => {
           marker.setMap(this.map);
         });
         // 距離ラベル
@@ -736,7 +797,7 @@ class Route {
       x.div.className = distanceClass;
     });
     // ドットマーカー
-    this.markers.forEach(marker => {
+    this.dotMarkers.forEach(marker => {
       const newIcon = {
         ...marker.getIcon(),
         fillColor: dotColor
