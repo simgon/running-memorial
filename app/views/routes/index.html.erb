@@ -23,30 +23,30 @@
         <%# ルート登録 %>
         <section>
           <%# 新しいルートボタン %>
-          <button id="new_route" class="flat-button">
+          <button id="new-route-button" class="flat-button">
             <%= image_tag("plus.svg", alt: "plus") %>
             新しいルート
           </button>
           <%# ルート入力 %>
-          <div id="new_route_text" style="display:none;">
+          <div id="new-route-input" class="hidden">
           <%= form_with(model: @route) do |f| %>
-            <div style="display:flex;">
+            <div class="flex-container">
               <%# ルート名 %>
-              <%= f.text_field :name, class: 'form-control' %>
+              <%= f.text_field :name, class: "form-control" %>
               <%# 確定 %>
-              <%= button_tag(type: 'submit', class: 'icon-submit') do %>
+              <%= button_tag(type: "submit", class: "icon-submit") do %>
                 <%= image_tag("check.svg", alt: "check") %>
               <% end %>
               <%# キャンセル %>
-              <%= button_tag(type: 'button', class: 'icon-submit') do %>
-                <%= image_tag("x.svg", alt: "x", id: "x") %>
+              <%= button_tag(type: "button", class: "icon-submit") do %>
+                <%= image_tag("x.svg", alt: "x", id: "new-route-cancel") %>
               <% end %>
             </div>
           <% end %>
           </div>
         </section>
         <%# ルート一覧 %>
-        <section class="route_info">
+        <section class="route-info">
           <ul id="routes-container" class="routes">
           <% @routes.each_with_index do |route, index| %>
             <li class="route-item" data-route-id="<%= route.id %>" data-visible="<%= route.visible %>" id="route-item<%= index %>"> 
@@ -63,13 +63,13 @@
                 <%# ルート編集ボタン一覧 %>
                 <div class="route-buttons-container">
                   <%# 表示／非表示 %>
-                  <%= link_to 'javascript:void(0);', onclick: 'return false;', class: 'eye-toggle' do %>
+                  <%= link_to "javascript:void(0);", onclick: "return false;", class: "eye-toggle" do %>
                     <%= image_tag("eye.svg", alt: "eye", class: "eye-icon") %>
-                    <%= image_tag("eye-slash.svg", alt: "eye-slash", class: "eye-slash-icon", style: "display:none;") %>
-                    <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon", style: "display:none;") %>
+                    <%= image_tag("eye-slash.svg", alt: "eye-slash", class: "eye-slash-icon hidden") %>
+                    <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon hidden") %>
                   <% end %>
                   <%# 編集 %>
-                  <%= link_to 'javascript:void(0);', onclick: 'return false;' do %>
+                  <%= link_to "javascript:void(0);", onclick: "return false;" do %>
                     <%= image_tag("pencil.svg", alt: "pencil", class: "edit-icon") %>
                   <% end %>
                   <%# 削除 %>
@@ -77,26 +77,26 @@
                     <%= image_tag("trash.svg", alt: "trash") %>
                   <% end %>
                   <%# コピー %>
-                  <%= form_with(model: route, url: '/routes/copy', method: :post) do |f| %>
+                  <%= form_with(model: route, url: "/routes/copy", method: :post) do |f| %>
                     <%= f.hidden_field :id %>
-                    <%= button_tag(type: 'submit', class: 'icon-submit' ) do %>
+                    <%= button_tag(type: "submit", class: "icon-submit" ) do %>
                       <%= image_tag("files.svg", alt: "files") %>
                     <% end %>
                   <% end %>
                 </div>
               </div>
               <%# ルート名編集 %>
-              <div class="route-edit" style="display:none;">
+              <div class="route-edit hidden">
               <%= form_with(model: route) do |f| %>
-                <div style="display:flex;">
+                <div class="flex-container">
                   <%# ルート名 %>
-                  <%= f.text_field :name, class: 'text-edit' %>
+                  <%= f.text_field :name, class: "text-edit" %>
                   <%# 確定 %>
-                  <%= button_tag(type: 'submit', class: 'icon-submit') do %>
+                  <%= button_tag(type: "submit", class: "icon-submit") do %>
                     <%= image_tag("check.svg", alt: "check") %>
                   <% end %>
                   <%# キャンセル %>
-                  <%= button_tag(type: 'button', class: 'icon-submit cancel') do %>
+                  <%= button_tag(type: "button", class: "icon-submit cancel") do %>
                     <%= image_tag("x.svg", alt: "x", id: "x") %>
                   <% end %>
                 </div>
@@ -109,32 +109,32 @@
       </div>
     </aside>
     <%# メイン %>
-    <div id="map_contents" class="col-sm-10">
+    <div id="map-contents" class="col-sm-10">
       <%# マップ %>
       <div id="map"></div>
       <div class="crosshair"></div>
       <%# マップ操作ボタン一覧 %>
-      <div id="map_board">
+      <div id="map-board">
         <div class="d-flex justify-content-evenly">
           <%# 保存 %>
-          <div class="btn" id="save_marker" style="display:flex;flex-flow: column;align-items: center;" disabled>
-            <%= image_tag("save.svg", alt: "plus", style: "width:5vw;") %>
-            <span style="color:#3cb371;margin-top:3px;">保存</span>
+          <div id="save-marker" class="btn flex-container flex-column align-items-center" disabled>
+            <%= image_tag("save.svg", alt: "plus", class: "map-board-btn-img") %>
+            <span class="map-board-btn-text">保存</span>
           </div>
           <%# 追加 %>
-          <div class="btn" id="add_marker" style="display:flex;flex-flow: column;align-items: center;" disabled>
-            <%= image_tag("plus-circle.svg", alt: "plus", style: "width:5vw;") %>
-            <span style="color:#3cb371;margin-top:3px;">追加</span>
+          <div id="add-marker" class="btn flex-container flex-column align-items-center" disabled>
+            <%= image_tag("plus-circle.svg", alt: "plus", class: "map-board-btn-img") %>
+            <span class="map-board-btn-text">追加</span>
           </div>
           <%# 1つ戻す %>
-          <div class="btn" id="del_marker" style="display:flex;flex-flow: column;align-items: center;" disabled>
-            <%= image_tag("backspace.svg", alt: "backspace", style: "width:5vw;") %>
-            <span style="color:#3cb371;margin-top:3px;">1つ戻す</span>
+          <div id="del-marker" class="btn flex-container flex-column align-items-center" disabled>
+            <%= image_tag("backspace.svg", alt: "backspace", class: "map-board-btn-img") %>
+            <span class="map-board-btn-text">1つ戻す</span>
           </div>
           <%# クリア %>
-          <div class="btn" id="eraser_marker" style="display:flex;flex-flow: column;align-items: center;" disabled>
-            <%= image_tag("eraser.svg", alt: "eraser", style: "width:5vw;") %>
-            <span style="color:#3cb371;margin-top:3px;">クリア</span>
+          <div id="eraser-marker" class="btn flex-container flex-column align-items-center" disabled>
+            <%= image_tag("eraser.svg", alt: "eraser", class: "map-board-btn-img") %>
+            <span class="map-board-btn-text">クリア</span>
           </div>
         </div>
       </div>
