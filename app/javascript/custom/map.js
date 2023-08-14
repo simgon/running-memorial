@@ -599,13 +599,13 @@ class Route {
 
       // 距離ラベルを作成
       let distance = this.getDistanceBetweenMarkers(prevDotMarker, newDotMarker);
-      const newDistanceLabel = this.createDistanceLabel(position, distance, init);
+      const newDistanceLabel = this.createDistanceLabel(position, distance);
       this.distanceLabels.push(newDistanceLabel);
       newDistanceLabel.labelContent = `${Math.round(this.getTotalDistance() * 1000)}m`;
     } else {
       // 先頭マーカーの場合
       // 距離ラベルを作成
-      const newDistanceLabel = this.createDistanceLabel(position, 0, init);
+      const newDistanceLabel = this.createDistanceLabel(position, 0);
       this.distanceLabels.push(newDistanceLabel);
     }
   }
@@ -795,9 +795,9 @@ class Route {
   /**
    * 距離ラベルを作成
    */
-  createDistanceLabel(position, distance = 0, init = false) {
+  createDistanceLabel(position, distance = 0) {
     // 距離ラベルを作成
-    const customLabel = new DistanceLabelOverlay(this.map, position, '0m', distance, init);
+    const customLabel = new DistanceLabelOverlay(this.map, position, '0m', distance);
     return customLabel;
   }
 
