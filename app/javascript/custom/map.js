@@ -284,6 +284,10 @@ function initMap() {
         data.forEach(loc => route.addMarker(new google.maps.LatLng(loc.lat_loc, loc.lon_loc), true));
         routes[routeId] = route;
 
+        // ルート非活性
+        routes[routeId].disableRoute(true);
+
+        // 表示／非表示
         const eyeToggle = listItems[i].querySelector('.eye-toggle');
         const eyeVisibleAll = listItems[i].querySelector('.eye-icon');
         const eyeVisibleRoute = listItems[i].querySelector('.eye-fill-icon');
@@ -954,7 +958,7 @@ class DistanceLabelOverlay extends google.maps.OverlayView {
   draw() {
     if (!this.div) {
       this.div = document.createElement('div');
-      this.div.className = 'distance-label';
+      this.div.className = 'distance-label distance-label-disable';
       this.div.textContent = this.labelContent;
       this.getPanes().overlayLayer.appendChild(this.div);
 
