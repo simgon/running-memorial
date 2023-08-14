@@ -271,59 +271,78 @@ function initMap() {
   // 表示処理
   // -------------------
   // #region 表示処理
+  const fetchPromises = [];
+
   // 各ルートのロケーション情報を取得して、マップ上にルート表示
   for (let i = 0; i < listItems.length; i++) {
     let routeId = listItems[i].getAttribute('data-route-id');
     let visible = listItems[i].getAttribute('data-visible');
 
     // ロケーション情報を取得
-    fetchLocations(routeId)
-      .then((data) => {
-        let route = new Route(routeId, map);
-        // マップ上にマーカーを表示
-        data.forEach(loc => route.addMarker(new google.maps.LatLng(loc.lat_loc, loc.lon_loc), true));
-        routes[routeId] = route;
+    fetchPromises.push(
+      fetchLocations(routeId)
+        .then((data) => {
+          let route = new Route(routeId, map);
+          // マップ上にマーカーを表示
+          data.forEach(loc => route.addMarker(new google.maps.LatLng(loc.lat_loc, loc.lon_loc), true));
+          routes[routeId] = route;
 
-        // ルート非活性
-        routes[routeId].disableRoute(true);
+          // ルート非活性
+          routes[routeId].disableRoute(true);
 
-        // 表示／非表示
-        const eyeToggle = listItems[i].querySelector('.eye-toggle');
-        const eyeVisibleAll = listItems[i].querySelector('.eye-icon');
-        const eyeVisibleRoute = listItems[i].querySelector('.eye-fill-icon');
-        const eyeInvisible = listItems[i].querySelector('.eye-slash-icon');
+          // 表示／非表示
+          const eyeToggle = listItems[i].querySelector('.eye-toggle');
+          const eyeVisibleAll = listItems[i].querySelector('.eye-icon');
+          const eyeVisibleRoute = listItems[i].querySelector('.eye-fill-icon');
+          const eyeInvisible = listItems[i].querySelector('.eye-slash-icon');
 
-        switch (visible){
-          // 非表示
-          case Route.INVISIBLE:
-            eyeVisibleAll.classList.add('hidden');
-            eyeVisibleRoute.classList.add('hidden');
-            eyeInvisible.classList.remove('hidden');
-            // ルートを非表示
-            routes[routeId].displayMarkers(Route.INVISIBLE);
-            break;
-          // 表示
-          case Route.VISIBLE_ALL:
-            eyeVisibleAll.classList.remove('hidden');
-            eyeVisibleRoute.classList.add('hidden');
-            eyeInvisible.classList.add('hidden');
-            // ルートを表示
-            routes[routeId].displayMarkers(Route.VISIBLE_ALL);
-            break;
-          // 表示(ルートのみ)
-          case Route.VISIBLE_ROUTE:
-            eyeVisibleAll.classList.add('hidden');
-            eyeVisibleRoute.classList.remove('hidden');
-            eyeInvisible.classList.add('hidden');
-            // ルートを表示
-            routes[routeId].displayMarkers(Route.VISIBLE_ROUTE);
-            break;
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+          switch (visible){
+            // 非表示
+            case Route.INVISIBLE:
+              eyeVisibleAll.classList.add('hidden');
+              eyeVisibleRoute.classList.add('hidden');
+              eyeInvisible.classList.remove('hidden');
+              // ルートを非表示
+              routes[routeId].displayMarkers(Route.INVISIBLE);
+              break;
+            // 表示
+            case Route.VISIBLE_ALL:
+              eyeVisibleAll.classList.remove('hidden');
+              eyeVisibleRoute.classList.add('hidden');
+              eyeInvisible.classList.add('hidden');
+              // ルートを表示
+              routes[routeId].displayMarkers(Route.VISIBLE_ALL);
+              break;
+            // 表示(ルートのみ)
+            case Route.VISIBLE_ROUTE:
+              eyeVisibleAll.classList.add('hidden');
+              eyeVisibleRoute.classList.remove('hidden');
+              eyeInvisible.classList.add('hidden');
+              // ルートを表示
+              routes[routeId].displayMarkers(Route.VISIBLE_ROUTE);
+              break;
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        })
+    );
   }
+
+  // ロケーション情報を取得後
+  Promise.all(fetchPromises)
+    .then(() => {
+      // 描画完了前？だと距離ラベルのdivに参照できない時があるので、遅延させる
+      setTimeout(() => {
+        // 全ルート非活性
+        Object.values(routes).forEach(route => {
+          route.disableRoute(true);
+        });
+      }, 100);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   // #endregion
 }
 
@@ -580,13 +599,13 @@ class Route {
 
       // 距離ラベルを作成
       let distance = this.getDistanceBetweenMarkers(prevDotMarker, newDotMarker);
-      const newDistanceLabel = this.createDistanceLabel(position, distance);
+      const newDistanceLabel = this.createDistanceLabel(position, distance, init);
       this.distanceLabels.push(newDistanceLabel);
       newDistanceLabel.labelContent = `${Math.round(this.getTotalDistance() * 1000)}m`;
     } else {
       // 先頭マーカーの場合
       // 距離ラベルを作成
-      const newDistanceLabel = this.createDistanceLabel(position);
+      const newDistanceLabel = this.createDistanceLabel(position, 0, init);
       this.distanceLabels.push(newDistanceLabel);
     }
   }
@@ -776,9 +795,9 @@ class Route {
   /**
    * 距離ラベルを作成
    */
-  createDistanceLabel(position, distance = 0) {
+  createDistanceLabel(position, distance = 0, init = false) {
     // 距離ラベルを作成
-    const customLabel = new DistanceLabelOverlay(this.map, position, '0m', distance);
+    const customLabel = new DistanceLabelOverlay(this.map, position, '0m', distance, init);
     return customLabel;
   }
 
@@ -958,7 +977,7 @@ class DistanceLabelOverlay extends google.maps.OverlayView {
   draw() {
     if (!this.div) {
       this.div = document.createElement('div');
-      this.div.className = 'distance-label distance-label-disable';
+      this.div.classList.add('distance-label');
       this.div.textContent = this.labelContent;
       this.getPanes().overlayLayer.appendChild(this.div);
 
