@@ -710,40 +710,52 @@ class Route {
     let touchStartTime;
     let longPressThreshold = 500; // ロングタップと判定する時間（ミリ秒）
 
-    // タッチ開始時の処理
-    routeLine.addListener('mousedown', (event) => {
-      touchStartTime = new Date().getTime();
+    const isTouchDevice = 'ontouchstart' in window || navigator.msMaxTouchPoints;
 
-      // ロングタップ時
-      longPressTimer = setTimeout(() => {
-        // ルート線上にマーカーを追加
-        this.addMarkerOnLine(routeLine, event.latLng);
-      }, longPressThreshold);
-    });
+    if (isTouchDevice) {
+      // タッチデバイスの場合
+      // タッチ開始時の処理
+      routeLine.addListener('mousedown', (event) => {
+        touchStartTime = new Date().getTime();
 
-    // タッチ終了時の処理
-    routeLine.addListener('mouseup', (event) => {
-      clearTimeout(longPressTimer);
+        // ロングタップ時
+        longPressTimer = setTimeout(() => {
+          // ルート線上にマーカーを追加
+          this.addMarkerOnLine(routeLine, event.latLng);
+        }, longPressThreshold);
+      });
 
-      const touchEndTime = new Date().getTime();
-      const touchDuration = touchEndTime - touchStartTime;
+      // タッチ終了時の処理
+      routeLine.addListener('mouseup', (event) => {
+        clearTimeout(longPressTimer);
 
-      // addMarkerOnLine内の距離ラベルの「this.setMap(map);」が実行されるとtouchStartTimeがundefinedになるため、undefinedの場合ロングタップと判定
-      if (touchDuration >= longPressThreshold || touchStartTime === undefined) {
-        // ロングタップと判定
-        // longPressTimerにてロングタップ時処理を実施
-      } else {
-        // 通常のクリック処理
+        const touchEndTime = new Date().getTime();
+        const touchDuration = touchEndTime - touchStartTime;
+
+        // addMarkerOnLine内の距離ラベルの「this.setMap(map);」が実行されるとtouchStartTimeがundefinedになるため、undefinedの場合ロングタップと判定
+        if (touchDuration >= longPressThreshold || touchStartTime === undefined) {
+          // ロングタップと判定
+          // longPressTimerにてロングタップ時処理を実施
+        } else {
+          // 通常のクリック処理
+          // クリックされた場所にマーカーを追加
+          selectedRoute?.addMarker(event.latLng);
+        }
+      });
+    } else {
+      // PCの場合
+      // ルート線上をクリック時
+      routeLine.addListener('click', (event) => {
         // クリックされた場所にマーカーを追加
         selectedRoute?.addMarker(event.latLng);
-      }
-    });
+      });
 
-    // ルート線上を右クリック時
-    routeLine.addListener('rightclick', (event) => {
-      // ルート線上にマーカーを追加
-      this.addMarkerOnLine(routeLine, {lat: event.latLng.lat(), lng: event.latLng.lng()});
-    });
+      // ルート線上を右クリック時
+      routeLine.addListener('rightclick', (event) => {
+        // ルート線上にマーカーを追加
+        this.addMarkerOnLine(routeLine, {lat: event.latLng.lat(), lng: event.latLng.lng()});
+      });
+    }
 
     return routeLine;
   }
