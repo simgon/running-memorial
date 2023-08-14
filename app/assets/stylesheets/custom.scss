@@ -273,7 +273,6 @@ aside {
 }
 
 #notification-popup {
-  display: none;
   position: fixed;
   top: 20px;
   left: 50%;
@@ -307,28 +306,27 @@ aside {
   background-repeat: no-repeat;
 }
 
-.distance-tag {
+.distance-label {
   position: absolute;
-  background-color: #3CB371;
+  z-index: 1000;
+  width: 5em;
+  padding: 3px 6px;
   border: 1px solid white;
   border-radius: 8px;
   color: #FFFFFF;
   font-size: 12px;
-  padding: 3px 6px;
-  z-index: 1000;
-  width: 5em;
-
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #3CB371;
 }
 
-.distance-tag-disable {
-  background-color: #3CB37155;
+.distance-label-disable {
   z-index: 999;
+  background-color: #3CB37155;
 }
 
-.distance-tag::after {
+.distance-label::after {
   content: "";
   position: absolute;
   left: 50%;

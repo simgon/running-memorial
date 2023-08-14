@@ -7,7 +7,7 @@ document.addEventListener('turbo:load', function() {
   // 初期化処理
   initMap();
 
-  // 通知ダイアログを表示
+  // 通知ダイアログを表示（リダイレクト時）
   showNotification(3000);
 
   // SortableJS
@@ -22,10 +22,30 @@ document.addEventListener('turbo:load', function() {
 
       const listContainer = document.getElementById('routes-container');
       const listItems = [...listContainer.getElementsByTagName('li')];
+      // ルートの並び順を更新
       postRouteOrder(listItems.map(item => item.getAttribute('data-route-id'))); 
     }
   });
 });
+
+/**
+ * 通知ダイアログを表示
+ * @param {Integer} duration - 表示時間
+ * @param {String} message   - メッセージ
+ */
+function showNotification(duration, message = null) {
+  let notificationPopup = document.getElementById('notification-popup');
+  let notificationMessage = document.getElementById('notification-message');
+
+  if (message || notificationMessage?.textContent.trim()) {
+    // メッセージ表示
+    notificationPopup.classList.remove('hidden');
+    if (message) notificationMessage.textContent = message;
+
+    // 表示時間経過後、メッセージ非表示
+    setTimeout(() => notificationPopup.classList.add('hidden'), duration);
+  }
+}
 
 // 選択ルートを保持
 let selectedRoute;
@@ -36,6 +56,7 @@ let selectedRoute;
 function initMap() {
   let currentLoc = new google.maps.LatLng('34.724789', '135.496594');
 
+  // マップ作成
   let mapOptions = {
     zoom: 16,
     center: currentLoc,
@@ -54,8 +75,9 @@ function initMap() {
   let routes = {};
 
   // -------------------
-  // イベント
+  // イベント処理
   // -------------------
+  // #region イベント処理
   // **************
   // マップ
   // **************
@@ -69,22 +91,22 @@ function initMap() {
     switch (targetId) {
       // マーカー追加
       case 'add-marker':
-        // マーカー追加ボタンがクリックされた場合の処理
+        // マーカー追加ボタン押下時
         selectedRoute.addMarker(map.getCenter());
         break;
       // １つ戻す
       case 'del-marker':
-        // １つ戻すボタンがクリックされた場合の処理
+        // １つ戻すボタン押下時
         selectedRoute.delMarker();
         break;
       // クリア
       case 'eraser-marker':
-        // クリアボタンがクリックされた場合の処理
+        // クリアボタン押下時
         selectedRoute.clearMarkers();
         break;
       // 保存
       case 'save-marker':
-        // 保存ボタンがクリックされた場合の処理
+        // 保存ボタン押下時
         postRoute();
         break;
     }
@@ -121,9 +143,9 @@ function initMap() {
   map.addListener('bounds_changed', () => {
     if (zoomChanged) {
       // 選択／未選択ルート
-      Object.values(routes).forEach(r => {
+      Object.values(routes).forEach(route => {
         // ルート活性／非活性
-        r.disableRoute(r.routeId === selectedRoute?.routeId ? false : true);
+        route.disableRoute(route.routeId === selectedRoute?.routeId ? false : true);
       });
       zoomChanged = false;
     }
@@ -191,34 +213,34 @@ function initMap() {
 
     // 表示／非表示
     const eyeToggle = routeItem.querySelector('.eye-toggle');
-    const eyeIcon = routeItem.querySelector('.eye-icon');
-    const eyeFillIcon = routeItem.querySelector('.eye-fill-icon');
-    const eyeSlashIcon = routeItem.querySelector('.eye-slash-icon');
+    const eyeVisibleAll = routeItem.querySelector('.eye-icon');
+    const eyeVisibleRoute = routeItem.querySelector('.eye-fill-icon');
+    const eyeInvisible = routeItem.querySelector('.eye-slash-icon');
   
     eyeToggle.addEventListener('click', function(event) {
       let routeId = this.closest('[data-route-id]').getAttribute('data-route-id');
       let visible = this.closest('[data-visible]');
       
-      if (!eyeIcon.classList.contains('hidden')) {
+      if (!eyeVisibleAll.classList.contains('hidden')) {
         // 表示 → 表示(ルートのみ)
-        eyeIcon.classList.add('hidden');
-        eyeFillIcon.classList.remove('hidden');
+        eyeVisibleAll.classList.add('hidden');
+        eyeVisibleRoute.classList.remove('hidden');
         visible.setAttribute('data-visible', Route.VISIBLE_ROUTE);
         // ルートを表示(ルートのみ)
         routes[routeId].displayMarkers(Route.VISIBLE_ROUTE);
         postRouteVisible(routeId, Route.VISIBLE_ROUTE);
-      } else if (!eyeFillIcon.classList.contains('hidden')) {
+      } else if (!eyeVisibleRoute.classList.contains('hidden')) {
         // 表示(ルートのみ) → 非表示
-        eyeFillIcon.classList.add('hidden');
-        eyeSlashIcon.classList.remove('hidden');
+        eyeVisibleRoute.classList.add('hidden');
+        eyeInvisible.classList.remove('hidden');
         visible.setAttribute('data-visible', Route.INVISIBLE);
         // ルートを非表示
         routes[routeId].displayMarkers(Route.INVISIBLE);
         postRouteVisible(routeId, Route.INVISIBLE);
       } else {
         // 非表示 → 表示
-        eyeSlashIcon.classList.add('hidden');
-        eyeIcon.classList.remove('hidden');
+        eyeInvisible.classList.add('hidden');
+        eyeVisibleAll.classList.remove('hidden');
         visible.setAttribute('data-visible', Route.VISIBLE_ALL);
         // ルートを表示
         routes[routeId].displayMarkers(Route.VISIBLE_ALL);
@@ -243,10 +265,12 @@ function initMap() {
       routeItem.querySelector('.route-edit').classList.add('hidden');
     });
   }
+  // #endregion
 
   // -------------------
-  // 表示
+  // 表示処理
   // -------------------
+  // #region 表示処理
   // 各ルートのロケーション情報を取得して、マップ上にルート表示
   for (let i = 0; i < listItems.length; i++) {
     let routeId = listItems[i].getAttribute('data-route-id');
@@ -257,36 +281,36 @@ function initMap() {
       .then((data) => {
         let route = new Route(routeId, map);
         // マップ上にマーカーを表示
-        data.forEach(loc => route.addMarker(new google.maps.LatLng(loc.lat_loc, loc.lon_loc)));
+        data.forEach(loc => route.addMarker(new google.maps.LatLng(loc.lat_loc, loc.lon_loc), true));
         routes[routeId] = route;
 
         const eyeToggle = listItems[i].querySelector('.eye-toggle');
-        const eyeIcon = listItems[i].querySelector('.eye-icon');
-        const eyeFillIcon = listItems[i].querySelector('.eye-fill-icon');
-        const eyeSlashIcon = listItems[i].querySelector('.eye-slash-icon');
+        const eyeVisibleAll = listItems[i].querySelector('.eye-icon');
+        const eyeVisibleRoute = listItems[i].querySelector('.eye-fill-icon');
+        const eyeInvisible = listItems[i].querySelector('.eye-slash-icon');
 
         switch (visible){
           // 非表示
           case Route.INVISIBLE:
-            eyeIcon.classList.add('hidden');
-            eyeFillIcon.classList.add('hidden');
-            eyeSlashIcon.classList.remove('hidden');
+            eyeVisibleAll.classList.add('hidden');
+            eyeVisibleRoute.classList.add('hidden');
+            eyeInvisible.classList.remove('hidden');
             // ルートを非表示
             routes[routeId].displayMarkers(Route.INVISIBLE);
             break;
           // 表示
           case Route.VISIBLE_ALL:
-            eyeIcon.classList.remove('hidden');
-            eyeFillIcon.classList.add('hidden');
-            eyeSlashIcon.classList.add('hidden');
+            eyeVisibleAll.classList.remove('hidden');
+            eyeVisibleRoute.classList.add('hidden');
+            eyeInvisible.classList.add('hidden');
             // ルートを表示
             routes[routeId].displayMarkers(Route.VISIBLE_ALL);
             break;
           // 表示(ルートのみ)
           case Route.VISIBLE_ROUTE:
-            eyeIcon.classList.add('hidden');
-            eyeFillIcon.classList.remove('hidden');
-            eyeSlashIcon.classList.add('hidden');
+            eyeVisibleAll.classList.add('hidden');
+            eyeVisibleRoute.classList.remove('hidden');
+            eyeInvisible.classList.add('hidden');
             // ルートを表示
             routes[routeId].displayMarkers(Route.VISIBLE_ROUTE);
             break;
@@ -296,8 +320,13 @@ function initMap() {
         console.error(error);
       });
   }
+  // #endregion
 }
 
+// -------------------
+// データの取得、更新
+// -------------------
+// #region データの取得、更新
 /**
  * ロケーション情報を取得
  * @param {String} route_id - ルートID
@@ -397,27 +426,7 @@ function postRequest(action, param, message = '') {
     })
     .catch(error => console.error(error));
 }
-
-/**
- * 通知ダイアログを表示
- * @param {Integer} duration - 表示時間
- * @param {String} message   - メッセージ
- */
-function showNotification(duration, message = null) {
-  let notificationPopup = document.getElementById('notification-popup');
-  let notificationMessage = document.getElementById('notification-message');
-
-  if (message || notificationMessage?.textContent.trim()) {
-    notificationPopup.style.display = 'block';
-    if (message) {
-      notificationMessage.textContent = message;
-    }
-
-    setTimeout(function() {
-      notificationPopup.style.display = 'none';
-    }, duration);
-  }
-}
+// #endregion
 
 /**
  * RouteMapクラス
@@ -452,7 +461,7 @@ class RouteMap extends google.maps.Map {
     const crosshairElement = document.querySelector('.crosshair');
   
     // 地図の移動が完了したときに十字の位置を更新する
-    google.maps.event.addListener(this, 'idle', function() {
+    this.addListener('idle', function() {
       const center = this.getCenter();
       const bounds = this.getBounds();
       const ne = bounds.getNorthEast();
@@ -506,9 +515,9 @@ class Route {
   constructor(routeId, map) {
     this.routeId = routeId;
     this.map = map;
-    this.dotMarkers = [];
-    this.distanceLabels = [];
-    this.routeLines = [];
+    this.dotMarkers = [];       // ドットマーカー
+    this.distanceLabels = [];   // 距離ラベル
+    this.routeLines = [];       // ルート線
   }
 
   /**
@@ -536,75 +545,111 @@ class Route {
    * 直前に追加したマーカーを削除
    */
   delMarker() {
-    for (const array of [this.dotMarkers, this.distanceLabels, this.routeLines]) {
-      if (array.length) {
-        array.pop().setMap(null);
-      }
-    }
+    [this.dotMarkers, this.distanceLabels, this.routeLines].forEach(markers => {
+      if (markers.length) markers.pop().setMap(null);
+    });
   }
 
   /**
    * マーカーを追加
    */
-  addMarker(location) {
+  addMarker(position, init = false) {
+    // ドットマーカーを作成
+    const newDotMarker = this.createDotMarker({lat: position.lat(), lng: position.lng()});
+
+    // 初期表示時、ドラッグ不可
+    if (init) newDotMarker.setDraggable(false);
+
+    // 配列にマーカーを追加
+    this.dotMarkers.push(newDotMarker);
+  
+    // 2つ以上のマーカーがある場合は、新しく追加されたマーカーと前のマーカー間に直線を引く
+    if (this.dotMarkers.length > 1) {
+      // 前マーカー
+      const prevDotMarker = this.dotMarkers[this.dotMarkers.length - 2];
+
+      // ルート線を作成
+      const routeLine = this.createRouteLine([prevDotMarker.position, newDotMarker.position]);    
+      
+      // ルート線を配列に追加
+      this.routeLines.push(routeLine);
+
+      // 距離ラベルを作成
+      let distance = this.getDistanceBetweenMarkers(prevDotMarker, newDotMarker);
+      const newDistanceLabel = this.createDistanceLabel(position, distance);
+      this.distanceLabels.push(newDistanceLabel);
+      newDistanceLabel.labelContent = `${Math.round(this.getTotalDistance() * 1000)}m`;
+    } else {
+      // 先頭マーカーの場合
+      // 距離ラベルを作成
+      const newDistanceLabel = this.createDistanceLabel(position);
+      this.distanceLabels.push(newDistanceLabel);
+    }
+  }
+
+  /**
+   * ドットマーカーを作成
+   */
+  createDotMarker(position) {
     // ドットマーカーを作成
     const dotMarker = new google.maps.Marker({
-      position: {lat: location.lat(), lng: location.lng()},
+      position: position,
       map: this.map,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         fillOpacity: 1,
         fillColor: '#3CB371', // ドットの色を指定
         strokeOpacity: 0,
-        scale: 2, // ドットのサイズを指定
+        scale: 2,             // ドットのサイズを指定
       },
-      draggable: false,
-    });
-
-    // ドラッグ可能にする（イベント追加後にドラッグ不可にする）
-    dotMarker.setDraggable(true);
-
-    // ドラッグ後のクリック動作を制御
-    let delayFlg = false;
-
-    // ドットマーカーをクリック時
-    dotMarker.addListener('click', (event) => {
-
-      if (delayFlg) return;
-
-      // マップ上のクリックされた場所にマーカーを追加
-      selectedRoute.addMarker(event.latLng);
+      draggable: true,        // ドラッグ可能にする
     });
 
     dotMarker.customId = this.routeId + '-' + this.dotMarkers.length;
+
+    // -------------------
+    // イベント処理
+    // -------------------
+    // ドラッグ後のクリック動作を制御（ドラッグ後にクリックイベントが走ることがあるので、待機時間を設ける）
+    let isDragging = false;
+
+    // ドットマーカーをクリック時
+    dotMarker.addListener('click', (event) => {
+      // ドラッグ待機中の場合
+      if (isDragging) return;
+
+      // マップ上のクリックされた場所にマーカーを追加
+      selectedRoute?.addMarker(event.latLng);
+    });
   
     // ドットマーカードラッグ完了時、マーカーを移動
     dotMarker.addListener('dragend', (event) => {
+      // ドラッグ待機中
+      isDragging = true;
+      setTimeout(() => isDragging = false, 1000);
 
-      delayFlg = true;
-      setTimeout(() => delayFlg = false, 1000);
+      const dotMarkerIdx = dotMarker.customId.split('-')[1];
 
-      const idx = dotMarker.customId.split('-')[1];
+      // ドットマーカーを移動
+      this.dotMarkers[dotMarkerIdx].position = event.latLng;
 
-      // ドットマーカー
-      this.dotMarkers[idx].position = event.latLng;
-
-      // ルート線
-      if (idx == 0) {
-        // 先頭
-        this.routeLines[idx].setPath([event.latLng, this.routeLines[idx].getPath().getAt(1)]);
-      } else if (idx == this.dotMarkers.length - 1) {
-        // 末尾
-        this.routeLines[idx - 1].setPath([this.routeLines[idx - 1].getPath().getAt(0), event.latLng]);
+      // ルート線を移動
+      if (dotMarkerIdx == 0) {
+        // 先頭マーカードラッグ時
+        this.routeLines[dotMarkerIdx].setPath([event.latLng, this.routeLines[dotMarkerIdx].getPath().getAt(1)]);
+      } else if (dotMarkerIdx == this.dotMarkers.length - 1) {
+        // 末尾マーカードラッグ時
+        this.routeLines[dotMarkerIdx - 1].setPath([this.routeLines[dotMarkerIdx - 1].getPath().getAt(0), event.latLng]);
       } else {
         // 上記以外
-        this.routeLines[idx - 1].setPath([this.routeLines[idx - 1].getPath().getAt(0), event.latLng]);
-        this.routeLines[idx].setPath([event.latLng, this.routeLines[idx].getPath().getAt(1)]);
+        this.routeLines[dotMarkerIdx - 1].setPath([this.routeLines[dotMarkerIdx - 1].getPath().getAt(0), event.latLng]);
+        this.routeLines[dotMarkerIdx].setPath([event.latLng, this.routeLines[dotMarkerIdx].getPath().getAt(1)]);
       }
 
-      // 距離ラベル
-      this.distanceLabels[idx].position = event.latLng;
+      // 距離ラベルを移動
+      this.distanceLabels[dotMarkerIdx].position = event.latLng;
 
+      // 距離ラベル値を更新
       for (let i = 1; i < this.distanceLabels.length; i++) {
         this.distanceLabels[i].distanceValue = 0;
       }
@@ -616,111 +661,123 @@ class Route {
       }
     });
 
-    // ドラッグ不可
-    dotMarker.setDraggable(false);
+    return dotMarker;
+  }
 
-    // 配列にマーカーを追加
-    this.dotMarkers.push(dotMarker);
-  
-    // 2つ以上のマーカーがある場合は、新しく追加されたマーカーと前のマーカー間に直線を引く
-    if (this.dotMarkers.length > 1) {
-      const prevMarker = this.dotMarkers[this.dotMarkers.length - 2];
+  /**
+   * ルート線を作成
+   */
+  createRouteLine(path) {
+    // ルート線を作成
+    const routeLine = new google.maps.Polyline({
+      path: path,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 4,
+      map: this.map,
+      // editable: true, // ライン上の点をドラッグ可能にする
+    });
 
-      // ルート線を作成
-      const routeLine = new google.maps.Polyline({
-        path: [prevMarker.position, dotMarker.position],
-        strokeColor: '#FF0000',
-        strokeOpacity: 1.0,
-        strokeWeight: 4,
-        map: this.map,
-        // editable: true, // ライン上の点をドラッグ可能にする
-      });
-    
-      routeLine.customId = this.routeId + '-' + this.routeLines.length;
+    routeLine.customId = this.routeId + '-' + this.routeLines.length;
 
-      // ルート線上をクリック時
-      routeLine.addListener('click', (event) => {
-        // マップ上のクリックされた場所にマーカーを追加
-        selectedRoute.addMarker(event.latLng);
-      });
-  
-      // ルート線上を右クリック時、ルート線上にマーカーを追加
-      routeLine.addListener('rightclick', (event) => {
-  
-        const routeId = routeLine.customId.split('-')[0];
-        const routeLineIdx = routeLine.customId.split('-')[1];
+    // -------------------
+    // イベント処理
+    // -------------------
+    let longPressTimer;
+    let touchStartTime;
+    let longPressThreshold = 500; // ロングタップと判定する時間（ミリ秒）
 
-        if (selectedRoute?.routeId != routeId) return;
+    // タッチ開始時の処理
+    routeLine.addListener('mousedown', (event) => {
+      touchStartTime = new Date().getTime();
 
-        // TODO: 追加マーカーのドラッグ移動ができない
-        //       追加マーカーのルート線上にマーカー追加できない
+      // ロングタップ時
+      longPressTimer = setTimeout(() => {
+        // ルート線上にマーカーを追加
+        this.addMarkerOnLine(routeLine, event.latLng);
+      }, longPressThreshold);
+    });
 
+    // タッチ終了時の処理
+    routeLine.addListener('mouseup', (event) => {
+      clearTimeout(longPressTimer);
+
+      const touchEndTime = new Date().getTime();
+      const touchDuration = touchEndTime - touchStartTime;
+
+      // addMarkerOnLine内の距離ラベルの「this.setMap(map);」が実行されるとtouchStartTimeがundefinedになるため、undefinedの場合ロングタップと判定
+      if (touchDuration >= longPressThreshold || touchStartTime === undefined) {
+        // ロングタップと判定
+        // longPressTimerにてロングタップ時処理を実施
+      } else {
+        // 通常のクリック処理
+        // クリックされた場所にマーカーを追加
+        selectedRoute?.addMarker(event.latLng);
+      }
+    });
+
+    // ルート線上を右クリック時
+    routeLine.addListener('rightclick', (event) => {
+      // ルート線上にマーカーを追加
+      this.addMarkerOnLine(routeLine, {lat: event.latLng.lat(), lng: event.latLng.lng()});
+    });
+
+    return routeLine;
+  }
+
+  /**
+   * ルート線上にマーカーを追加
+   */
+  addMarkerOnLine(routeLine, position) {
+    const routeId = routeLine.customId.split('-')[0];
+    const routeLineIdx = routeLine.customId.split('-')[1];
+
+    if (selectedRoute?.routeId != routeId) return;
+
+    for (let markerIdx = 0; markerIdx < this.dotMarkers.length; markerIdx++) {
+      const dotMarkerIdx = this.dotMarkers[markerIdx].customId?.split('-')[1];
+
+      if (dotMarkerIdx == routeLineIdx) {
+        // ドットマーカーを作成
+        const dotMarker = this.createDotMarker(position);
+        this.dotMarkers.splice(markerIdx + 1, 0, dotMarker);
+
+        // ルート線を作成
+        const routeLine = this.createRouteLine([this.dotMarkers[dotMarkerIdx].position, dotMarker.position]);   
+        this.routeLines.splice(markerIdx + 1, 0, routeLine);
+
+        // customIdを再設定
         for (let i = 0; i < this.dotMarkers.length; i++) {
-          const dotMarkerIdx = this.dotMarkers[i].customId?.split('-')[1];
-
-          if (dotMarkerIdx == routeLineIdx) {
-            // ドットマーカーを作成
-            const dotMarker = new google.maps.Marker({
-              position: event.latLng,
-              map: this.map,
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                fillOpacity: 1,
-                fillColor: '#3CB371', // ドットの色を指定
-                strokeOpacity: 0,
-                scale: 2, // ドットのサイズを指定
-              },
-              draggable: false,
-            });
-            this.dotMarkers.splice(i + 1, 0, dotMarker);
-
-            // ルート線を作成
-            const routeLine = new google.maps.Polyline({
-              path: [this.dotMarkers[dotMarkerIdx].position, dotMarker.position],
-              strokeColor: '#FF0000',
-              strokeOpacity: 1.0,
-              strokeWeight: 4,
-              map: this.map,
-              // editable: true, // ライン上の点をドラッグ可能にする
-            });
-            this.routeLines.splice(i + 1, 0, routeLine);
-
-            for (let i = 0; i < this.dotMarkers.length; i++) {
-              this.dotMarkers[i].customId = this.routeId + '-' + i;
-            }
-            for (let i = 0; i < this.routeLines.length; i++) {
-              this.routeLines[i].customId = this.routeId + '-' + i;
-            }
-            // ルート線パスを再設定
-            for (let i = 1; i < this.dotMarkers.length; i++) {
-              this.routeLines[i - 1].setPath([this.dotMarkers[i - 1].position, this.dotMarkers[i].position]);
-            }
-
-            // 距離ラベルを作成
-            let distance = this.getDistanceBetweenMarkers(this.dotMarkers[dotMarkerIdx], dotMarker);
-            const customLabel = new DistanceLabelOverlay(this.map, event.latLng, '0m', distance);
-            this.distanceLabels.splice(i + 1, 0, customLabel);
-            customLabel.labelContent = `${Math.round((distance + (this.distanceLabels[dotMarkerIdx].labelContent.slice(0, -1) / 1000)) * 1000)}m`;
-
-            break;
-          }
+          this.dotMarkers[i].customId = this.routeId + '-' + i;
         }
-      });
-  
-      // ルート線を配列に追加
-      this.routeLines.push(routeLine);
+        for (let i = 0; i < this.routeLines.length; i++) {
+          this.routeLines[i].customId = this.routeId + '-' + i;
+        }
+        // ルート線パスを再設定
+        for (let i = 1; i < this.dotMarkers.length; i++) {
+          this.routeLines[i - 1].setPath([this.dotMarkers[i - 1].position, this.dotMarkers[i].position]);
+        }
 
-      // 距離ラベルを作成
-      let distance = this.getDistanceBetweenMarkers(prevMarker, dotMarker);
-      const customLabel = new DistanceLabelOverlay(this.map, location, '0m', distance);
-      this.distanceLabels.push(customLabel);
-      customLabel.labelContent = `${Math.round(this.getTotalDistance() * 1000)}m`;
-    } else {
-      const customLabel = new DistanceLabelOverlay(this.map, location, '0m', 0);
-      this.distanceLabels.push(customLabel);
+        // 距離ラベルを作成
+        let distance = this.getDistanceBetweenMarkers(this.dotMarkers[dotMarkerIdx], dotMarker);
+        const distanceLabel = this.createDistanceLabel(position, distance);
+        this.distanceLabels.splice(markerIdx + 1, 0, distanceLabel);
+        distanceLabel.labelContent = `${Math.round((distance + (this.distanceLabels[dotMarkerIdx].labelContent.slice(0, -1) / 1000)) * 1000)}m`;
+
+        break;
+      }
     }
   }
-  
+
+  /**
+   * 距離ラベルを作成
+   */
+  createDistanceLabel(position, distance = 0) {
+    // 距離ラベルを作成
+    const customLabel = new DistanceLabelOverlay(this.map, position, '0m', distance);
+    return customLabel;
+  }
+
   /**
    * 2つのマーカー間の距離（km）を返す
    */
@@ -854,12 +911,12 @@ class Route {
     // 選択ルート
     if (!disable) {
       routeColor = '#FF0000';
-      distanceClass = 'distance-tag';
+      distanceClass = 'distance-label';
       dotColor = '#3CB371';
     // 未選択ルート
     } else {
       routeColor = '#FF000055';
-      distanceClass = 'distance-tag distance-tag-disable';
+      distanceClass = 'distance-label distance-label-disable';
       dotColor = '#3CB37155';
     }
 
@@ -881,7 +938,6 @@ class Route {
   }
 }
 
-
 /**
  * 距離ラベルのオーバーレイ
  */
@@ -898,7 +954,7 @@ class DistanceLabelOverlay extends google.maps.OverlayView {
   draw() {
     if (!this.div) {
       this.div = document.createElement('div');
-      this.div.className = 'distance-tag';
+      this.div.className = 'distance-label';
       this.div.textContent = this.labelContent;
       this.getPanes().overlayLayer.appendChild(this.div);
 

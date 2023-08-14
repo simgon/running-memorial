@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta charset="utf-8">
 
-    <%= favicon_link_tag '/assets/icon.png' %>
+    <%= favicon_link_tag "/assets/icon.png" %>
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/icon.png">
 
     <%= csrf_meta_tags %>
@@ -19,9 +19,9 @@
 
   <body>
     <% flash.each do |message_type, message| %>
-      <div style="display:none;" class="alert alert-<%= message_type %>"><%= message %></div>
+      <div class="alert alert-<%= message_type %> hidden"><%= message %></div>
     <% end %>
-    <div id="notification-popup">
+    <div id="notification-popup" class="hidden">
       <span id="notification-message">
         <% flash.each do |message_type, message| %>
           <%= message %>
