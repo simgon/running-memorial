@@ -1,6 +1,6 @@
 # ルート記録サイト
 ## 画面
-<img width="1800" alt="image" src="https://github.com/simgon/running-memorial/assets/23553796/c0fa7969-e41c-4a44-a853-07fe1a9384fe">
+![image](https://github.com/simgon/running-memorial/assets/23553796/fb94e01c-2485-488d-903d-32c75933103c)
 
 ## アプリ仕様
 - マップ上にルートを記録するアプリ
