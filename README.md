@@ -1,24 +1,30 @@
-# README
+# ルート記録サイト
+## 画面
+<img width="1800" alt="image" src="https://github.com/simgon/running-memorial/assets/23553796/c0fa7969-e41c-4a44-a853-07fe1a9384fe">
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## アプリ仕様
+- マップ上にルートを記録するアプリ
+  - ランニングルート等を記録する
+  - マップ上にマーカーを設置して、ルートを作成する
+- マップ
+  - 追加ボタン or マップ上をクリック
+    - マーカーを設置
+  - 1つ戻すボタン
+    - 直前に設置したマーカーを１つ戻す
+  - クリアボタン
+    - 全てのマーカーを削除
+  - 設置マーカーをドラッグ
+    - 設置マーカーを移動
+  - PC:ルート線上を右クリック、スマホ：ルート線上をロングタップ
+    - ルート線上にマーカーを追加設置
+- サイドメニュー
+  - 新しいルートボタン
+    - 新しいルートを追加
+  - 表示ボタン
+    - ルート表示、ルートのみ表示、ルート非表示を切替
+  - 編集ボタン
+    - ルート名を変更
+  - 削除ボタン
+    - ルートを削除
+  - コピーボタン
+    - ルートをコピー作成
