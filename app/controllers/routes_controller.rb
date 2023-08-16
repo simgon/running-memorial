@@ -1,9 +1,27 @@
 class RoutesController < ApplicationController
   # Route一覧を表示
   def index
-    @routes = Route.order(:order)
-    @route = Route.new
+    # クッキーからユーザーIDを取得
+    user_id = cookies.encrypted[:user_id]
+    if user_id
+      # ユーザーを取得
+      @user = User.find(user_id)
+    end
 
+    # ユーザーを取得できなかった場合
+    if !@user
+      # ユーザーを新規作成
+      @user = User.new
+      @user.save
+      # クッキーにユーザーIDをセット
+      cookies.permanent.encrypted[:user_id] = @user.id
+    end
+
+    # Route情報を取得
+    @routes = Route.where(user_id: @user.id).order(:order)
+    @route = Route.new
+    @route.user_id = @user.id
+    
     respond_to do |format|
       format.html # HTML形式のビューを表示
       format.json { render json: @routes.to_json() } # JSON形式でデータを返す
@@ -19,7 +37,8 @@ class RoutesController < ApplicationController
 
   # Route新規登録
   def create
-    @route = Route.new(route_params)
+
+    @route = Route.new(route_params_create)
 
     if @route.save
       flash[:info] = "登録しました"
@@ -32,7 +51,7 @@ class RoutesController < ApplicationController
   # Route情報更新
   def update
     @route = Route.find(params[:id])
-    if @route.update(route_params)
+    if @route.update(route_params_update)
       flash[:success] = "更新しました"
       redirect_to routes_url
     else
@@ -103,7 +122,12 @@ class RoutesController < ApplicationController
   private
 
     # ルート登録時のストロングパラメータ
-    def route_params
+    def route_params_create
+      params.require(:route).permit(:name, :user_id)
+    end
+
+    # ルート登録時のストロングパラメータ
+    def route_params_update
       params.require(:route).permit(:name)
     end
 end

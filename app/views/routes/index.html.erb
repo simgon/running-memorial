@@ -33,6 +33,7 @@
             <div class="flex-container">
               <%# ルート名 %>
               <%= f.text_field :name, class: "form-control" %>
+              <%= f.hidden_field :user_id %>
               <%# 確定 %>
               <%= button_tag(type: "submit", class: "icon-submit") do %>
                 <%= image_tag("check.svg", alt: "check") %>
