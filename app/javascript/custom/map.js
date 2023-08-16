@@ -636,55 +636,173 @@ class Route {
     // ドラッグ後のクリック動作を制御（ドラッグ後にクリックイベントが走ることがあるので、待機時間を設ける）
     let isDragging = false;
 
-    // ドットマーカーをクリック時
-    dotMarker.addListener('click', (event) => {
-      // ドラッグ待機中の場合
-      if (isDragging) return;
+    let longPressTimer;
+    let touchStartTime;
+    let longPressThreshold = 500; // ロングタップと判定する時間（ミリ秒）
 
-      // マップ上のクリックされた場所にマーカーを追加
-      selectedRoute?.addMarker(event.latLng);
-    });
+    const isTouchDevice = 'ontouchstart' in window || navigator.msMaxTouchPoints;
+
+    if (isTouchDevice) {
+      // タッチデバイスの場合
+      // タッチ開始時の処理
+      dotMarker.addListener('mousedown', (event) => {
+        touchStartTime = new Date().getTime();
+
+        // ロングタップ時
+        longPressTimer = setTimeout(() => {
+          // 右クリックされたマーカーを削除
+          this.removeMarker(dotMarker);
+        }, longPressThreshold);
+      });
+
+      // タッチ終了時の処理
+      dotMarker.addListener('mouseup', (event) => {
+        clearTimeout(longPressTimer);
+
+        const touchEndTime = new Date().getTime();
+        const touchDuration = touchEndTime - touchStartTime;
+
+        if (touchDuration >= longPressThreshold || touchStartTime === undefined) {
+          // ロングタップと判定（当if文は通らない。removeMarkerでdotMarkerが削除されるため、mouseupイベントは発火しない）
+          // longPressTimerにてロングタップ時処理を実施
+        } else {
+          // 通常のクリック処理
+          // ドラッグ待機中の場合
+          if (isDragging) return;
+
+          // マップ上のクリックされた場所にマーカーを追加
+          selectedRoute?.addMarker(event.latLng);
+        }
+      });
+    } else {
+      // PCの場合
+      // ドットマーカーをクリック時
+      dotMarker.addListener('click', (event) => {
+        // ドラッグ待機中の場合
+        if (isDragging) return;
+
+        // マップ上のクリックされた場所にマーカーを追加
+        selectedRoute?.addMarker(event.latLng);
+      });
+
+      // ドットマーカーを右クリック時
+      dotMarker.addListener('rightclick', (event) => {
+        // 右クリックされたマーカーを削除
+        this.removeMarker(dotMarker);
+      });
+    }
   
+    // ドットマーカードラッグ開始時
+    dotMarker.addListener('dragstart', (event) => {
+      // ロングタップをキャンセル
+      clearTimeout(longPressTimer);
+    });
+    
     // ドットマーカードラッグ完了時、マーカーを移動
     dotMarker.addListener('dragend', (event) => {
       // ドラッグ待機中
       isDragging = true;
       setTimeout(() => isDragging = false, 1000);
 
-      const dotMarkerIdx = dotMarker.customId.split('-')[1];
-
-      // ドットマーカーを移動
-      this.dotMarkers[dotMarkerIdx].position = event.latLng;
-
-      // ルート線を移動
-      if (dotMarkerIdx == 0) {
-        // 先頭マーカードラッグ時
-        this.routeLines[dotMarkerIdx].setPath([event.latLng, this.routeLines[dotMarkerIdx].getPath().getAt(1)]);
-      } else if (dotMarkerIdx == this.dotMarkers.length - 1) {
-        // 末尾マーカードラッグ時
-        this.routeLines[dotMarkerIdx - 1].setPath([this.routeLines[dotMarkerIdx - 1].getPath().getAt(0), event.latLng]);
-      } else {
-        // 上記以外
-        this.routeLines[dotMarkerIdx - 1].setPath([this.routeLines[dotMarkerIdx - 1].getPath().getAt(0), event.latLng]);
-        this.routeLines[dotMarkerIdx].setPath([event.latLng, this.routeLines[dotMarkerIdx].getPath().getAt(1)]);
-      }
-
-      // 距離ラベルを移動
-      this.distanceLabels[dotMarkerIdx].position = event.latLng;
-
-      // 距離ラベル値を更新
-      for (let i = 1; i < this.distanceLabels.length; i++) {
-        this.distanceLabels[i].distanceValue = 0;
-      }
-      for (let i = 1; i < this.distanceLabels.length; i++) {
-        let distance = this.getDistanceBetweenMarkers(this.dotMarkers[i - 1], this.dotMarkers[i]);
-        this.distanceLabels[i].distanceValue = distance;
-        this.distanceLabels[i].labelContent = `${Math.round(this.getTotalDistance() * 1000)}m`;
-        this.distanceLabels[i].setMap(this.map);
-      }
+      // マーカーを移動
+      this.moveMarker(dotMarker, event.latLng);
     });
 
     return dotMarker;
+  }
+
+  /**
+   * マーカーを削除
+   */
+  removeMarker(dotMarker) {
+    const routeId = dotMarker.customId.split('-')[0];
+    const dotMarkerIdx = dotMarker.customId.split('-')[1];
+
+    if (selectedRoute?.routeId != routeId) return;
+
+    // ルート線を削除
+    if (dotMarkerIdx == 0) {
+      // 先頭マーカー右クリック時
+      this.routeLines[dotMarkerIdx]?.setMap(null);
+      this.routeLines?.splice(dotMarkerIdx, 1)
+    } else if (dotMarkerIdx == this.dotMarkers.length - 1) {
+      // 末尾マーカー右クリック時
+      this.routeLines[dotMarkerIdx - 1].setMap(null);
+      this.routeLines.splice(dotMarkerIdx - 1, 1)
+    } else {
+      // 上記以外
+      this.routeLines[dotMarkerIdx].setMap(null);
+      this.routeLines[dotMarkerIdx - 1].setPath([this.dotMarkers[dotMarkerIdx - 1].position, this.dotMarkers[Number(dotMarkerIdx) + 1].position]);
+      this.routeLines.splice(dotMarkerIdx, 1)
+    }
+
+    // ドットマーカーを削除
+    this.dotMarkers[dotMarkerIdx].setMap(null);
+    this.dotMarkers.splice(dotMarkerIdx, 1)
+    // 距離ラベルを削除
+    this.distanceLabels[dotMarkerIdx].setMap(null);
+    this.distanceLabels.splice(dotMarkerIdx, 1)
+
+    // customIdを再設定
+    for (let i = 0; i < this.dotMarkers.length; i++) {
+      this.dotMarkers[i].customId = this.routeId + '-' + i;
+    }
+    for (let i = 0; i < this.routeLines.length; i++) {
+      this.routeLines[i].customId = this.routeId + '-' + i;
+    }
+
+    // 距離ラベル値を更新
+    for (let i = 0; i < this.distanceLabels.length; i++) {
+      this.distanceLabels[i].distanceValue = 0;
+      this.distanceLabels[i].labelContent = '0m';
+    }
+    this.distanceLabels[0]?.setMap(this.map);
+    for (let i = 1; i < this.distanceLabels.length; i++) {
+      let distance = this.getDistanceBetweenMarkers(this.dotMarkers[i - 1], this.dotMarkers[i]);
+      this.distanceLabels[i].distanceValue = distance;
+      this.distanceLabels[i].labelContent = `${Math.round(this.getTotalDistance() * 1000)}m`;
+      this.distanceLabels[i].setMap(this.map);
+    }
+  }
+
+  /**
+   * マーカーを移動
+   */
+  moveMarker(dotMarker, movedPosition) {
+    const routeId = dotMarker.customId.split('-')[0];
+    const dotMarkerIdx = dotMarker.customId.split('-')[1];
+
+    if (selectedRoute?.routeId != routeId) return;
+
+    // ドットマーカーを移動
+    this.dotMarkers[dotMarkerIdx].position = movedPosition;
+
+    // ルート線を移動
+    if (dotMarkerIdx == 0) {
+      // 先頭マーカードラッグ時
+      this.routeLines[dotMarkerIdx].setPath([movedPosition, this.routeLines[dotMarkerIdx].getPath().getAt(1)]);
+    } else if (dotMarkerIdx == this.dotMarkers.length - 1) {
+      // 末尾マーカードラッグ時
+      this.routeLines[dotMarkerIdx - 1].setPath([this.routeLines[dotMarkerIdx - 1].getPath().getAt(0), movedPosition]);
+    } else {
+      // 上記以外
+      this.routeLines[dotMarkerIdx - 1].setPath([this.routeLines[dotMarkerIdx - 1].getPath().getAt(0), movedPosition]);
+      this.routeLines[dotMarkerIdx].setPath([movedPosition, this.routeLines[dotMarkerIdx].getPath().getAt(1)]);
+    }
+
+    // 距離ラベルを移動
+    this.distanceLabels[dotMarkerIdx].position = movedPosition;
+
+    // 距離ラベル値を更新
+    for (let i = 1; i < this.distanceLabels.length; i++) {
+      this.distanceLabels[i].distanceValue = 0;
+    }
+    for (let i = 1; i < this.distanceLabels.length; i++) {
+      let distance = this.getDistanceBetweenMarkers(this.dotMarkers[i - 1], this.dotMarkers[i]);
+      this.distanceLabels[i].distanceValue = distance;
+      this.distanceLabels[i].labelContent = `${Math.round(this.getTotalDistance() * 1000)}m`;
+      this.distanceLabels[i].setMap(this.map);
+    }
   }
 
   /**
