@@ -181,6 +181,9 @@ aside {
   align-items: center;
   background-color: $main-color;
 }
+.route-item:hover {
+  background-color: #343641;
+}
 .route-name-container {
   text-align: left;
   width: 100%;
