@@ -177,6 +177,7 @@ function initMap() {
     // ルート選択時
     routeItem.addEventListener('click', function(event) {
       let routeId = this.getAttribute('data-route-id');
+      let visible = this.getAttribute('data-visible');
       
       // 全ルート一覧の背景色を通常色に戻す
       for (let j = 0; j < listItems.length; j++) {
@@ -185,23 +186,34 @@ function initMap() {
 
       // 選択ルートの一覧項目の背景色を変更
       this.style.backgroundColor = '#343641';
+
+      if (visible == Route.VISIBLE_ALL) {
+        // 選択ルートを保持
+        selectedRoute = routes[routeId];
+
+        // マップボタン一覧を活性化
+        document.getElementById('save-marker').removeAttribute('disabled');
+        document.getElementById('add-marker').removeAttribute('disabled');
+        document.getElementById('del-marker').removeAttribute('disabled');
+        document.getElementById('eraser-marker').removeAttribute('disabled');
+      } else {
+        // 選択ルートを未選択
+        selectedRoute = null;
+
+        // マップボタン一覧を非活性化
+        document.getElementById('save-marker').setAttribute('disabled', '');
+        document.getElementById('add-marker').setAttribute('disabled', '');
+        document.getElementById('del-marker').setAttribute('disabled', '');
+        document.getElementById('eraser-marker').setAttribute('disabled', '');
+      }
       
-      // マップボタン一覧を活性化
-      document.getElementById('save-marker').removeAttribute('disabled');
-      document.getElementById('add-marker').removeAttribute('disabled');
-      document.getElementById('del-marker').removeAttribute('disabled');
-      document.getElementById('eraser-marker').removeAttribute('disabled');
-
-      // 選択ルートを保持
-      selectedRoute = routes[routeId];
-
       // 選択／未選択ルート
       Object.values(routes).forEach(route => {
         if (route.routeId === routeId) {
           // ルート活性
           route.disableRoute(false);
           // ドラッグ可能
-          route.dotMarkers.forEach(dotMarker => dotMarker.setDraggable(true));
+          route.dotMarkers.forEach(dotMarker => dotMarker.setDraggable(visible == Route.VISIBLE_ALL ? true : false));
         } else {
           // ルート非活性
           route.disableRoute(true);
@@ -780,7 +792,7 @@ class Route {
     // ルート線を移動
     if (dotMarkerIdx == 0) {
       // 先頭マーカードラッグ時
-      this.routeLines[dotMarkerIdx].setPath([movedPosition, this.routeLines[dotMarkerIdx].getPath().getAt(1)]);
+      this.routeLines[dotMarkerIdx]?.setPath([movedPosition, this.routeLines[dotMarkerIdx].getPath().getAt(1)]);
     } else if (dotMarkerIdx == this.dotMarkers.length - 1) {
       // 末尾マーカードラッグ時
       this.routeLines[dotMarkerIdx - 1].setPath([this.routeLines[dotMarkerIdx - 1].getPath().getAt(0), movedPosition]);
