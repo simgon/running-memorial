@@ -102,6 +102,9 @@ aside {
 }
 
 #navbar-menu {
+  display: flex !important;
+  flex-direction: column;
+  min-height: 100%;
   padding: 0px 10px;
 }
 
