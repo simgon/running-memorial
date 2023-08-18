@@ -5,6 +5,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 <% end %>
 
+
+<%= form_with(model: @user) do |f| %>
+  <%= f.hidden_field :id %>
+  <%# 確定 %>
+  <%= button_tag(type: "submit", class: "icon-submit") do %>
+    <%= image_tag("check.svg", alt: "check") %>
+  <% end %>
+<% end %>
+
+
 <div class="container-fluid">
   <div id="site-container" class="row">
     <%# サイドメニュー %>
