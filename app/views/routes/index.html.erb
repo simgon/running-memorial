@@ -21,7 +21,7 @@
       <%# メニュー %>
       <div id="navbar-menu" class="collapse navbar-collapse">
         <%# ルート登録 %>
-        <section>
+        <section id="new-route">
           <%# 新しいルートボタン %>
           <button id="new-route-button" class="flat-button">
             <%= image_tag("plus.svg", alt: "plus") %>
@@ -107,9 +107,26 @@
           <% end %>
           </ul>
         </section>
-        <%# 設定 %>
-        <section style="margin-top: auto; margin-bottom: 30px;">
-          <%= image_tag("gear.svg", alt: "gear") %>
+        <%# オプション %>
+        <section id="options-container">
+          <%# オプションメニュー %>
+          <ul id="options-menu" class="hidden">
+            <li>none1</li>
+            <li>none2</li>
+            <li>none3</li>
+          </ul>
+          <%# オプションボタン %>
+          <div id="options-btn">
+            <span id="logo-icon">
+              <%= image_tag("icon.png") %>
+            </span>
+            <span id="app-name">
+              ランニング・メモリアル
+            </span>
+            <span id="options-icon">
+              <%= image_tag("three-dots.svg") %>
+            </span>
+          </div>
         </section>
       </div>
     </aside>

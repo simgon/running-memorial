@@ -104,7 +104,7 @@ aside {
 #navbar-menu {
   display: flex !important;
   flex-direction: column;
-  min-height: 100%;
+  max-height: 100%;
   padding: 0px 10px;
 }
 
@@ -277,8 +277,13 @@ aside {
   }
 }
 
+#new-route {
+  overflow: visible;
+}
+
 .route-info {
-  max-height: 92vh;
+  flex-grow: 1;
+  height: 100vh;
   overflow-y: auto;
 }
 
@@ -302,7 +307,55 @@ aside {
   }
 }
 
-/* HTML marker styles */
+/* オプションメニュー */
+
+#options-menu {
+  background-color: black;
+  color: $sub-color;
+  list-style: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+
+  li {
+    padding: 8px 12px;
+  }
+  li:hover {
+    background-color: #34364160;
+  }
+}
+
+#options-container {
+  margin-bottom: 20px;
+  overflow: visible;
+}
+
+#options-btn {
+  display: flex;
+  flex-direction: row;
+
+  border-radius: 6px;
+  padding: 10px;
+  align-items: center;
+}
+
+#options-btn:hover {
+  background-color: #34364160;
+  cursor: pointer;
+}
+
+#logo-icon img {
+  width:20px;border-radius: 6px;margin-right: 5px;filter: grayscale(0%);
+}
+
+#app-name {
+  width:100%;margin:0;
+}
+
+#options-icon {
+  margin:0;
+}
+
+/* google map スタイル */
 
 .crosshair {
   position: absolute;
