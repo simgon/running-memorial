@@ -1,6 +1,6 @@
-# ルート記録サイト
+# ランニング・メモリアル（ルート記録サイト）
 ## 画面
-![image](https://github.com/simgon/running-memorial/assets/23553796/fb94e01c-2485-488d-903d-32c75933103c)
+![image](https://github.com/simgon/running-memorial/assets/23553796/7308c6f4-73cc-4885-aaed-df0e27de1d29)
 
 ## アプリ仕様
 - マップ上にルートを記録するアプリ
