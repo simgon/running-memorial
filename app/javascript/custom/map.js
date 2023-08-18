@@ -26,6 +26,21 @@ document.addEventListener('turbo:load', function() {
       postRouteOrder(listItems.map(item => item.getAttribute('data-route-id'))); 
     }
   });
+
+  // オプションボタン
+  let options = document.querySelector("#options-btn");
+  options.addEventListener("click", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    let menu = document.querySelector("#options-menu");
+    menu.classList.toggle("hidden");
+  });
+
+  document.addEventListener("click", function(event) {
+    event.preventDefault();
+    let menu = document.querySelector("#options-menu");
+    menu.classList.add("hidden");
+  });
 });
 
 /**

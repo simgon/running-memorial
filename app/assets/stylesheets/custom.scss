@@ -102,6 +102,9 @@ aside {
 }
 
 #navbar-menu {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
   padding: 0px 10px;
 }
 
@@ -159,43 +162,21 @@ aside {
   gap: 10px;
 }
 
-@media (max-width: 767px) {
-
-  #site-container {
-    display: flex;
-    flex-flow: column;
-    height: 89vh;
-  }
-
-  #side-menu {
-    height: auto;
-  }
-
-  #navbar-menu {
-    position:absolute;
-    left: 0px;
-    background-color: $main-color;
-    z-index: 10;
-    width: 100%;
-    height: 240px;
-    padding-bottom: 10px;
-    overflow: scroll;
-  }
-
-  #map-contents {
-    flex-grow: 1;
-  }
-
-  #map {
-    height: 100%;
-  }
-  #map-board {
-    width: auto;
-  }
-
-  .route-item:hover {
-    background-color: #34364100;
-  }
+.route-item {
+  align-items: center;
+  background-color: $main-color;
+}
+.route-item:hover {
+  background-color: #34364160;
+}
+.route-name-container {
+  text-align: left;
+  width: 100%;
+  margin: 0px 5px;
+}
+.route-buttons-container {
+  display: flex;
+  gap: 10px;
 }
 
 .flat-button {
@@ -278,8 +259,13 @@ aside {
   }
 }
 
+#new-route {
+  overflow: visible;
+}
+
 .route-info {
-  max-height: 92vh;
+  flex-grow: 1;
+  height: 100vh;
   overflow-y: auto;
 }
 
@@ -303,7 +289,55 @@ aside {
   }
 }
 
-/* HTML marker styles */
+/* オプションメニュー */
+
+#options-menu {
+  background-color: black;
+  color: $sub-color;
+  list-style: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+
+  li {
+    padding: 8px 12px;
+  }
+  li:hover {
+    background-color: #34364160;
+  }
+}
+
+#options-container {
+  margin-bottom: 20px;
+  overflow: visible;
+}
+
+#options-btn {
+  display: flex;
+  flex-direction: row;
+
+  border-radius: 6px;
+  padding: 10px;
+  align-items: center;
+}
+
+#options-btn:hover {
+  background-color: #34364160;
+  cursor: pointer;
+}
+
+#logo-icon img {
+  width:20px;border-radius: 6px;margin-right: 5px;filter: grayscale(0%);
+}
+
+#app-name {
+  width:100%;margin:0;
+}
+
+#options-icon {
+  margin:0;
+}
+
+/* google map スタイル */
 
 .crosshair {
   position: absolute;
@@ -375,4 +409,44 @@ aside {
 }
 ::-webkit-scrollbar-thumb{
   background-color: $sub-color;
+}
+
+@media (max-width: 767px) {
+
+  #site-container {
+    display: flex;
+    flex-flow: column;
+    height: 89vh;
+  }
+
+  #side-menu {
+    height: auto;
+  }
+
+  #navbar-menu {
+    background-color: $main-color;
+    z-index: 10;
+    width: 100%;
+    height: 350px;
+    overflow: scroll;
+  }
+
+  .collapse {
+    display: none !important;
+  }
+
+  #map-contents {
+    flex-grow: 1;
+  }
+
+  #map {
+    height: 100%;
+  }
+  #map-board {
+    width: auto;
+  }
+
+  #options-container {
+    margin: 10px 0px;
+  }
 }
