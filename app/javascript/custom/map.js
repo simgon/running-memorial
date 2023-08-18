@@ -1125,6 +1125,15 @@ class DistanceLabelOverlay extends google.maps.OverlayView {
 
       // 親要素のzIndexを削除
       this.div.parentNode.style.zIndex = null;
+
+      // クリックイベントを処理
+      google.maps.event.addDomListener(this.div, 'click', (event) => {
+        // console.log("custom click");
+        event.stopPropagation(); // マップの click イベントを停止
+      });
+
+      let panes = this.getPanes();
+      panes.floatPane.appendChild(this.div);
     }
     const point = this.getProjection().fromLatLngToDivPixel(this.position);
     if (point) {
@@ -1134,7 +1143,9 @@ class DistanceLabelOverlay extends google.maps.OverlayView {
   }
 
   onRemove() {
-    this.div.parentNode.removeChild(this.div);
-    this.div = null;
+    if (this.div) {
+      this.div.parentNode.removeChild(this.div);
+      this.div = null;
+    }
   }
 }
