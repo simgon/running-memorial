@@ -37,7 +37,6 @@ document.addEventListener('turbo:load', function() {
   });
 
   document.addEventListener("click", function(event) {
-    event.preventDefault();
     let menu = document.querySelector("#options-menu");
     menu.classList.add("hidden");
   });
