@@ -6,6 +6,11 @@ class RoutesController < ApplicationController
     if user_id
       # ユーザーを取得
       @user = User.find(user_id)
+
+      if !@user.user_token
+        @user.user_token = User.new_token
+        @user.save
+      end
     end
 
     # ユーザーを取得できなかった場合
