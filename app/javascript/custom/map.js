@@ -114,34 +114,36 @@ function initMap() {
   // マップ
   // **************
   // マップ上ボタン
-  document.addEventListener('click', (event) => {
+  // マーカー追加
+  document.querySelector("#add-marker").addEventListener("click", function(event) {
     // ルート未選択の場合
     if (!selectedRoute) return;
+    // マーカー追加ボタン押下時
+    selectedRoute.addMarker(map.getCenter());
+  });
 
-    const targetId = event.target.id;
+  // １つ戻す
+  document.querySelector("#del-marker").addEventListener("click", function(event) {
+    // ルート未選択の場合
+    if (!selectedRoute) return;
+    // １つ戻すボタン押下時
+    selectedRoute.delMarker();
+  });
 
-    switch (targetId) {
-      // マーカー追加
-      case 'add-marker':
-        // マーカー追加ボタン押下時
-        selectedRoute.addMarker(map.getCenter());
-        break;
-      // １つ戻す
-      case 'del-marker':
-        // １つ戻すボタン押下時
-        selectedRoute.delMarker();
-        break;
-      // クリア
-      case 'eraser-marker':
-        // クリアボタン押下時
-        selectedRoute.clearMarkers();
-        break;
-      // 保存
-      case 'save-marker':
-        // 保存ボタン押下時
-        postRoute();
-        break;
-    }
+  // クリア
+  document.querySelector("#eraser-marker").addEventListener("click", function(event) {
+    // ルート未選択の場合
+    if (!selectedRoute) return;
+    // クリアボタン押下時
+    selectedRoute.clearMarkers();
+  });
+  
+  // 保存
+  document.querySelector("#save-marker").addEventListener("click", function(event) {
+    // ルート未選択の場合
+    if (!selectedRoute) return;
+    // 保存ボタン押下時
+    postRoute();
   });
 
   // マップ上クリック時
