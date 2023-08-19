@@ -5,16 +5,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 <% end %>
 
-
-<%= form_with(model: @user) do |f| %>
-  <%= f.hidden_field :id %>
-  <%# 確定 %>
-  <%= button_tag(type: "submit", class: "icon-submit") do %>
-    <%= image_tag("check.svg", alt: "check") %>
-  <% end %>
-<% end %>
-
-
 <div class="container-fluid">
   <div id="site-container" class="row">
     <%# サイドメニュー %>
@@ -121,9 +111,45 @@
         <section id="options-container">
           <%# オプションメニュー %>
           <ul id="options-menu" class="hidden">
-            <li>none1</li>
-            <li>none2</li>
-            <li>none3</li>
+            <%# セッションユーザーID設定 %>
+            <% if @user.allow_session_user_id_setting %>
+            <li>
+              <%= form_with(model: @user) do |f| %>
+                <div class="options-item">
+                  <span class="option-item"><%= image_tag("person-up.svg", alt: "person-up") %></span>
+                  <span class="option-item-margin"></span>
+                  <span class="option-item" style="width: 100%;">
+                    <%= f.text_field :changed_user_token, class: "form-control" %>
+                  </span>
+                  <span class="option-item">
+                    <%= button_tag(type: "submit", class: "icon-submit", style: "margin-left: 5px;") do %>
+                      <%= image_tag("check.svg", alt: "check") %>
+                    <% end %>
+                  </span>
+                  <%= f.hidden_field :id %>
+                </div>
+              <% end %>
+            </li>
+            <% end %>
+            <%# ホーム %>
+            <%= link_to(root_path) do %>
+              <li>
+                <div class="options-item">
+                  <span class="option-item"><%= image_tag("house.svg", alt: "house") %></span>
+                  <span class="option-item-margin"></span>
+                  <span class="option-item">ホーム</span>
+                </div>
+              </li>
+            <% end %>
+            <hr>
+            <%# ユーザートークン %>
+            <li>
+              <div class="options-item">
+                <span class="option-item">ID</span>
+                <span class="option-item-margin"></span>
+                <span class="option-item"><%= @user.user_token %></span>
+              </div>
+            </li>
           </ul>
           <%# オプションボタン %>
           <div id="options-btn">

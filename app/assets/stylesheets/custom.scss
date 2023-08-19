@@ -295,19 +295,48 @@ aside {
   background-color: black;
   color: $sub-color;
   list-style: none;
-  padding: 8px 12px;
+  padding: 6px 0;
+  margin: 0 0 10px 0;
   border-radius: 6px;
 
   li {
-    padding: 8px 12px;
+    padding: 10px 15px;
+    margin: 0;
   }
+
   li:hover {
-    background-color: #34364160;
+    background-color: #343641;
+  }
+
+  a {
+    display: block;
+    height: 100%;
+    width: 100%;
+    color: $sub-color;
+    text-decoration: none;
+  }
+
+  hr {
+    margin: 6px 0;
+    border-color: $main-color;
   }
 }
 
+.options-item {
+  display:flex;
+  align-items: center;
+}
+
+.option-item {
+  margin: 0;
+}
+
+.option-item-margin {
+  margin: 0 5px;
+}
+
 #options-container {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   overflow: visible;
 }
 
@@ -321,12 +350,14 @@ aside {
 }
 
 #options-btn:hover {
-  background-color: #34364160;
+  background-color: #343641;
   cursor: pointer;
 }
 
 #logo-icon img {
-  width:20px;border-radius: 6px;margin-right: 5px;filter: grayscale(0%);
+  width:20px;
+  border-radius: 6px;
+  margin-right: 5px;
 }
 
 #app-name {
@@ -335,6 +366,11 @@ aside {
 
 #options-icon {
   margin:0;
+}
+
+.vertical-line {
+  border-right: 1px solid $sub-color;
+  margin: 0 5px;
 }
 
 /* google map スタイル */

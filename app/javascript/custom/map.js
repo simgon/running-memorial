@@ -29,16 +29,18 @@ document.addEventListener('turbo:load', function() {
 
   // オプションボタン
   let options = document.querySelector("#options-btn");
+  let menu = document.querySelector("#options-menu");
+
   options.addEventListener("click", function(event) {
     event.preventDefault();
     event.stopPropagation();
-    let menu = document.querySelector("#options-menu");
     menu.classList.toggle("hidden");
   });
 
   document.addEventListener("click", function(event) {
-    let menu = document.querySelector("#options-menu");
-    menu.classList.add("hidden");
+    if (!menu.contains(event.target)) {
+      menu.classList.add("hidden");
+    }
   });
 });
 
