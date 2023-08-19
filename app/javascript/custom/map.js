@@ -8,7 +8,7 @@ document.addEventListener('turbo:load', function() {
   initMap();
 
   // 通知ダイアログを表示（リダイレクト時）
-  showNotification(3000);
+  showNotification();
 
   // SortableJS
   const routesContainer = document.getElementById('routes-container');
@@ -48,7 +48,7 @@ document.addEventListener('turbo:load', function() {
   copyUserToken.addEventListener("click", function(event) {
     navigator.clipboard.writeText(this.getAttribute('data-user-token'))
     .then(function() {
-      showNotification(3000, 'コピー')
+      showNotification('コピー')
     })
     .catch(function(error) {
       console.error('クリップボードへのコピーが失敗しました:', error);
@@ -58,10 +58,10 @@ document.addEventListener('turbo:load', function() {
 
 /**
  * 通知ダイアログを表示
- * @param {Integer} duration - 表示時間
  * @param {String} message   - メッセージ
+ * @param {Integer} duration - 表示時間
  */
-function showNotification(duration, message = null) {
+function showNotification(message = null, duration = 3000,) {
   let notificationPopup = document.getElementById('notification-popup');
   let notificationMessage = document.getElementById('notification-message');
 
@@ -170,11 +170,14 @@ function initMap() {
   // マップ変更時
   map.addListener('bounds_changed', () => {
     if (zoomChanged) {
-      // 選択／未選択ルート
-      Object.values(routes).forEach(route => {
-        // ルート活性／非活性
-        route.disableRoute(route.routeId === selectedRoute?.routeId ? false : true);
-      });
+      // 描画完了前？だと距離ラベルのdivに参照できない時があるので、遅延させる
+      setTimeout(function() {
+        // 選択／未選択ルート
+        Object.values(routes).forEach(route => {
+          // ルート活性／非活性
+          route.disableRoute(route.routeId === selectedRoute?.routeId ? false : true);
+        });
+      }, 100);
       zoomChanged = false;
     }
   });
@@ -485,7 +488,7 @@ function postRequest(action, param, message = '') {
     .then(data => {
       console.log(data);
 
-      if (message) showNotification(3000, message);
+      if (message) showNotification(message);
     })
     .catch(error => console.error(error));
 }
