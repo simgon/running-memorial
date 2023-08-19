@@ -5,7 +5,7 @@ class RoutesController < ApplicationController
     user_id = cookies.encrypted[:user_id]
     if user_id
       # ユーザーを取得
-      @user = User.find(user_id)
+      @user = User.find_by_id(user_id)
     end
 
     # ユーザーを取得できなかった場合
