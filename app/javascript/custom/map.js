@@ -42,6 +42,18 @@ document.addEventListener('turbo:load', function() {
       menu.classList.add("hidden");
     }
   });
+
+  // ユーザートークンをクリップボードにコピー
+  let copyUserToken = document.querySelector("#copy-user-token");
+  copyUserToken.addEventListener("click", function(event) {
+    navigator.clipboard.writeText(this.getAttribute('data-user-token'))
+    .then(function() {
+      showNotification(3000, 'コピー')
+    })
+    .catch(function(error) {
+      console.error('クリップボードへのコピーが失敗しました:', error);
+    });
+  });
 });
 
 /**

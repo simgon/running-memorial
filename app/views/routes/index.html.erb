@@ -147,7 +147,12 @@
               <div class="options-item">
                 <span class="option-item">ID</span>
                 <span class="option-item-margin"></span>
-                <span class="option-item"><%= @user.user_token %></span>
+                <span class="option-item" style="width: 100%;"><%= @user.user_token %></span>
+                <span class="option-item">
+                  <%= button_tag(id: "copy-user-token", type: "submit", class: "icon-submit", style: "margin-left: 5px;", "data-user-token": "#{@user.user_token}") do %>
+                    <%= image_tag("clipboard.svg", alt: "clipboard", style: "width: 16px;") %>
+                  <% end %>
+                </span>
               </div>
             </li>
           </ul>
