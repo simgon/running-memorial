@@ -37,8 +37,8 @@ class RoutesController < ApplicationController
 
   # Route新規登録
   def create
-
     @route = Route.new(route_params_create)
+    @route.order = 0
 
     if @route.save
       flash[:info] = "登録しました"
@@ -123,7 +123,7 @@ class RoutesController < ApplicationController
 
     # ルート登録時のストロングパラメータ
     def route_params_create
-      params.require(:route).permit(:name, :user_id)
+      params.require(:route).permit(:name, :user_id, :order)
     end
 
     # ルート登録時のストロングパラメータ
