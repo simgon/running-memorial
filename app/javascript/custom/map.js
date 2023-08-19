@@ -54,6 +54,10 @@ document.addEventListener('turbo:load', function() {
       console.error('クリップボードへのコピーが失敗しました:', error);
     });
   });
+
+  // スマホ画面のステータスバー対応。カスタムプロパティ
+  let height = window.innerHeight;
+  document.documentElement.style.setProperty('--vh', height / 100 + 'px');
 });
 
 /**

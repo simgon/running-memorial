@@ -17,6 +17,7 @@ $sub-color: #ECECF1;
 body {
   padding-top: 0px;
   margin: 0px;
+  background-color: $main-color;
 }
 
 section {
@@ -193,11 +194,11 @@ aside {
 }
 
 .flat-button img {
-  margin-right: 8px; /* テキストとアイコンの間の余白 */
+  margin-right: 8px;
 }
 
 .flat-button:hover {
-  background-color: #343641; /* ボタンをホバーした時の背景色 */
+  background-color: #343641;
 }
 
 .flex-container {
@@ -228,7 +229,7 @@ aside {
   padding: 0;
   border: none;
   background-color: transparent;
-  cursor: pointer; /* 必要に応じてカーソルをポインターに変更 */
+  cursor: pointer;
   img {
     width: 24px;
   }
@@ -361,7 +362,8 @@ aside {
 }
 
 #app-name {
-  width:100%;margin:0;
+  width:100%;
+  margin:0;
 }
 
 #options-icon {
@@ -452,7 +454,7 @@ aside {
   #site-container {
     display: flex;
     flex-flow: column;
-    height: 89vh;
+    height: calc(var(--vh) * 100);  // カスタムプロパティ
   }
 
   #side-menu {
