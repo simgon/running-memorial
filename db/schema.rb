@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_20_102615) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_20_110404) do
   create_table "locations", force: :cascade do |t|
     t.decimal "lat_loc"
     t.decimal "lon_loc"
