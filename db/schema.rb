@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_19_034105) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_20_102615) do
   create_table "locations", force: :cascade do |t|
     t.decimal "lat_loc"
     t.decimal "lon_loc"
@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_19_034105) do
     t.datetime "updated_at", null: false
     t.string "visible", default: "1"
     t.integer "order"
-    t.integer "user_id"
+    t.string "user_id", null: false
     t.index ["user_id"], name: "index_routes_on_user_id"
   end
 
@@ -35,7 +35,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_19_034105) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "allow_session_user_id_setting", default: false
-    t.string "user_token"
+    t.string "user_token", null: false
   end
 
   add_foreign_key "locations", "routes"
