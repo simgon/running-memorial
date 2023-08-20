@@ -393,6 +393,9 @@ function initMap() {
       console.error(error);
     });
   // #endregion
+
+  // マップをユーザーの現在位置に設定
+  map.setMapMyLocation();
 }
 
 // -------------------
@@ -514,16 +517,8 @@ class RouteMap extends google.maps.Map {
     customControlDiv.appendChild(controlUI);
   
     google.maps.event.addDomListener(customControlDiv, 'click', () => {
-      this.getMyLocation()
-        .then((position) => {
-          // 位置情報を取得できた場合の処理
-          // 地図の中心をユーザーの現在位置に移動
-          this.setCenter(position);
-        })
-        .catch((error) => {
-          // 位置情報の取得に失敗した場合の処理
-          console.error('Error:', error);
-        });
+      // マップをユーザーの現在位置に設定
+      this.setMapMyLocation();
     });
   
     // 地図の右下にカスタムコントロールを配置
@@ -555,7 +550,7 @@ class RouteMap extends google.maps.Map {
   }
 
   /**
-   * 現在位置を取得
+   * ユーザーの現在位置を取得
    */
   getMyLocation() {
     return new Promise((resolve, reject) => {
@@ -572,6 +567,22 @@ class RouteMap extends google.maps.Map {
         reject(new Error('Geolocation is not supported in this browser.'));
       }
     });
+  }
+
+  /**
+   * マップをユーザーの現在位置に設定
+   */
+  setMapMyLocation() {
+    this.getMyLocation()
+      .then((position) => {
+        // 位置情報を取得できた場合の処理
+        // マップの中心をユーザーの現在位置に移動
+        this.setCenter(position);
+      })
+      .catch((error) => {
+        // 位置情報の取得に失敗した場合の処理
+        console.error('Error:', error);
+      });
   }
 }
 
