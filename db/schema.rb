@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_20_102615) do
     t.datetime "updated_at", null: false
     t.string "visible", default: "1"
     t.integer "order"
-    t.string "user_id", null: false
+    t.string "user_id"
     t.index ["user_id"], name: "index_routes_on_user_id"
   end
 
