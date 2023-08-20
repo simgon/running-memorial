@@ -178,26 +178,30 @@
       <div class="crosshair"></div>
       <%# マップ操作ボタン一覧 %>
       <div id="map-board">
-        <div class="d-flex justify-content-evenly">
+        <div id="marker-container">
           <%# 保存 %>
-          <div id="save-marker" class="btn flex-container flex-column align-items-center" disabled>
-            <%= image_tag("save.svg", alt: "plus", class: "map-board-btn-img") %>
-            <span class="map-board-btn-text">保存</span>
+          <div id="save-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
+            <%= image_tag("save.svg", alt: "plus", class: "map-marker-img") %>
+            <span class="map-marker-text">保存</span>
+          </div>
+          <%# 空白 %>
+          <div id="XXX-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
+            <div class="map-marker-blank"></div>
           </div>
           <%# 追加 %>
-          <div id="add-marker" class="btn flex-container flex-column align-items-center" disabled>
-            <%= image_tag("plus-circle.svg", alt: "plus", class: "map-board-btn-img") %>
-            <span class="map-board-btn-text">追加</span>
+          <div id="add-marker" class="btn map-marker align-items-center" disabled>
+            <%= image_tag("plus-circle.svg", alt: "plus", class: "map-marker-img-large") %>
+            <span class="map-marker-text">追加</span>
           </div>
           <%# 1つ戻す %>
-          <div id="del-marker" class="btn flex-container flex-column align-items-center" disabled>
-            <%= image_tag("backspace.svg", alt: "backspace", class: "map-board-btn-img") %>
-            <span class="map-board-btn-text">1つ戻す</span>
+          <div id="del-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
+            <%= image_tag("backspace.svg", alt: "backspace", class: "map-marker-img") %>
+            <span class="map-marker-text">1つ戻す</span>
           </div>
           <%# クリア %>
-          <div id="eraser-marker" class="btn flex-container flex-column align-items-center" disabled>
-            <%= image_tag("eraser.svg", alt: "eraser", class: "map-board-btn-img") %>
-            <span class="map-board-btn-text">クリア</span>
+          <div id="eraser-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
+            <%= image_tag("eraser.svg", alt: "eraser", class: "map-marker-img") %>
+            <span class="map-marker-text">クリア</span>
           </div>
         </div>
       </div>

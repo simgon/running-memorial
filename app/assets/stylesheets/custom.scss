@@ -137,12 +137,45 @@ aside {
   -webkit-transform: translateX(-50%);
   -ms-transform: translateX(-50%);
   width: 50%;
-  border-radius: 30px;
+  border-radius: 10px;
   background-color: $sub-color;
+}
 
-  .d-flex.justify-content-evenly {
-    display: flex;
-    justify-content: space-evenly;
+#marker-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: -7%;
+}
+
+.map-marker {
+  display: flex;
+  flex-flow: column;
+  justify-content: end;
+  flex: 1 0 ;
+  width: 20%;
+  border-radius: 32%;
+
+  &.map-marker-normal {
+    margin-top: 7% !important;
+  }
+  .map-marker-img {
+    width:5vw;
+    pointer-events: none;
+  }
+  .map-marker-img-large {
+    width: 8vw;
+    background-color: $sub-color;
+    border-radius: 100%;
+  }
+  .map-marker-text {
+    color:#3CB371;
+    margin-top:3px;
+    pointer-events: none;
+  }
+  .map-marker-blank {
+    border-right: solid 1px;
+    height: 100%;
+    border-color: #3CB371;
   }
 }
 
@@ -211,17 +244,6 @@ aside {
 
 .align-items-center {
   align-items: center;
-}
-
-.map-board-btn-img {
-  width:5vw;
-  pointer-events: none;
-}
-
-.map-board-btn-text {
-  color:#3CB371;
-  margin-top:3px;
-  pointer-events: none;
 }
 
 .icon-submit {
@@ -486,5 +508,11 @@ aside {
 
   #options-container {
     margin: 10px 0px;
+  }
+
+  .map-marker {
+    .map-marker-text {
+      font-size: 12px;
+    }
   }
 }
