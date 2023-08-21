@@ -139,6 +139,20 @@ aside {
   width: 60%;
   border-radius: 10px;
   background-color: $sub-color;
+
+  &.map-board-disabled {
+    background-color: #ECECF1CC;
+  
+    img {
+      filter: grayscale(100%);
+    }
+    .map-marker-text {
+      color: gray;
+    }
+    .map-marker-blank {
+      border-color: gray;
+    }
+  }
 }
 
 #marker-container {

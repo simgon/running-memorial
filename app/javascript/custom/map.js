@@ -229,6 +229,7 @@ function initMap() {
         selectedRoute = routes[routeId];
 
         // マップボタン一覧を活性化
+        document.getElementById('map-board').classList.remove('map-board-disabled');
         document.getElementById('save-marker').removeAttribute('disabled');
         document.getElementById('add-marker').removeAttribute('disabled');
         document.getElementById('del-marker').removeAttribute('disabled');
@@ -238,6 +239,7 @@ function initMap() {
         selectedRoute = null;
 
         // マップボタン一覧を非活性化
+        document.getElementById('map-board').classList.add('map-board-disabled');
         document.getElementById('save-marker').setAttribute('disabled', '');
         document.getElementById('add-marker').setAttribute('disabled', '');
         document.getElementById('del-marker').setAttribute('disabled', '');
