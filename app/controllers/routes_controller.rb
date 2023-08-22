@@ -2,7 +2,7 @@ class RoutesController < ApplicationController
   # Route一覧を表示
   def index
     # クッキーからユーザーIDを取得
-    user_id = cookies.encrypted[:user_id]
+    user_id = get_cookies_user_id
     if user_id
       # ユーザーを取得
       @user = User.find_by_id(user_id)
@@ -14,7 +14,7 @@ class RoutesController < ApplicationController
       @user = User.new
       @user.save
       # クッキーにユーザーIDをセット
-      cookies.permanent.encrypted[:user_id] = @user.id
+      set_cookies_user_id(@user)
     end
 
     # Route情報を取得

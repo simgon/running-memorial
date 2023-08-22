@@ -13,7 +13,7 @@ class UsersController < ApplicationController
         flash[:success] = "更新しました"
 
         # クッキーに変更先ユーザーIDをセット
-        cookies.permanent.encrypted[:user_id] = changedUser.id
+        set_cookies_user_id(changedUser)
 
         redirect_to routes_url
       else
