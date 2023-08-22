@@ -82,6 +82,8 @@ function showNotification(message = null, duration = 3000,) {
 // 選択ルートを保持
 let selectedRoute;
 
+let isMobileScreen = window.innerWidth <= 768;
+
 /**
  * 初期化処理
  */
@@ -92,14 +94,17 @@ function initMap() {
   let mapOptions = {
     zoom: 16,
     center: currentLoc,
-    clickableIcons: false,      // マップ上アイコン無効化
-    keyboardShortcuts: false,   // キーボードショートカット無効化
-    draggableCursor: 'pointer', // ドラッグ時カーソル
-    mapTypeControl: true,       // マップタイプ コントロール
-    fullscreenControl: false,   // 全画面表示 コントロール
-    streetViewControl: true,    // ストリートビュー コントロール
-    zoomControl: true,          // ズーム コントロール
-    gestureHandling: 'greedy',  // マップ操作ジェスチャー
+    clickableIcons: false,        // マップ上アイコン無効化
+    keyboardShortcuts: false,     // キーボードショートカット無効化
+    draggableCursor: 'pointer',   // ドラッグ時カーソル
+    mapTypeControl: true,         // マップタイプ コントロール
+    fullscreenControl: false,     // 全画面表示 コントロール
+    streetViewControl: true,      // ストリートビュー コントロール
+    streetViewControlOptions: {
+      position: (isMobileScreen ? google.maps.ControlPosition.RIGHT_TOP : google.maps.ControlPosition.RIGHT_BOTTOM),
+    },
+    zoomControl: !isMobileScreen, // ズーム コントロール
+    gestureHandling: 'greedy',    // マップ操作ジェスチャー
   };
   const map = new RouteMap(document.getElementById('map'), mapOptions);
 
@@ -524,7 +529,7 @@ class RouteMap extends google.maps.Map {
     });
   
     // 地図の右下にカスタムコントロールを配置
-    this.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(customControlDiv);
+    this.controls[(isMobileScreen ? google.maps.ControlPosition.RIGHT_TOP : google.maps.ControlPosition.RIGHT_BOTTOM)].push(customControlDiv);
   
     // 十字の要素を取得
     const crosshairElement = document.querySelector('.crosshair');
