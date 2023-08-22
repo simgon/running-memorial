@@ -1,7 +1,13 @@
 require "test_helper"
 
 class LocationTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  def setup
+    @user = User.new
+    @route = @user.routes.build()
+    @location = @route.locations.build()
+  end
+
+  test "should be valid" do
+    assert @location.valid?
+  end
 end
