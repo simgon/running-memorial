@@ -1,10 +1,9 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
 
-/* mixins, variables, etc. */
+@import "_variables";
 
-$main-color: #202123;
-$sub-color: #ECECF1;
+/* mixins, variables, etc. */
 
 @mixin box_sizing {
   -moz-box-sizing:    border-box;
@@ -18,6 +17,7 @@ body {
   padding-top: 0px;
   margin: 0px;
   background-color: $main-color;
+  color: $sub-color;
 }
 
 section {

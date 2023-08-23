@@ -1,12 +1,8 @@
 class RoutesController < ApplicationController
   # Route一覧を表示
   def index
-    # クッキーからユーザーIDを取得
-    user_id = get_cookies_user_id
-    if user_id
-      # ユーザーを取得
-      @user = User.find_by_id(user_id)
-    end
+    # クッキーのユーザーIDからユーザーを取得
+    @user = User.find_by(id: get_cookies_user_id)
 
     # ユーザーを取得できなかった場合
     if !@user

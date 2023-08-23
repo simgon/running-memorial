@@ -1,4 +1,11 @@
 class UsersController < ApplicationController
+  before_action :admin_user, only: [:index, :destroy]
+
+  # ユーザー一覧
+  def index
+    @users = User.all
+  end
+
   # 変更先ユーザーに変更
   def update
     # 現在ユーザー
@@ -26,10 +33,26 @@ class UsersController < ApplicationController
     end
   end
 
+  # ユーザー削除
+  def destroy
+    user = User.find(params[:id])
+    if user.destroy
+      flash[:success] = "削除しました"
+      redirect_to users_url, status: :see_other
+    else
+      render 'index', status: :see_other
+    end
+  end
+
   private
 
-  # ストロングパラメータ
-  def user_params
-    params.require(:user).permit(:allow_session_user_id_setting)
-  end
+    # ストロングパラメータ
+    def user_params
+      params.require(:user).permit(:allow_session_user_id_setting)
+    end
+
+    # 管理者かどうか確認
+    def admin_user
+      redirect_to(root_url, status: :see_other) unless current_user&.admin?
+    end
 end

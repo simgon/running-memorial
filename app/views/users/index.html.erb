@@ -1,0 +1,41 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag 'users', media: 'all' %>
+<% end %>
+
+<div class="container-fluid">
+  <div id="site-container" class="container">
+    <h1>ユーザー管理</h1>
+    <div class="table-container table-scroll">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>ルート数</th>
+            <th>ユーザー変更可否</th>
+            <th>ユーザートークン</th>
+            <th>管理者</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.each do |user| %>
+          <tr>
+            <td><%= user.id %></td>
+            <td><%= user.routes.count %></td>
+            <td><%= user.allow_session_user_id_setting? %></td>
+            <td><%= user.user_token %></td>
+            <td><%= user.admin? %></td>
+            <td>
+              <% unless user.admin? %>
+                <%= link_to user, data: { "turbo-method": :delete, turbo_confirm: "削除します。よろしいですか？" } do %>
+                  <%= image_tag("trash_b.svg", alt: "trash_b") %>
+                <% end %>
+              <% end %>
+            </td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
