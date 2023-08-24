@@ -1,0 +1,86 @@
+@import "bootstrap-sprockets";
+@import "bootstrap";
+@import "variables";
+
+body {
+  background-color: $sub-color;
+  color: $main-color;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 5px 0;
+
+  #logo-icon img {
+    width: 30px;
+  }
+
+  #title-icon img {
+    width: 250px;
+  }
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.image-container {
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.caption {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.instruction-container {
+  display: flex;
+  flex-flow: row-reverse wrap;
+}
+
+.instruction {
+  background-color: #f7f7f7;
+  padding: 10px;
+  border: 1px solid #ddd;
+
+  flex-grow: 1;
+  flex-basis: max-content;
+
+  p {
+    font-weight: bold;
+  }
+  ul {
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 5px;
+    list-style: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .title {
+    padding: 5px;
+
+    #logo-icon img {
+      width: 20px;
+    }
+  
+    #title-icon img {
+      width: 160px;
+    }
+  }
+}

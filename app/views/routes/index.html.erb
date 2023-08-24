@@ -1,8 +1,14 @@
-<% content_for :javascript_includes do %>
+<% content_for :css do %>
+  <%= stylesheet_link_tag 'routes', media: 'all' %>
+<% end %>
+
+<% content_for :js do %>
   <%# Google Maps API %>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>"></script>
   <%# SortableJSのCDNリンク %>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+  <%= javascript_import_module_tag "custom/map" %>
+  <%= javascript_import_module_tag "custom/menu" %>
 <% end %>
 
 <div class="container-fluid">
@@ -132,7 +138,9 @@
             </li>
             <% end %>
             <%# ホーム %>
-            <%= link_to(root_path) do %>
+
+            <%= link_to "/", onclick: "location.href='/'" do %>
+            <%# link_to(root_path) do %>
               <li>
                 <div class="options-item">
                   <span class="option-item"><%= image_tag("house.svg", alt: "house") %></span>

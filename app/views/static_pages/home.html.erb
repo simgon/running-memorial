@@ -1,0 +1,75 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag 'home', media: 'all' %>
+<% end %>
+
+<% content_for :js do %>
+<% end %>
+
+<div class="flex-container">
+  <div class="home-container">
+    <div class="title">
+      <div style="flex: 1;">
+        <span id="logo-icon">
+          <%= image_tag("icon_t.png") %>
+        </span>
+        <span id="title-icon">
+          <%= image_tag("title_t.png") %>
+        </span>
+      </div>
+      <%# link_to("ルート作成を開始する", routes_url, class: "btn btn-danger", data: { "turbolinks" => true }) %>
+      <%= button_tag 'ルート作成を開始する', type: 'button', class: "btn btn-danger", onclick: "location.href='/routes'" %>
+    </div>
+
+    <div class="instruction-container">
+      <div class="image-container">
+        <div class="caption">操作動画</div>
+        <%= image_tag("introduction_route_create.gif") %>
+      </div>
+
+      <div class="instruction">
+        <p>マーカーを追加</p>
+        <ul>
+          <li>追加ボタンをクリック</li>
+          <li>マップ上をクリック</li>
+        </ul>
+
+        <p>マーカーを移動</p>
+        <ul>
+          <li>マーカーをドラッグ</li>
+        </ul>
+
+        <p>ルート線上にマーカーを追加</p>
+        <ul>
+          <li>
+            <p>PC</p>
+            <ul>
+              <li>ルート線上を右クリック</li>
+            </ul>
+          </li>
+          <li>
+            <p>スマホ</p>
+            <ul>
+              <li>ルート線上をロングタップ</li>
+            </ul>
+          </li>
+        </ul>
+
+        <p>マーカーを削除</p>
+        <ul>
+          <li>
+            <p>PC</p>
+            <ul>
+              <li>マーカーを右クリック</li>
+            </ul>
+          </li>
+          <li>
+            <p>スマホ</p>
+            <ul>
+              <li>マーカーをロングタップ</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

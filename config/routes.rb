@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root "routes#index"
+  root "static_pages#home"
   resources :routes
   resources :locations, only: [:show, :create, :destroy]
   resources :users, only: [:index, :update, :destroy]

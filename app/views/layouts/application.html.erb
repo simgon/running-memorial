@@ -12,10 +12,11 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag 'custom', :media => "all" %>
-    <%= javascript_importmap_tags %>
+    <%= stylesheet_link_tag 'common', :media => "all" %>
 
-    <%= yield :javascript_includes %>
+    <%= javascript_importmap_tags %>
+    
+    <%= yield :js  %>
     <%= yield :css %>
   </head>
 

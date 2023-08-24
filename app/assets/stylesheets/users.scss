@@ -1,4 +1,6 @@
-@import "_variables";
+@import "bootstrap-sprockets";
+@import "bootstrap";
+@import "variables";
 
 body {
   background-color: $sub-color;
