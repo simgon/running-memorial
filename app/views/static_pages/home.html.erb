@@ -17,13 +17,15 @@
         </span>
       </div>
       <%# link_to("ルート作成を開始する", routes_url, class: "btn btn-danger", data: { "turbolinks" => true }) %>
-      <%= button_tag 'ルート作成を開始する', type: 'button', class: "btn btn-danger", onclick: "location.href='/routes'" %>
+      <%= button_tag 'ルート作成を開始する', type: 'button', class: "btn btn-danger", style: "font-weight: bold;", onclick: "location.href='/routes'" %>
     </div>
 
     <div class="instruction-container">
       <div class="image-container">
-        <div class="caption">操作動画</div>
+        <div class="caption">ルート作成〜ルート保存</div>
         <%= image_tag("introduction_route_create.gif") %>
+        <div class="caption">ルート表示・非表示</div>
+        <%= image_tag("introduction_route_display.gif") %>
       </div>
 
       <div class="instruction">

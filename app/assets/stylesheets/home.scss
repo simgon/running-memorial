@@ -11,7 +11,7 @@ body {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 5px 0;
+  padding: 5px;
 
   #logo-icon img {
     width: 30px;
@@ -25,7 +25,7 @@ body {
 .home-container {
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .image-container {
@@ -49,6 +49,7 @@ body {
 .instruction-container {
   display: flex;
   flex-flow: row-reverse wrap;
+  justify-content: left;
 }
 
 .instruction {
