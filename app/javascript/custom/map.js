@@ -26,22 +26,6 @@ document.addEventListener('turbo:load', function() {
     }
   });
 
-  // オプションボタン
-  let options = document.querySelector("#options-btn");
-  let menu = document.querySelector("#options-menu");
-
-  options.addEventListener("click", function(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    menu.classList.toggle("hidden");
-  });
-
-  document.addEventListener("click", function(event) {
-    if (!menu.contains(event.target)) {
-      menu.classList.add("hidden");
-    }
-  });
-
   // ユーザートークンをクリップボードにコピー
   let copyUserToken = document.querySelector("#copy-user-token");
   copyUserToken.addEventListener("click", function(event) {
