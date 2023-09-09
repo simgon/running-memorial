@@ -98,6 +98,32 @@ function initMap() {
   // イベント処理
   // -------------------
   // #region イベント処理
+  // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
+  const fncDisplayMostRelevantRoute = () => {
+    Object.values(routes).forEach((route, index, routeArray) => {
+      route.routeLines.forEach(line => {
+        let lineSt = line.getPath().getAt(0);
+        let lineEd = line.getPath().getAt(1);
+
+        routeArray.slice(index + 1).forEach(routeOther => {
+          routeOther.routeLines.forEach(lineOther => {
+            let lineStOther = lineOther.getPath().getAt(0);
+            let lineEdOther = lineOther.getPath().getAt(1);
+
+            if (lineSt.equals(lineStOther) && lineEd.equals(lineEdOther)) {
+              if (line.strokeColor != '#FF0000') {
+                line.setOptions({ strokeColor: '#00000000' });
+              }
+              if (lineOther.strokeColor != '#FF0000') {
+                lineOther.setOptions({ strokeColor: '#FF000055' });
+              }
+            }
+          });
+        });
+      });
+    });
+  };
+  
   // **************
   // マップ
   // **************
@@ -171,6 +197,9 @@ function initMap() {
           // ルート活性／非活性
           route.disableRoute(route.routeId === selectedRoute?.routeId ? false : true);
         });
+
+        // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
+        fncDisplayMostRelevantRoute();
       }, 100);
       zoomChanged = false;
     }
@@ -248,6 +277,9 @@ function initMap() {
           route.dotMarkers.forEach(dotMarker => dotMarker.setDraggable(false));
         }
       });
+
+      // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
+      fncDisplayMostRelevantRoute();
     });
 
     // 表示／非表示
@@ -377,6 +409,9 @@ function initMap() {
         Object.values(routes).forEach(route => {
           route.disableRoute(true);
         });
+
+        // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
+        fncDisplayMostRelevantRoute();
       }, 100);
     })
     .catch((error) => {
