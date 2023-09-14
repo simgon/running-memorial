@@ -384,11 +384,13 @@ aside {
   justify-content: center;
   align-items: center;
   background-color: #3CB371;
+  user-select: none;
 }
 
 .distance-label-disable {
   z-index: 999;
   background-color: #3CB37155;
+  user-select: none;
 }
 
 .distance-label::after {

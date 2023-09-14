@@ -181,7 +181,7 @@ function initMap() {
       let routeId = listItems[i].getAttribute('data-route-id');
       let visible = listItems[i].getAttribute('data-visible');
 
-      routes[routeId].displayMarkers(visible);
+      routes[routeId]?.displayMarkers(visible);
     }
 
     zoomChanged = true;
