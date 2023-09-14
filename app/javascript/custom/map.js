@@ -100,7 +100,11 @@ function initMap() {
   // #region イベント処理
   // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
   const fncDisplayMostRelevantRoute = () => {
-    Object.values(routes).forEach((route, index, routeArray) => {
+    Object.values(routes).filter(route => {
+      // 表示ルートのみに絞り込み
+      let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute("data-visible");
+      return visible != Route.INVISIBLE
+    }).forEach((route, index, routeArray) => {
       route.routeLines.forEach(line => {
         let lineSt = line.getPath().getAt(0);
         let lineEd = line.getPath().getAt(1);
