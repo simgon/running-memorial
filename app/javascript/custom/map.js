@@ -174,7 +174,7 @@ function initMap() {
   // マップズーム時
   map.addListener('zoom_changed', () => {
     // ルート一覧を取得
-    const listItems = document.getElementById('routes-container').getElementsByTagName('li');
+    const listItems = document.getElementById('routes-container').getElementsByClassName('route-item');
 
     // ルート再描画
     for (let i = 0; i < listItems.length; i++) {
