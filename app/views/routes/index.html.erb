@@ -52,7 +52,7 @@
           </div>
         </section>
         <%# ルート一覧 %>
-        <section class="route-info">
+        <section class="route-info" data-routes-target="routeInfo">
           <ul id="routes-container" class="routes">
           <% @routes.each_with_index do |route, index| %>
             <li class="route-item" data-route-id="<%= route.id %>" data-visible="<%= route.visible %>" id="route-item<%= index %>"> 
@@ -78,17 +78,34 @@
                   <%= link_to "javascript:void(0);", onclick: "return false;" do %>
                     <%= image_tag("pencil.svg", alt: "pencil", class: "edit-icon") %>
                   <% end %>
-                  <%# 削除 %>
-                  <%= link_to route, data: { "turbo-method": :delete, turbo_confirm: "削除します。よろしいですか？" } do %>
-                    <%= image_tag("trash.svg", alt: "trash") %>
-                  <% end %>
-                  <%# コピー %>
-                  <%= form_with(model: route, url: "/routes/copy", method: :post) do |f| %>
-                    <%= f.hidden_field :id %>
-                    <%= button_tag(type: "submit", class: "icon-submit" ) do %>
-                      <%= image_tag("files.svg", alt: "files") %>
-                    <% end %>
-                  <% end %>
+                  <%# ルート機能メニュー %>
+                  <div>
+                    <ul id="route-menu" class="hidden" data-routes-target="routeMenu">
+                      <%# 削除 %>
+                      <li>
+                        <%= link_to route, data: { "turbo-method": :delete, turbo_confirm: "削除します。よろしいですか？" } do %>
+                          <%= image_tag("trash.svg", alt: "trash") %>
+                          <span>削除</span>
+                        <% end %>
+                      </li>
+                      <%# コピー %>
+                      <li>
+                        <%= form_with(model: route, url: "/routes/copy", method: :post) do |f| %>
+                          <%= f.hidden_field :id %>
+                          <%= button_tag(type: "submit", class: "icon-submit", data: { "turbo-confirm": "コピーします。よろしいですか？" } ) do %>
+                            <%= image_tag("files.svg", alt: "files") %>
+                            <span>コピー</span>
+                          <% end %>
+                        <% end %>
+                      </li>
+                    </ul>
+                    <%# 機能メニューボタン %>
+                    <div data-action="click->routes#openRouteMenu" data-routes-target="routeMenuBtn">
+                      <%= link_to "javascript:void(0);", onclick: "return false;" do %>
+                        <%= image_tag("chevron-down.svg", alt: "chevron-down", class: "edit-icon",  id: "route-menu-btn#{index}") %>
+                      <% end %>
+                    </div>
+                  </div>
                 </div>
               </div>
               <%# ルート名編集 %>

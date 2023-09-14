@@ -123,7 +123,7 @@ function initMap() {
       });
     });
   };
-  
+
   // **************
   // マップ
   // **************
@@ -222,7 +222,7 @@ function initMap() {
   });
 
   // ルート一覧を取得
-  const listItems = document.getElementById('routes-container').getElementsByTagName('li');
+  const listItems = document.getElementById('routes-container').getElementsByClassName('route-item');
 
   for (let i = 0; i < listItems.length; i++) {
     // ルート項目

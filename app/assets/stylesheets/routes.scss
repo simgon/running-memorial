@@ -53,7 +53,7 @@ aside {
   list-style: none;
   margin: 0;
   padding: 0;
-  li {
+  >li {
     overflow: auto;
     padding: 10px 5px;
     border-bottom: 1px solid $gray-lighter;
@@ -232,6 +232,42 @@ aside {
   border: 1px solid #858585;
   .icon-bar {
     background-color: #858585;
+  }
+}
+
+/* ルート機能メニュー */
+
+#route-menu {
+  position: absolute;
+  right: 10px;
+  padding: 5px;
+
+  background-color: black;
+  color: $sub-color;
+  list-style: none;
+  border-radius: 6px;
+
+  >li {
+    overflow: auto;
+  }
+
+  li:hover {
+    background-color: #343641;
+  }
+
+  a, button {
+    display:flex;
+    align-items: center;
+    padding: 10px 5px;
+    height: 100%;
+    width: 100%;
+    color: $sub-color;
+    text-decoration: none;
+  }
+
+  span {
+    margin: 0 auto;
+    margin-left: 10px;
   }
 }
 
