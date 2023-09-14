@@ -2,10 +2,11 @@ class LocationsController < ApplicationController
   # Routeに紐づくLocation情報を取得
   def show
     @route = Route.find(params[:id])
+    locations = @route.locations.order(:loc_order)
 
     respond_to do |format|
-      format.html # HTML形式のビューを表示
-      format.json { render json: @route.locations.to_json() } # JSON形式でデータを返す
+      format.html
+      format.json { render json: locations.to_json() }
     end
   end
 
