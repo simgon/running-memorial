@@ -207,17 +207,28 @@
             <%= image_tag("save.svg", alt: "plus", class: "map-marker-img") %>
             <span class="map-marker-text">保存</span>
           </div>
-          <%# 空白 %>
-          <div id="XXX-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
-            <div class="map-marker-blank"></div>
+          <%# 切替 %>
+          <div id="switch-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
+            <%= image_tag("arrow-repeat.svg", alt: "arrow-repeat", class: "map-marker-img") %>
+            <span class="map-marker-text">切替</span>
           </div>
           <%# 追加 %>
           <div id="add-marker" class="btn map-marker align-items-center" disabled>
             <%= image_tag("plus-circle.svg", alt: "plus", class: "map-marker-img-large") %>
             <span class="map-marker-text">追加</span>
           </div>
+          <%# ルート上追加 %>
+          <div id="add-line-marker" class="btn map-marker align-items-center hidden" disabled>
+            <%= image_tag("node-plus.svg", alt: "node-plus", class: "map-marker-img-large") %>
+            <span class="map-marker-text">ルート上追加</span>
+          </div>
+          <%# 削除 %>
+          <div id="del-marker" class="btn map-marker align-items-center hidden" disabled>
+            <%= image_tag("dash-circle.svg", alt: "dash-circle", class: "map-marker-img-large") %>
+            <span class="map-marker-text">削除</span>
+          </div>
           <%# 1つ戻す %>
-          <div id="del-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
+          <div id="undo-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
             <%= image_tag("backspace.svg", alt: "backspace", class: "map-marker-img") %>
             <span class="map-marker-text">1つ戻す</span>
           </div>

@@ -369,6 +369,7 @@ aside {
   background-image: url('plus_map.svg');
   background-size: 100%;
   background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 .distance-label {

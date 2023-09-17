@@ -62,6 +62,8 @@ function showNotification(message = null, duration = 3000,) {
   }
 }
 
+// ルート一覧を保持
+let routes = {};
 // 選択ルートを保持
 let selectedRoute;
 
@@ -79,7 +81,7 @@ function initMap() {
     center: currentLoc,
     clickableIcons: false,        // マップ上アイコン無効化
     keyboardShortcuts: false,     // キーボードショートカット無効化
-    draggableCursor: 'pointer',   // ドラッグ時カーソル
+    draggableCursor: 'default',   // ドラッグ時カーソル
     mapTypeControl: true,         // マップタイプ コントロール
     fullscreenControl: false,     // 全画面表示 コントロール
     streetViewControl: true,      // ストリートビュー コントロール
@@ -91,46 +93,47 @@ function initMap() {
   };
   const map = new RouteMap(document.getElementById('map'), mapOptions);
 
-  // ルート一覧を保持
-  let routes = {};
-
   // -------------------
   // イベント処理
   // -------------------
   // #region イベント処理
-  // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
-  const fncDisplayMostRelevantRoute = () => {
-    Object.values(routes).filter(route => {
-      // 表示ルートのみに絞り込み
-      let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute("data-visible");
-      return visible != Route.INVISIBLE
-    }).forEach((route, index, routeArray) => {
-      route.routeLines.forEach(line => {
-        let lineSt = line.getPath().getAt(0);
-        let lineEd = line.getPath().getAt(1);
-
-        routeArray.slice(index + 1).forEach(routeOther => {
-          routeOther.routeLines.forEach(lineOther => {
-            let lineStOther = lineOther.getPath().getAt(0);
-            let lineEdOther = lineOther.getPath().getAt(1);
-
-            if (lineSt.equals(lineStOther) && lineEd.equals(lineEdOther)) {
-              if (line.strokeColor != '#FF0000') {
-                line.setOptions({ strokeColor: '#00000000' });
-              }
-              if (lineOther.strokeColor != '#FF0000') {
-                lineOther.setOptions({ strokeColor: '#FF000055' });
-              }
-            }
-          });
-        });
-      });
-    });
-  };
-
   // **************
   // マップ
   // **************
+  let selectedDotMarker
+  let selectedRouteLine
+
+  // マップ移動後
+  map.addListener('idle', function() {
+    if (selectedRoute) {
+      const addLineMarker = document.getElementById('add-line-marker');
+      const delMarker = document.getElementById('del-marker');
+
+      addLineMarker.setAttribute('disabled', '');
+      delMarker.setAttribute('disabled', '');
+      selectedDotMarker = null;
+      selectedRouteLine = null;
+
+      // ドットマーカー接触判定
+      selectedRoute.dotMarkers.forEach(marker => {
+        if (collisionMarker(marker.position, this.getCenter())) {
+          // 削除ボタンを活性化
+          delMarker.removeAttribute('disabled');
+          selectedDotMarker = marker;
+        }
+      });
+
+      // ルート線接触判定
+      selectedRoute.routeLines.forEach(line => {
+        if (collisionLine(line, this.getCenter())) {
+          // ルート上追加ボタンを活性化
+          addLineMarker.removeAttribute('disabled');
+          selectedRouteLine = line;
+        }
+      });
+    }
+  });
+
   // マップ上ボタン
   // マーカー追加
   document.querySelector("#add-marker").addEventListener("click", function(event) {
@@ -140,12 +143,59 @@ function initMap() {
     selectedRoute.addMarker(map.getCenter());
   });
 
-  // １つ戻す
+  // ルート上追加
+  document.querySelector("#add-line-marker").addEventListener("click", function(event) {
+    // ルート未選択の場合
+    if (!selectedRoute || !selectedRouteLine) return;
+
+    selectedRoute.addMarkerOnLine(selectedRouteLine, map.getCenter());
+    selectedRouteLine = null;
+  });
+
+  // マーカー削除
   document.querySelector("#del-marker").addEventListener("click", function(event) {
+    // ルート未選択の場合
+    if (!selectedRoute || !selectedDotMarker) return;
+    
+    selectedRoute.removeMarker(selectedDotMarker);
+    selectedDotMarker = null;
+  });
+
+  // 切替
+  document.querySelector("#switch-marker").addEventListener("click", function(event) {
+    // ルート未選択の場合
+    if (!selectedRoute) return;
+
+    let addMarker = document.getElementById('add-marker');
+    let addLineMarker = document.getElementById('add-line-marker');
+    let delMarker = document.getElementById('del-marker');
+
+    // 追加ボタン → ルート上追加ボタン
+    if (!addMarker.classList.contains('hidden')) {
+      addMarker.classList.add('hidden');
+      addLineMarker.classList.remove('hidden');
+      delMarker.classList.add('hidden');
+
+    // ルート上追加ボタン → 削除ボタン
+    } else if (!addLineMarker.classList.contains('hidden')) {
+      addMarker.classList.add('hidden');
+      addLineMarker.classList.add('hidden');
+      delMarker.classList.remove('hidden');
+
+    // 削除ボタン → 追加ボタン
+    } else if (!delMarker.classList.contains('hidden')) {
+      addMarker.classList.remove('hidden');
+      addLineMarker.classList.add('hidden');
+      delMarker.classList.add('hidden');
+    }
+  });
+  
+  // １つ戻す
+  document.querySelector("#undo-marker").addEventListener("click", function(event) {
     // ルート未選択の場合
     if (!selectedRoute) return;
     // １つ戻すボタン押下時
-    selectedRoute.delMarker();
+    selectedRoute.undoMng.undo(selectedRoute);
   });
 
   // クリア
@@ -203,7 +253,7 @@ function initMap() {
         });
 
         // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
-        fncDisplayMostRelevantRoute();
+        displayMostRelevantRoute();
       }, 100);
       zoomChanged = false;
     }
@@ -252,8 +302,11 @@ function initMap() {
         // マップボタン一覧を活性化
         document.getElementById('map-board').classList.remove('map-board-disabled');
         document.getElementById('save-marker').removeAttribute('disabled');
+        document.getElementById('switch-marker').removeAttribute('disabled');
         document.getElementById('add-marker').removeAttribute('disabled');
-        document.getElementById('del-marker').removeAttribute('disabled');
+        document.getElementById('add-line-marker').setAttribute('disabled', '');
+        document.getElementById('del-marker').setAttribute('disabled', '');
+        document.getElementById('undo-marker').removeAttribute('disabled');
         document.getElementById('eraser-marker').removeAttribute('disabled');
       } else {
         // 選択ルートを未選択
@@ -262,8 +315,11 @@ function initMap() {
         // マップボタン一覧を非活性化
         document.getElementById('map-board').classList.add('map-board-disabled');
         document.getElementById('save-marker').setAttribute('disabled', '');
+        document.getElementById('switch-marker').setAttribute('disabled', '');
         document.getElementById('add-marker').setAttribute('disabled', '');
+        document.getElementById('add-line-marker').setAttribute('disabled', '');
         document.getElementById('del-marker').setAttribute('disabled', '');
+        document.getElementById('undo-marker').setAttribute('disabled', '');
         document.getElementById('eraser-marker').setAttribute('disabled', '');
       }
       
@@ -283,7 +339,10 @@ function initMap() {
       });
 
       // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
-      fncDisplayMostRelevantRoute();
+      displayMostRelevantRoute();
+
+      selectedDotMarker = null;
+      selectedRouteLine = null;
     });
 
     // 表示／非表示
@@ -359,7 +418,7 @@ function initMap() {
         .then((data) => {
           let route = new Route(routeId, map);
           // マップ上にマーカーを表示
-          data.forEach(loc => route.addMarker(new google.maps.LatLng(loc.lat_loc, loc.lon_loc), true));
+          data.forEach(loc => route.addMarker(new google.maps.LatLng(loc.lat_loc, loc.lon_loc), true, false));
           routes[routeId] = route;
 
           // ルート非活性
@@ -415,7 +474,7 @@ function initMap() {
         });
 
         // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
-        fncDisplayMostRelevantRoute();
+        displayMostRelevantRoute();
       }, 100);
     })
     .catch((error) => {
@@ -425,6 +484,89 @@ function initMap() {
 
   // マップをユーザーの現在位置に設定
   map.setMapMyLocation();
+}
+
+// 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
+function displayMostRelevantRoute() {
+  Object.values(routes).filter(route => {
+    // 表示ルートのみに絞り込み
+    let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute("data-visible");
+    return visible != Route.INVISIBLE
+  }).forEach((route, index, routeArray) => {
+    route.routeLines.forEach(line => {
+      let lineSt = line.getPath().getAt(0);
+      let lineEd = line.getPath().getAt(1);
+
+      routeArray.slice(index + 1).forEach(routeOther => {
+        routeOther.routeLines.forEach(lineOther => {
+          let lineStOther = lineOther.getPath().getAt(0);
+          let lineEdOther = lineOther.getPath().getAt(1);
+
+          if (lineSt.equals(lineStOther) && lineEd.equals(lineEdOther)) {
+            if (line.strokeColor != '#FF0000') {
+              line.setOptions({ strokeColor: '#00000000' });
+            }
+            if (lineOther.strokeColor != '#FF0000') {
+              lineOther.setOptions({ strokeColor: '#FF000055' });
+            }
+          }
+        });
+      });
+    });
+  });
+}
+
+// ドットマーカー接触判定
+function collisionMarker(position1, position2, collisionThreshold = 5) {
+  const distanceToCenter = google.maps.geometry.spherical.computeDistanceBetween(position1, position2);
+  return distanceToCenter <= collisionThreshold;
+}
+
+// ルート線接触判定
+function collisionLine(line, position, collisionThreshold = 0.00005) {
+  const path = line.getPath();
+  let shortestDistance = Number.MAX_SAFE_INTEGER;
+
+  for (let i = 0; i < path.getLength() - 1; i++) {
+    const lineStart = path.getAt(i);
+    const lineEnd = path.getAt(i + 1);
+
+    const distance = calculateShortestDistance(position, lineStart, lineEnd);
+    shortestDistance = Math.min(shortestDistance, distance);
+  }
+
+  return shortestDistance <= collisionThreshold;
+}
+
+function calculateShortestDistance(point, lineStart, lineEnd) {
+  const A = point.lat() - lineStart.lat();
+  const B = point.lng() - lineStart.lng();
+  const C = lineEnd.lat() - lineStart.lat();
+  const D = lineEnd.lng() - lineStart.lng();
+
+  const dot = A * C + B * D;
+  const len_sq = C * C + D * D;
+  let param = -1;
+
+  if (len_sq !== 0)
+    param = dot / len_sq;
+
+  let xx, yy;
+
+  if (param < 0) {
+    xx = lineStart.lat();
+    yy = lineStart.lng();
+  } else if (param > 1) {
+    xx = lineEnd.lat();
+    yy = lineEnd.lng();
+  } else {
+    xx = lineStart.lat() + param * C;
+    yy = lineStart.lng() + param * D;
+  }
+
+  const dx = point.lat() - xx;
+  const dy = point.lng() - yy;
+  return Math.sqrt(dx * dx + dy * dy);
 }
 
 // -------------------
@@ -552,30 +694,6 @@ class RouteMap extends google.maps.Map {
   
     // 地図の右下にカスタムコントロールを配置
     this.controls[(isMobileScreen ? google.maps.ControlPosition.RIGHT_TOP : google.maps.ControlPosition.RIGHT_BOTTOM)].push(customControlDiv);
-  
-    // 十字の要素を取得
-    const crosshairElement = document.querySelector('.crosshair');
-  
-    // 地図の移動が完了したときに十字の位置を更新する
-    this.addListener('idle', function() {
-      const center = this.getCenter();
-      const bounds = this.getBounds();
-      const ne = bounds.getNorthEast();
-      const sw = bounds.getSouthWest();
-  
-      const projection = this.getProjection();
-      const centerPoint = projection.fromLatLngToPoint(center);
-      const nePoint = projection.fromLatLngToPoint(ne);
-      const swPoint = projection.fromLatLngToPoint(sw);
-      const mapWidth = nePoint.x - swPoint.x;
-      const mapHeight = swPoint.y - nePoint.y;
-  
-      const left = (centerPoint.x - swPoint.x) / mapWidth * 100;
-      const top = (centerPoint.y - nePoint.y) / mapHeight * 100;
-  
-      crosshairElement.style.left = left + '%';
-      crosshairElement.style.top = top + '%';
-    });
   }
 
   /**
@@ -624,6 +742,8 @@ class Route {
   static VISIBLE_ALL = '1';
   static VISIBLE_ROUTE = '2';
 
+  undoMng = new UndoManager();
+
   constructor(routeId, map) {
     this.routeId = routeId;
     this.map = map;
@@ -665,12 +785,15 @@ class Route {
   /**
    * マーカーを追加
    */
-  addMarker(position, init = false) {
+  addMarker(position, init = false, pushUndo = true) {
     // ドットマーカーを作成
     const newDotMarker = this.createDotMarker({lat: position.lat(), lng: position.lng()});
 
     // 初期表示時、ドラッグ不可
     if (init) newDotMarker.setDraggable(false);
+
+    // undo保持
+    if (pushUndo) this.undoMng.push(UndoManager.ADD, newDotMarker.customId);
 
     // 配列にマーカーを追加
     this.dotMarkers.push(newDotMarker);
@@ -715,6 +838,7 @@ class Route {
         scale: 2,             // ドットのサイズを指定
       },
       draggable: true,        // ドラッグ可能にする
+      cursor: 'pointer'       // カーソルのスタイルを指定
     });
 
     dotMarker.customId = this.routeId + '-' + this.dotMarkers.length;
@@ -781,8 +905,13 @@ class Route {
       });
     }
   
+    let prevPosition;
+
     // ドットマーカードラッグ開始時
     dotMarker.addListener('dragstart', (event) => {
+      // 移動前位置を保持
+      prevPosition = event.latLng;
+
       // ロングタップをキャンセル
       clearTimeout(longPressTimer);
     });
@@ -794,7 +923,7 @@ class Route {
       setTimeout(() => isDragging = false, 1000);
 
       // マーカーを移動
-      this.moveMarker(dotMarker, event.latLng);
+      this.moveMarker(dotMarker, dotMarker.position ,prevPosition);
     });
 
     return dotMarker;
@@ -803,7 +932,7 @@ class Route {
   /**
    * マーカーを削除
    */
-  removeMarker(dotMarker) {
+  removeMarker(dotMarker, pushUndo = true) {
     const routeId = dotMarker.customId.split('-')[0];
     const dotMarkerIdx = dotMarker.customId.split('-')[1];
 
@@ -811,15 +940,24 @@ class Route {
 
     // ルート線を削除
     if (dotMarkerIdx == 0) {
-      // 先頭マーカー右クリック時
+      // 先頭マーカーの場合
+      // undo保持
+      if (pushUndo) this.undoMng.push(UndoManager.DEL, this.routeLines[dotMarkerIdx].customId, dotMarker.position, {head: true, tail: false});
+      // ルート線を削除
       this.routeLines[dotMarkerIdx]?.setMap(null);
       this.routeLines?.splice(dotMarkerIdx, 1)
     } else if (dotMarkerIdx == this.dotMarkers.length - 1) {
-      // 末尾マーカー右クリック時
+      // 末尾マーカーの場合
+      // undo保持
+      if (pushUndo) this.undoMng.push(UndoManager.DEL, this.routeLines[dotMarkerIdx - 1].customId, dotMarker.position, {head: false, tail: true});
+      // ルート線を削除
       this.routeLines[dotMarkerIdx - 1].setMap(null);
       this.routeLines.splice(dotMarkerIdx - 1, 1)
     } else {
       // 上記以外
+      // undo保持
+      if (pushUndo) this.undoMng.push(UndoManager.DEL, this.routeLines[dotMarkerIdx - 1].customId, dotMarker.position);
+      // ルート線を削除
       this.routeLines[dotMarkerIdx].setMap(null);
       this.routeLines[dotMarkerIdx - 1].setPath([this.dotMarkers[dotMarkerIdx - 1].position, this.dotMarkers[Number(dotMarkerIdx) + 1].position]);
       this.routeLines.splice(dotMarkerIdx, 1)
@@ -857,14 +995,19 @@ class Route {
   /**
    * マーカーを移動
    */
-  moveMarker(dotMarker, movedPosition) {
+  moveMarker(dotMarker, movedPosition, prevPosition, pushUndo = true) {
     const routeId = dotMarker.customId.split('-')[0];
     const dotMarkerIdx = dotMarker.customId.split('-')[1];
 
     if (selectedRoute?.routeId != routeId) return;
 
+    // undo保持
+    if (pushUndo) this.undoMng.push(UndoManager.MOVE, dotMarker.customId, prevPosition);
+
+    if (!movedPosition) movedPosition = dotMarker.position;
+
     // ドットマーカーを移動
-    this.dotMarkers[dotMarkerIdx].position = movedPosition;
+    this.dotMarkers[dotMarkerIdx].setPosition(movedPosition);
 
     // ルート線を移動
     if (dotMarkerIdx == 0) {
@@ -970,7 +1113,7 @@ class Route {
   /**
    * ルート線上にマーカーを追加
    */
-  addMarkerOnLine(routeLine, position) {
+  addMarkerOnLine(routeLine, position,  pushUndo = true) {
     const routeId = routeLine.customId.split('-')[0];
     const routeLineIdx = routeLine.customId.split('-')[1];
 
@@ -999,6 +1142,9 @@ class Route {
         for (let i = 1; i < this.dotMarkers.length; i++) {
           this.routeLines[i - 1].setPath([this.dotMarkers[i - 1].position, this.dotMarkers[i].position]);
         }
+
+        // undo保持
+        if (pushUndo) this.undoMng.push(UndoManager.ADD, dotMarker.customId);
 
         // 距離ラベルを作成
         let distance = this.getDistanceBetweenMarkers(this.dotMarkers[dotMarkerIdx], dotMarker);
@@ -1223,6 +1369,65 @@ class DistanceLabelOverlay extends google.maps.OverlayView {
     if (this.div) {
       this.div.parentNode.removeChild(this.div);
       this.div = null;
+    }
+  }
+}
+
+/**
+ * UndoManagerクラス
+ */
+class UndoManager {
+  static ADD = '0';
+  static DEL = '1';
+  static MOVE = '2';
+
+  undoList = new Array();
+
+  push(undoDiv, customId, position = null, order = null) {
+    this.undoList.push(
+      {
+        undoDiv: undoDiv,
+        customId: customId,
+        position: position,
+        order: order
+      }
+    );
+  }
+
+  undo(route) {
+    let undoInfo = this.undoList.pop();
+    
+    if (!undoInfo) {
+      route.delMarker();
+      return;
+    }
+
+    switch (undoInfo.undoDiv) {
+      case UndoManager.ADD:
+        // 追加マーカーを取消
+        route.removeMarker(route.dotMarkers.filter(marker => marker.customId == undoInfo.customId)[0], false);
+        break;
+      case UndoManager.DEL:
+        // 削除マーカーを復元
+        if (!undoInfo.order) {
+          route.addMarkerOnLine(route.routeLines.filter(line => line.customId == undoInfo.customId)[0], undoInfo.position, false);
+        } else {
+          if (undoInfo.order.head) {
+            // 先頭マーカー
+            route.addMarkerOnLine(route.routeLines[0], undoInfo.position, false);
+            let tmpPos = route.dotMarkers[0].position;
+            route.moveMarker(route.dotMarkers[0], route.dotMarkers[1].position, false);
+            route.moveMarker(route.dotMarkers[1], tmpPos, false);
+          } else {
+            // 末尾マーカー
+            route.addMarker(undoInfo.position, false, false);
+          }
+        }
+        break;
+      case UndoManager.MOVE:
+        // 移動マーカーを移動前に戻す
+        route.moveMarker(route.dotMarkers.filter(marker => marker.customId == undoInfo.customId)[0], undoInfo.position, null, false);
+        break;
     }
   }
 }
