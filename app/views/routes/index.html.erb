@@ -62,6 +62,8 @@
                 <div>
                   <%= image_tag("line.svg", alt: "line", class: "drag-handle") %>
                 </div>
+                <%# 未保存ラベル %>
+                <span class="not-yet-save-label label label-danger hidden">未保存</span>
                 <%# ルート名 %>
                 <div class="route-name-container">
                   <%= route.name %>

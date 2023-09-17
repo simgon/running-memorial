@@ -212,6 +212,9 @@ function initMap() {
     if (!selectedRoute) return;
     // 保存ボタン押下時
     postRoute();
+
+    // 未保存ラベルを非表示
+    visibleNotYetSaveLabel(false);
   });
 
   // マップ上クリック時
@@ -516,6 +519,25 @@ function displayMostRelevantRoute() {
   });
 }
 
+// 未保存ラベル表示／非表示
+function visibleNotYetSaveLabel(visible) {
+  if (!selectedRoute) return;
+
+  // ルート一覧を取得
+  const listItems = document.getElementById('routes-container').getElementsByClassName('route-item');
+
+  let item = Object.values(listItems).filter(item => {
+    let routeId = item.getAttribute('data-route-id');
+    return selectedRoute.routeId == routeId;
+  })[0];
+
+  if (visible) {
+    item.getElementsByClassName('not-yet-save-label')[0].classList.remove('hidden');
+  } else {
+    item.getElementsByClassName('not-yet-save-label')[0].classList.add('hidden');
+  }
+}
+
 // ドットマーカー接触判定
 function collisionMarker(position1, position2, collisionThreshold = 5) {
   const distanceToCenter = google.maps.geometry.spherical.computeDistanceBetween(position1, position2);
@@ -771,6 +793,9 @@ class Route {
     this.dotMarkers = [];
     this.distanceLabels = [];
     this.routeLines = [];
+
+    // 未保存ラベルを表示
+    visibleNotYetSaveLabel(true);
   }
 
   /**
@@ -780,6 +805,9 @@ class Route {
     [this.dotMarkers, this.distanceLabels, this.routeLines].forEach(markers => {
       if (markers.length) markers.pop().setMap(null);
     });
+
+    // 未保存ラベルを表示
+    visibleNotYetSaveLabel(true);
   }
 
   /**
@@ -820,6 +848,9 @@ class Route {
       const newDistanceLabel = this.createDistanceLabel(position, 0);
       this.distanceLabels.push(newDistanceLabel);
     }
+
+    // 未保存ラベルを表示
+    visibleNotYetSaveLabel(true);
   }
 
   /**
@@ -990,6 +1021,9 @@ class Route {
       this.distanceLabels[i].labelContent = `${Math.round(this.getTotalDistance() * 1000)}m`;
       this.distanceLabels[i].setMap(this.map);
     }
+
+    // 未保存ラベルを表示
+    visibleNotYetSaveLabel(true);
   }
 
   /**
@@ -1035,6 +1069,9 @@ class Route {
       this.distanceLabels[i].labelContent = `${Math.round(this.getTotalDistance() * 1000)}m`;
       this.distanceLabels[i].setMap(this.map);
     }
+
+    // 未保存ラベルを表示
+    visibleNotYetSaveLabel(true);
   }
 
   /**
@@ -1155,6 +1192,9 @@ class Route {
         break;
       }
     }
+
+    // 未保存ラベルを表示
+    visibleNotYetSaveLabel(true);
   }
 
   /**
