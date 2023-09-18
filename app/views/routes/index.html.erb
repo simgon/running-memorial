@@ -3,20 +3,16 @@
 <% end %>
 
 <% content_for :js do %>
-  <%# Google Maps API %>
-  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>"></script>
-  <%# SortableJSのCDNリンク %>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
-  <%= javascript_import_module_tag "custom/map" %>
+  <%# javascript_import_module_tag "custom/routes" %>
 <% end %>
 
 <div class="container-fluid" data-controller="routes">
-  <div id="site-container" class="row">
+  <div id="site-container" class="row" data-action="click->routes#clickDocument">
     <%# サイドメニュー %>
     <aside id="side-menu" class="col-sm-2">
       <%# ハンバーガーメニュー %>
       <div class="navbar-header">
-        <button id="hamburger" type="button" class="navbar-toggle" data-action="click->routes#openMenu">
+        <button id="hamburger" type="button" class="navbar-toggle" data-action="click->routes#openHamburgerMenu">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
@@ -24,11 +20,11 @@
         </button>
       </div>
       <%# メニュー %>
-      <div id="navbar-menu" class="collapse" data-routes-target="menu">
+      <div id="navbar-menu" class="collapse" data-routes-target="hamburgerMenu">
         <%# ルート登録 %>
         <section id="new-route">
           <%# 新しいルートボタン %>
-          <button id="new-route-button" class="flat-button">
+          <button id="new-route-button" class="flat-button" data-action="click->routes#clickNewRouteButton">
             <%= image_tag("plus.svg", alt: "plus") %>
             新しいルート
           </button>
@@ -44,7 +40,7 @@
                 <%= image_tag("check.svg", alt: "check") %>
               <% end %>
               <%# キャンセル %>
-              <%= button_tag(type: "button", class: "icon-submit") do %>
+              <%= button_tag(type: "button", class: "icon-submit", "data-action": "click->routes#clickNewRouteCancelButton") do %>
                 <%= image_tag("x.svg", alt: "x", id: "new-route-cancel") %>
               <% end %>
             </div>
@@ -52,10 +48,10 @@
           </div>
         </section>
         <%# ルート一覧 %>
-        <section class="route-info" data-routes-target="routeInfo">
+        <section class="route-info" data-routes-target="routeInfo" data-action="scroll->routes#scrollRouteInfo">
           <ul id="routes-container" class="routes">
           <% @routes.each_with_index do |route, index| %>
-            <li class="route-item" data-route-id="<%= route.id %>" data-visible="<%= route.visible %>" id="route-item<%= index %>"> 
+            <li id="route-item<%= index %>" class="route-item" data-action="click->routes#clickRouteItem" data-route-id="<%= route.id %>" data-visible="<%= route.visible %>" > 
               <%# ルート名表示 %>
               <div class="route-detail">
                 <%# ドラッグハンドル %>
@@ -71,14 +67,14 @@
                 <%# ルート編集ボタン一覧 %>
                 <div class="route-buttons-container">
                   <%# 表示／非表示 %>
-                  <%= link_to "javascript:void(0);", onclick: "return false;", class: "eye-toggle" do %>
+                  <%= link_to "javascript:void(0);", onclick: "return false;", class: "eye-toggle", "data-action": "click->routes#clickEye" do %>
                     <%= image_tag("eye.svg", alt: "eye", class: "eye-icon") %>
                     <%= image_tag("eye-slash.svg", alt: "eye-slash", class: "eye-slash-icon hidden") %>
                     <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon hidden") %>
                   <% end %>
                   <%# 編集 %>
                   <%= link_to "javascript:void(0);", onclick: "return false;" do %>
-                    <%= image_tag("pencil.svg", alt: "pencil", class: "edit-icon") %>
+                    <%= image_tag("pencil.svg", alt: "pencil", class: "edit-icon", "data-action": "click->routes#clickEditRoute") %>
                   <% end %>
                   <%# ルート機能メニュー %>
                   <div>
@@ -121,7 +117,7 @@
                     <%= image_tag("check.svg", alt: "check") %>
                   <% end %>
                   <%# キャンセル %>
-                  <%= button_tag(type: "button", class: "icon-submit cancel") do %>
+                  <%= button_tag(type: "button", class: "icon-submit cancel", "data-action": "click->routes#clickEditRouteCancel") do %>
                     <%= image_tag("x.svg", alt: "x", id: "x") %>
                   <% end %>
                 </div>
@@ -156,8 +152,8 @@
             </li>
             <% end %>
             <%# ホーム %>
-            <%= link_to "/", onclick: "location.href='/'" do %>
-            <%# link_to(root_path) do %>
+            <%# link_to "/", onclick: "location.href='/'" do %>
+            <%= link_to(root_path) do %>
               <li>
                 <div class="options-item">
                   <span class="option-item"><%= image_tag("house.svg", alt: "house") %></span>
@@ -174,7 +170,7 @@
                 <span class="option-item-margin"></span>
                 <span class="option-item" style="width: 100%;"><%= @user.user_token %></span>
                 <span class="option-item">
-                  <%= button_tag(id: "copy-user-token", type: "submit", class: "icon-submit", style: "margin-left: 5px;", data: { "user-token": @user.user_token }) do %>
+                  <%= button_tag(id: "copy-user-token", type: "submit", class: "icon-submit", style: "margin-left: 5px;", data: { "action": "click->routes#clickCopyUserToken", "user-token": @user.user_token }) do %>
                     <%= image_tag("clipboard.svg", alt: "clipboard", style: "width: 16px;") %>
                   <% end %>
                 </span>
@@ -205,37 +201,37 @@
       <div id="map-board" class="map-board-disabled">
         <div id="marker-container">
           <%# 保存 %>
-          <div id="save-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
+          <div id="save-marker" class="btn map-marker map-marker-normal align-items-center" data-action="click->routes#saveMarker" disabled>
             <%= image_tag("save.svg", alt: "plus", class: "map-marker-img") %>
             <span class="map-marker-text">保存</span>
           </div>
           <%# 切替 %>
-          <div id="switch-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
+          <div id="switch-marker" class="btn map-marker map-marker-normal align-items-center" data-action="click->routes#switchMarker" disabled>
             <%= image_tag("arrow-repeat.svg", alt: "arrow-repeat", class: "map-marker-img") %>
             <span class="map-marker-text">切替</span>
           </div>
           <%# 追加 %>
-          <div id="add-marker" class="btn map-marker align-items-center" disabled>
+          <div id="add-marker" class="btn map-marker align-items-center" data-action="click->routes#addMarker" disabled>
             <%= image_tag("plus-circle.svg", alt: "plus", class: "map-marker-img-large") %>
             <span class="map-marker-text">追加</span>
           </div>
           <%# ルート上追加 %>
-          <div id="add-line-marker" class="btn map-marker align-items-center hidden" disabled>
+          <div id="add-line-marker" class="btn map-marker align-items-center hidden" data-action="click->routes#addLineMarker" disabled>
             <%= image_tag("node-plus.svg", alt: "node-plus", class: "map-marker-img-large") %>
             <span class="map-marker-text">ルート上追加</span>
           </div>
           <%# 削除 %>
-          <div id="del-marker" class="btn map-marker align-items-center hidden" disabled>
+          <div id="remove-marker" class="btn map-marker align-items-center hidden" data-action="click->routes#removeMarker" disabled>
             <%= image_tag("dash-circle.svg", alt: "dash-circle", class: "map-marker-img-large") %>
             <span class="map-marker-text">削除</span>
           </div>
           <%# 1つ戻す %>
-          <div id="undo-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
+          <div id="undo-marker" class="btn map-marker map-marker-normal align-items-center" data-action="click->routes#undoMarker" disabled>
             <%= image_tag("backspace.svg", alt: "backspace", class: "map-marker-img") %>
             <span class="map-marker-text">1つ戻す</span>
           </div>
           <%# クリア %>
-          <div id="eraser-marker" class="btn map-marker map-marker-normal align-items-center" disabled>
+          <div id="clear-marker" class="btn map-marker map-marker-normal align-items-center" data-action="click->routes#clearMarker" disabled>
             <%= image_tag("eraser.svg", alt: "eraser", class: "map-marker-img") %>
             <span class="map-marker-text">クリア</span>
           </div>

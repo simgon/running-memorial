@@ -15,7 +15,11 @@
     <%= stylesheet_link_tag 'common', :media => "all" %>
 
     <%= javascript_importmap_tags %>
-    
+    <%# Google Maps API %>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>"></script>
+    <%# SortableJSのCDNリンク %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
     <%= yield :js  %>
     <%= yield :css %>
   </head>
