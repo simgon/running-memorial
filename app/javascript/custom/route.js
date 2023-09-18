@@ -52,8 +52,8 @@ export class RouteMap extends google.maps.Map {
         // マップの中心をユーザーの現在位置に移動
         this.setCenter(position);
 
-        setCookie('user_lat', position.lat());
-        setCookie('user_lng', position.lng());
+        Common.setCookie('user_lat', position.lat());
+        Common.setCookie('user_lng', position.lng());
       })
       .catch((error) => {
         // 位置情報の取得に失敗した場合の処理
