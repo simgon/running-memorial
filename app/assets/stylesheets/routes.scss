@@ -453,6 +453,7 @@ aside {
   }
 
   #navbar-menu {
+    position: fixed;
     background-color: $main-color;
     z-index: 10;
     width: 100%;
