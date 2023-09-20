@@ -135,37 +135,37 @@
       <div id="map-board" class="map-board-disabled">
         <div id="marker-container">
           <%# 保存 %>
-          <div id="save-marker" class="btn map-marker map-marker-normal align-items-center" data-action="click->routes#saveMarker" disabled>
+          <div id="save-marker" class="map-marker map-marker-normal align-items-center" data-action="click->routes#saveMarker" disabled>
             <%= image_tag("save.svg", alt: "plus", class: "map-marker-img") %>
             <span class="map-marker-text">保存</span>
           </div>
           <%# 切替 %>
-          <div id="switch-marker" class="btn map-marker map-marker-normal align-items-center" data-action="click->routes#switchMarker" disabled>
+          <div id="switch-marker" class="map-marker map-marker-normal align-items-center" data-action="click->routes#switchMarker" disabled>
             <%= image_tag("arrow-repeat.svg", alt: "arrow-repeat", class: "map-marker-img") %>
             <span class="map-marker-text">切替</span>
           </div>
           <%# 追加 %>
-          <div id="add-marker" class="btn map-marker align-items-center" data-action="click->routes#addMarker" disabled>
+          <div id="add-marker" class="map-marker align-items-center" data-action="click->routes#addMarker" disabled>
             <%= image_tag("plus-circle.svg", alt: "plus", class: "map-marker-img-large") %>
             <span class="map-marker-text">追加</span>
           </div>
           <%# ルート上追加 %>
-          <div id="add-line-marker" class="btn map-marker align-items-center hidden" data-action="click->routes#addLineMarker" disabled>
+          <div id="add-line-marker" class="map-marker align-items-center hidden" data-action="click->routes#addLineMarker" disabled>
             <%= image_tag("node-plus.svg", alt: "node-plus", class: "map-marker-img-large") %>
             <span class="map-marker-text">ルート上追加</span>
           </div>
           <%# 削除 %>
-          <div id="remove-marker" class="btn map-marker align-items-center hidden" data-action="click->routes#removeMarker" disabled>
+          <div id="remove-marker" class="map-marker align-items-center hidden" data-action="click->routes#removeMarker" disabled>
             <%= image_tag("dash-circle.svg", alt: "dash-circle", class: "map-marker-img-large") %>
             <span class="map-marker-text">削除</span>
           </div>
           <%# 1つ戻す %>
-          <div id="undo-marker" class="btn map-marker map-marker-normal align-items-center" data-action="click->routes#undoMarker" disabled>
+          <div id="undo-marker" class="map-marker map-marker-normal align-items-center" data-action="click->routes#undoMarker" disabled>
             <%= image_tag("backspace.svg", alt: "backspace", class: "map-marker-img") %>
             <span class="map-marker-text">1つ戻す</span>
           </div>
           <%# クリア %>
-          <div id="clear-marker" class="btn map-marker map-marker-normal align-items-center" data-action="click->routes#clearMarker" disabled>
+          <div id="clear-marker" class="map-marker map-marker-normal align-items-center" data-action="click->routes#clearMarker" disabled>
             <%= image_tag("eraser.svg", alt: "eraser", class: "map-marker-img") %>
             <span class="map-marker-text">クリア</span>
           </div>

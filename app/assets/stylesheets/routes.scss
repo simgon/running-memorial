@@ -103,6 +103,26 @@ aside {
   flex: 1 0 ;
   width: 20%;
   border-radius: 32%;
+  touch-action: manipulation;
+  cursor: pointer;
+  padding: 6px 0px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  &[disabled] {
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    opacity: 0.65;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  &:active {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 32%;
+  }
 
   &.map-marker-normal {
     margin-top: 8%;
