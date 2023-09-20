@@ -94,6 +94,7 @@ aside {
   display: flex;
   flex-wrap: wrap;
   margin-top: -8%;
+  pointer-events: none;
 }
 
 .map-marker {
@@ -110,6 +111,7 @@ aside {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  pointer-events: auto;
 
   &[disabled] {
     cursor: not-allowed;
