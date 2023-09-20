@@ -35,18 +35,13 @@ aside {
   padding: 0;
   background-color: $main-color;
   color: $sub-color;
-  .route-detail button {
-    img {
-      width: 16px;
-    }
-  }
 }
 
 #navbar-menu {
   display: flex;
   flex-direction: column;
   max-height: 100%;
-  padding: 0px 10px;
+  padding: 0px 8px;
 }
 
 .routes {
@@ -135,58 +130,17 @@ aside {
   }
 }
 
-.route-item {
-  align-items: center;
-  background-color: $main-color;
-}
-.route-item:hover {
-  background-color: #34364160;
-}
-.not-yet-save-label {
-  display: flex;
-  align-items: center;
-  margin: 1px;
-  margin-left: 4px;
-}
-.route-name-container {
-  text-align: left;
-  width: 100%;
-  margin: 0px 5px;
-}
-.route-buttons-container {
-  display: flex;
-  gap: 10px;
-}
+/* ルート項目 */
 
 .route-item {
   align-items: center;
   background-color: $main-color;
-}
-.route-item:hover {
-  background-color: #34364160;
-}
-.route-name-container {
-  text-align: left;
-  width: 100%;
-  margin: 0px 5px;
-}
-.route-buttons-container {
-  display: flex;
-  gap: 10px;
-}
-
-.icon-submit {
-  display: inline-block;
-  padding: 0;
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-  img {
-    width: 24px;
+  &:hover {
+    background-color: #34364160;
   }
 }
 
-.route-detail {
+.route-display-container {
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -194,7 +148,21 @@ aside {
   padding-top: 2px;
 }
 
-.route-edit {
+.route-item-container {
+  width: 100%;
+  margin: 0px 5px;
+}
+
+.route-item-action {
+  display: flex;
+  justify-content: space-between;
+  .route-item-btn-container {
+    display: flex;
+    gap: 10px;
+  }
+}
+
+.route-item-edit {
   width: 100%;
   height: 23px;
   .text-edit {
@@ -206,16 +174,42 @@ aside {
     outline: none;
     padding: 0;
     margin: -1px;
+    margin-left: 1px;
     font: inherit;
     color: inherit;
   }
 }
 
-#new-route {
+.label-not-yet-save {
+  display: flex;
+  align-items: center;
+  margin: 1px;
+  margin-left: 4px;
+}
+
+.action-icon {
+  cursor: pointer;
+  img {
+    width: 16px;
+  }
+}
+
+.submit-icon {
+  display: inline-block;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  img {
+    width: 16px;
+  }
+}
+
+.route-regist-container {
   overflow: visible;
 }
 
-.route-info {
+.route-items-container {
   flex-grow: 1;
   height: 100vh;
   overflow-y: auto;
@@ -243,11 +237,10 @@ aside {
 
 /* ルート機能メニュー */
 
-#route-menu {
+#route-item-action-menu {
   position: absolute;
   right: 10px;
   padding: 5px;
-
   background-color: black;
   color: $sub-color;
   list-style: none;
@@ -287,15 +280,6 @@ aside {
   margin: 0 0 10px 0;
   border-radius: 6px;
 
-  li {
-    padding: 10px 15px;
-    margin: 0;
-  }
-
-  li:hover {
-    background-color: #343641;
-  }
-
   a {
     display: block;
     height: 100%;
@@ -313,6 +297,11 @@ aside {
 .options-item {
   display:flex;
   align-items: center;
+  padding: 10px 15px;
+  margin: 0;
+  &:hover {
+    background-color: #343641;
+  }
 }
 
 .option-item {
@@ -324,6 +313,8 @@ aside {
 }
 
 #options-container {
+  display: flex;
+  flex-direction: column-reverse;
   margin-bottom: 10px;
   overflow: visible;
 }
@@ -331,15 +322,14 @@ aside {
 #options-btn {
   display: flex;
   flex-direction: row;
-
   border-radius: 6px;
   padding: 10px;
   align-items: center;
-}
 
-#options-btn:hover {
-  background-color: #343641;
-  cursor: pointer;
+  &:hover {
+    background-color: #343641;
+    cursor: pointer;
+  }
 }
 
 #logo-icon img {
@@ -441,7 +431,6 @@ aside {
 }
 
 @media (max-width: 767px) {
-
   #site-container {
     display: flex;
     flex-flow: column;
@@ -453,7 +442,6 @@ aside {
   }
 
   #navbar-menu {
-    position: fixed;
     background-color: $main-color;
     z-index: 10;
     width: 100%;

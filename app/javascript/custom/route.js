@@ -719,7 +719,7 @@ export class Route {
           if (this.map.getZoom() <= 13) N = 1000;
 
           let dispDistance = [];
-          for (let i = 1; i <= 40; i++) {
+          for (let i = 1; i <= 40000 / N; i++) {
             dispDistance.push({flg: false, distance: i * N});
           }
 
@@ -818,9 +818,9 @@ export class Route {
     })[0];
 
     if (visible) {
-      item.getElementsByClassName('not-yet-save-label')[0].classList.remove('hidden');
+      item.getElementsByClassName('label-not-yet-save')[0].classList.remove('hidden');
     } else {
-      item.getElementsByClassName('not-yet-save-label')[0].classList.add('hidden');
+      item.getElementsByClassName('label-not-yet-save')[0].classList.add('hidden');
     }
   }
 }
@@ -932,4 +932,39 @@ class UndoManager {
         break;
     }
   }
+}
+
+/**
+ * ルート一覧の並び替えを有効にする
+ */
+export function initSortable() {
+  // SortableJS：Sortableオブジェクトを作成してリストの並び替えを有効にする
+  const routesContainer = document.getElementById('routes-container');
+  const sortable = new Sortable(routesContainer, {
+    animation: 150,
+    handle: '.drag-handle',   // ドラッグ可能な領域（ドラッグハンドル）を指定
+    onEnd: (event) => {  // ドラッグ終了後の処理
+      if (event.oldIndex === event.newIndex) return;
+
+      const listItems = [...routesContainer.getElementsByTagName('li')];
+      // ルートの並び順を更新
+      postRouteOrder(listItems.map(item => item.getAttribute('data-route-id'))); 
+    }
+  });
+}
+
+/**
+ * ルートの並び順を更新
+ * @param {Array.<String>} routeIds - ルートID配列
+ */
+function postRouteOrder(routeIds) {
+  // ルートの並び順を更新
+  Common.postRequest(
+    '/routes/order',
+    {
+      route_param: {
+        routeIds: routeIds
+      }
+    }
+  );
 }

@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { Common } from '../custom/common';
-import { RouteMap, RouteManager , Route } from '../custom/route';
+import { RouteMap, RouteManager , Route, initSortable } from '../custom/route';
 
 export default class extends Controller {
   static targets = ['hamburgerMenu', 'optionsMenu', 'optionsBtn'];
@@ -12,7 +12,7 @@ export default class extends Controller {
     this.initMap();
 
     // ルート一覧の並び替えを有効にする
-    this.initSortable();
+    initSortable();
 
     // スマホ画面のステータスバー対応。カスタムプロパティとして画面高さを保持。
     let height = window.innerHeight;
@@ -20,6 +20,18 @@ export default class extends Controller {
 
     // 通知ダイアログを表示（リダイレクト時）
     Common.showNotification();
+
+    // 暫定対応
+    document.addEventListener('turbo:submit-end', (event) => {
+      const method = event.target.attributes['method'].value;
+      const parts = event.target.action.split('/');
+      const action = parts[parts.length - 1];
+
+      // ルート削除 または ルートコピーの場合、画面リロード
+      if ((method == 'post' && action == 'copy') || method == 'delete') {
+        window.location.reload();
+      }
+    });
   }
 
   disconnect() {}
@@ -43,20 +55,19 @@ export default class extends Controller {
 
   // ルート機能メニューの開閉
   openRouteMenu(event) {
-    const routeMenuBtn = event.currentTarget
-    const routeMenu = routeMenuBtn.previousElementSibling
+    const routeMenuBtn = event.currentTarget;
+    const routeMenu = routeMenuBtn.nextElementSibling;
 
     // クリックした要素の座標情報を取得
-    const rect = routeMenuBtn.getBoundingClientRect()
+    const rect = routeMenuBtn.getBoundingClientRect();
 
     // クリックした要素の底辺の位置を計算
-    const bottom = rect.top + rect.height + 5
+    const bottom = rect.top + rect.height + 5;
 
     // routeMenu の位置を設定
-    routeMenu.style.position = "absolute"
-    routeMenu.style.top = `${bottom}px`
+    routeMenu.style.top = `${bottom}px`;
 
-    routeMenu.classList.toggle("hidden")
+    routeMenu.classList.toggle("hidden");
   }
 
   // ドキュメント全体クリック時
@@ -68,9 +79,9 @@ export default class extends Controller {
 
     // ルート機能メニューを閉じる
     if (!this.prevRouteMenu?.contains(event.target)) {
-      this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]').previousElementSibling?.classList.add("hidden");
+      this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]').nextElementSibling?.classList.add("hidden");
 
-      if (event.target.id.includes("route-menu-btn")) {
+      if (event.target.id.includes("route-item-action-menu-btn")) {
         this.prevRouteMenu = event.target;
       }
     }
@@ -79,7 +90,7 @@ export default class extends Controller {
   // ルート一覧スクロール時
   scrollRouteInfo() {
     // ルート機能メニューを閉じる
-    this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]')?.previousElementSibling?.classList.add("hidden");
+    this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]')?.nextElementSibling?.classList.add("hidden");
   }
   
   // **************
@@ -132,19 +143,19 @@ export default class extends Controller {
   // **************
   // 新しいルートボタン
   clickNewRouteButton() {
-    document.getElementById('new-route-button').classList.add('hidden');
-    document.getElementById('new-route-input').classList.remove('hidden');
-    document.getElementById('new-route-input').querySelector('.form-control').focus();
+    document.getElementById('route-regist-button').classList.add('hidden');
+    document.getElementById('route-regist-input').classList.remove('hidden');
+    document.getElementById('route-regist-input').querySelector('.form-control').focus();
   }
 
   // 新しいルート（キャンセル）
   clickNewRouteCancelButton() {
-    document.getElementById('new-route-button').classList.remove('hidden');
-    document.getElementById('new-route-input').classList.add('hidden');
+    document.getElementById('route-regist-button').classList.remove('hidden');
+    document.getElementById('route-regist-input').classList.add('hidden');
   }
 
   // ルート選択
-  clickRouteItem(event) {
+  clickRouteItem(event) {    
     let targetItem = event.currentTarget;
     let routeId = targetItem.getAttribute('data-route-id');
     let visible = targetItem.getAttribute('data-visible');
@@ -253,8 +264,8 @@ export default class extends Controller {
   clickEditRoute(event) {
     const routeItem = event.currentTarget.closest('li');
 
-    routeItem.querySelector('.route-detail').classList.add('hidden');
-    routeItem.querySelector('.route-edit').classList.remove('hidden');
+    routeItem.querySelector('.route-item-action').classList.add('hidden');
+    routeItem.querySelector('.route-item-edit').classList.remove('hidden');
 
     // テキストボックスをフォーカス
     const edit = routeItem.querySelector('.text-edit');
@@ -266,8 +277,8 @@ export default class extends Controller {
   clickEditRouteCancel(event) {
     const routeItem = event.currentTarget.closest('li');
 
-    routeItem.querySelector('.route-detail').classList.remove('hidden');
-    routeItem.querySelector('.route-edit').classList.add('hidden');
+    routeItem.querySelector('.route-item-action').classList.remove('hidden');
+    routeItem.querySelector('.route-item-edit').classList.add('hidden');
   }
 
   // ユーザートークン
@@ -490,23 +501,6 @@ export default class extends Controller {
   // 諸々の処理
   // -------------------
   // #region 諸々の処理
-  // ルート一覧の並び替えを有効にする
-  initSortable() {
-    // SortableJS：Sortableオブジェクトを作成してリストの並び替えを有効にする
-    const routesContainer = document.getElementById('routes-container');
-    const sortable = new Sortable(routesContainer, {
-      animation: 150,
-      handle: '.drag-handle',   // ドラッグ可能な領域（ドラッグハンドル）を指定
-      onEnd: (event) => {  // ドラッグ終了後の処理
-        if (event.oldIndex === event.newIndex) return;
-
-        const listItems = [...routesContainer.getElementsByTagName('li')];
-        // ルートの並び順を更新
-        this.postRouteOrder(listItems.map(item => item.getAttribute('data-route-id'))); 
-      }
-    });
-  }
-
   // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
   displayMostRelevantRoute() {
     Object.values(this.routeMng.routes).filter(route => {
@@ -631,22 +625,6 @@ export default class extends Controller {
           visible: visible
         }
       },
-    );
-  }
-
-  /**
-   * ルートの並び順を更新
-   * @param {Array.<String>} routeIds - ルートID配列
-   */
-  postRouteOrder(routeIds) {
-    // ルートの並び順を更新
-    Common.postRequest(
-      '/routes/order',
-      {
-        route_param: {
-          routeIds: routeIds
-        }
-      }
     );
   }
   // #endregion

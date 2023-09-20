@@ -22,113 +22,59 @@
       <%# メニュー %>
       <div id="navbar-menu" class="collapse" data-routes-target="hamburgerMenu">
         <%# ルート登録 %>
-        <section id="new-route">
+        <section class="route-regist-container">
           <%# 新しいルートボタン %>
-          <button id="new-route-button" class="flat-button" data-action="click->routes#clickNewRouteButton">
+          <button id="route-regist-button" class="flat-button" data-action="click->routes#clickNewRouteButton">
             <%= image_tag("plus.svg", alt: "plus") %>
             新しいルート
           </button>
           <%# ルート入力 %>
-          <div id="new-route-input" class="hidden">
+          <div id="route-regist-input" class="hidden">
           <%= form_with(model: @route) do |f| %>
             <div class="flex-container">
               <%# ルート名 %>
               <%= f.text_field :name, class: "form-control" %>
               <%= f.hidden_field :user_id %>
               <%# 確定 %>
-              <%= button_tag(type: "submit", class: "icon-submit") do %>
-                <%= image_tag("check.svg", alt: "check") %>
+              <%= button_tag(type: "submit", class: "submit-icon") do %>
+                <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
               <% end %>
               <%# キャンセル %>
-              <%= button_tag(type: "button", class: "icon-submit", "data-action": "click->routes#clickNewRouteCancelButton") do %>
-                <%= image_tag("x.svg", alt: "x", id: "new-route-cancel") %>
+              <%= button_tag(type: "button", class: "submit-icon", data: { action: "click->routes#clickNewRouteCancelButton" }) do %>
+                <%= image_tag("x.svg", alt: "x", id: "route-regist-cancel", style: "width: 24px;") %>
               <% end %>
             </div>
           <% end %>
           </div>
         </section>
         <%# ルート一覧 %>
-        <section class="route-info" data-routes-target="routeInfo" data-action="scroll->routes#scrollRouteInfo">
-          <ul id="routes-container" class="routes">
-          <% @routes.each_with_index do |route, index| %>
-            <li id="route-item<%= index %>" class="route-item" data-action="click->routes#clickRouteItem" data-route-id="<%= route.id %>" data-visible="<%= route.visible %>" > 
-              <%# ルート名表示 %>
-              <div class="route-detail">
-                <%# ドラッグハンドル %>
-                <div>
-                  <%= image_tag("line.svg", alt: "line", class: "drag-handle") %>
-                </div>
-                <%# 未保存ラベル %>
-                <span class="not-yet-save-label label label-danger hidden">未保存</span>
-                <%# ルート名 %>
-                <div class="route-name-container">
-                  <%= route.name %>
-                </div>
-                <%# ルート編集ボタン一覧 %>
-                <div class="route-buttons-container">
-                  <%# 表示／非表示 %>
-                  <%= link_to "javascript:void(0);", onclick: "return false;", class: "eye-toggle", "data-action": "click->routes#clickEye" do %>
-                    <%= image_tag("eye.svg", alt: "eye", class: "eye-icon") %>
-                    <%= image_tag("eye-slash.svg", alt: "eye-slash", class: "eye-slash-icon hidden") %>
-                    <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon hidden") %>
-                  <% end %>
-                  <%# 編集 %>
-                  <%= link_to "javascript:void(0);", onclick: "return false;" do %>
-                    <%= image_tag("pencil.svg", alt: "pencil", class: "edit-icon", "data-action": "click->routes#clickEditRoute") %>
-                  <% end %>
-                  <%# ルート機能メニュー %>
-                  <div>
-                    <ul id="route-menu" class="hidden" data-routes-target="routeMenu">
-                      <%# 削除 %>
-                      <li>
-                        <%= link_to route, data: { "turbo-method": :delete, turbo_confirm: "削除します。よろしいですか？" } do %>
-                          <%= image_tag("trash.svg", alt: "trash") %>
-                          <span>削除</span>
-                        <% end %>
-                      </li>
-                      <%# コピー %>
-                      <li>
-                        <%= form_with(model: route, url: "/routes/copy", method: :post) do |f| %>
-                          <%= f.hidden_field :id %>
-                          <%= button_tag(type: "submit", class: "icon-submit", data: { "turbo-confirm": "コピーします。よろしいですか？" } ) do %>
-                            <%= image_tag("files.svg", alt: "files") %>
-                            <span>コピー</span>
-                          <% end %>
-                        <% end %>
-                      </li>
-                    </ul>
-                    <%# 機能メニューボタン %>
-                    <div data-action="click->routes#openRouteMenu" data-routes-target="routeMenuBtn">
-                      <%= link_to "javascript:void(0);", onclick: "return false;" do %>
-                        <%= image_tag("chevron-down.svg", alt: "chevron-down", class: "edit-icon",  id: "route-menu-btn#{index}") %>
-                      <% end %>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <%# ルート名編集 %>
-              <div class="route-edit hidden">
-              <%= form_with(model: route) do |f| %>
-                <div class="flex-container">
-                  <%# ルート名 %>
-                  <%= f.text_field :name, class: "text-edit" %>
-                  <%# 確定 %>
-                  <%= button_tag(type: "submit", class: "icon-submit") do %>
-                    <%= image_tag("check.svg", alt: "check") %>
-                  <% end %>
-                  <%# キャンセル %>
-                  <%= button_tag(type: "button", class: "icon-submit cancel", "data-action": "click->routes#clickEditRouteCancel") do %>
-                    <%= image_tag("x.svg", alt: "x", id: "x") %>
-                  <% end %>
-                </div>
-              <% end %>
-              </div>
-            </li>
+        <section class="route-items-container" data-action="scroll->routes#scrollRouteInfo">
+          <%= turbo_stream_from "routes" %>
+          <%= turbo_frame_tag "routes" do %>
+            <%# 更新メッセージ %>
+            <input type="hidden" id="update-message" value="<%= flash[:success] %>">
+            <%# ルート一覧 %>
+            <ul id="routes-container" class="routes">
+            <% @routes.each_with_index do |route, index| %>
+              <%= render route, index: index %>
+            <% end %>
+            </ul>
           <% end %>
-          </ul>
         </section>
         <%# オプション %>
         <section id="options-container">
+          <%# オプション開閉ボタン %>
+          <div id="options-btn" data-action="click->routes#openOptions" data-routes-target="optionsBtn">
+            <span id="logo-icon">
+              <%= image_tag("icon.png") %>
+            </span>
+            <span id="app-name">
+              ランニング・メモリアル
+            </span>
+            <span id="options-icon">
+              <%= image_tag("three-dots.svg") %>
+            </span>
+          </div>
           <%# オプションメニュー %>
           <ul id="options-menu" class="hidden" data-routes-target="optionsMenu">
             <%# セッションユーザーID設定 %>
@@ -142,8 +88,8 @@
                     <%= f.text_field :changed_user_token, class: "form-control" %>
                   </span>
                   <span class="option-item">
-                    <%= button_tag(type: "submit", class: "icon-submit", style: "margin-left: 5px;") do %>
-                      <%= image_tag("check.svg", alt: "check") %>
+                    <%= button_tag(type: "submit", class: "submit-icon", style: "margin-left: 5px;") do %>
+                      <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
                     <% end %>
                   </span>
                   <%= f.hidden_field :id %>
@@ -152,16 +98,16 @@
             </li>
             <% end %>
             <%# ホーム %>
-            <%# link_to "/", onclick: "location.href='/'" do %>
-            <%= link_to(root_path) do %>
-              <li>
-                <div class="options-item">
-                  <span class="option-item"><%= image_tag("house.svg", alt: "house") %></span>
-                  <span class="option-item-margin"></span>
-                  <span class="option-item">ホーム</span>
-                </div>
-              </li>
-            <% end %>
+            <li>
+              <%#= link_to "/", onclick: "location.href='/'" do %>
+              <%= link_to(root_path) do %>
+              <div class="options-item">
+                <span class="option-item"><%= image_tag("house.svg", alt: "house") %></span>
+                <span class="option-item-margin"></span>
+                <span class="option-item">ホーム</span>
+              </div>
+              <% end %>
+            </li>
             <hr>
             <%# ユーザートークン %>
             <li>
@@ -170,25 +116,13 @@
                 <span class="option-item-margin"></span>
                 <span class="option-item" style="width: 100%;"><%= @user.user_token %></span>
                 <span class="option-item">
-                  <%= button_tag(id: "copy-user-token", type: "submit", class: "icon-submit", style: "margin-left: 5px;", data: { "action": "click->routes#clickCopyUserToken", "user-token": @user.user_token }) do %>
-                    <%= image_tag("clipboard.svg", alt: "clipboard", style: "width: 16px;") %>
+                  <%= button_tag(id: "copy-user-token", type: "submit", class: "submit-icon", style: "margin-left: 5px;", data: { action: "click->routes#clickCopyUserToken", "user-token": @user.user_token }) do %>
+                    <%= image_tag("clipboard.svg", alt: "clipboard") %>
                   <% end %>
                 </span>
               </div>
             </li>
           </ul>
-          <%# オプションボタン %>
-          <div id="options-btn" data-action="click->routes#openOptions" data-routes-target="optionsBtn">
-            <span id="logo-icon">
-              <%= image_tag("icon.png") %>
-            </span>
-            <span id="app-name">
-              ランニング・メモリアル
-            </span>
-            <span id="options-icon">
-              <%= image_tag("three-dots.svg") %>
-            </span>
-          </div>
         </section>
       </div>
     </aside>
