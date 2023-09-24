@@ -1,4 +1,7 @@
 class RoutesController < ApplicationController
+  before_action :set_route, only: %i[ show edit update destroy ]
+
+  # GET /cats
   # Route一覧を表示
   def index
     # クッキーのユーザーIDからユーザーを取得
@@ -14,7 +17,7 @@ class RoutesController < ApplicationController
     end
 
     # Route情報を取得
-    @routes = Route.where(user_id: @user.id).order(:order)
+    @routes = Route.where(user_id: @user.id).order(:order, created_at: :desc)
     @route = Route.new
     @route.user_id = @user.id
     
@@ -24,64 +27,76 @@ class RoutesController < ApplicationController
     end
   end
 
+  # GET /cats/1
   def show
-    @route = Route.find(params[:id])
   end
 
+  # GET /cats/new
   def new
+    @route = Route.new
   end
 
+  # GET /cats/1/edit
+  def edit
+  end
+
+  # POST /cats
   # Route新規登録
   def create
     @route = Route.new(route_params_create)
+    @route.user_id = get_cookies_user_id
     @route.order = 0
 
     if @route.save
-      flash[:info] = "登録しました"
-      redirect_to routes_url
+      # flash[:info] = "登録しました"
+      # redirect_to routes_url
+      flash.now.notice = "登録しました"
     else
-      render 'index'
+      render :new, status: :unprocessable_entity
     end
   end
 
+  # PATCH/PUT /cats/1
   # Route情報更新
   def update
-    @route = Route.find(params[:id])
     if @route.update(route_params_update)
-      flash[:success] = "更新しました"
-      redirect_to routes_url
+      # flash[:success] = "更新しました"
+      # redirect_to routes_url
+      # redirect_to @route, notice: "更新しました"
+      flash.now.notice = "更新しました"
     else
-      render 'index', status: :unprocessable_entity
+      render :edit, status: :unprocessable_entity
     end
   end
 
+  # DELETE /cats/1
   # Route情報削除
   def destroy
-    @route = Route.find(params[:id])
-    if @route.destroy
-      flash[:success] = "削除しました"
-      redirect_to routes_url, status: :see_other
-    else
-      render 'index', status: :see_other
-    end
+    @route.destroy
+    # flash[:success] = "削除しました"
+    # redirect_to routes_url, status: :see_other
+    flash.now.notice = "削除しました"
   end
 
   # Route情報コピー新規登録
   def copy
     # コピー元のRouteを取得
-    original_route = Route.find(params[:route][:id])
+    @org_route = Route.find(params[:route][:id])
 
     # Routeを複製
-    new_route = original_route.dup
+    new_route = @org_route.dup
     new_route.name += "_コピー"
+    new_route.order = 0
 
     # コピー元のRouteに紐づくLocationモデルを複製して、新しいRouteに紐づける
-    new_route.locations = original_route.locations.map { |location| location.dup }
+    new_route.locations = @org_route.locations.map { |location| location.dup }
 
     # 新しいRouteを新規登録
     if new_route.save
-      flash[:success] = "コピーしました"
-      redirect_to routes_url
+      # flash[:success] = "コピーしました"
+      # redirect_to routes_url
+      @route = new_route
+      flash.now.notice = "コピーしました"
     else
       render 'index'
     end
@@ -116,6 +131,10 @@ class RoutesController < ApplicationController
   end
 
   private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_route
+      @route = Route.find(params[:id])
+    end
 
     # ルート登録時のストロングパラメータ
     def route_params_create

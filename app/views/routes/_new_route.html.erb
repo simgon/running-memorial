@@ -1,0 +1,5 @@
+<%# 新しいルートボタン %>
+<%= link_to new_route_path, class: "flat-button", data: { turbo_frame: "new_route" } do %>
+  <%= image_tag("plus.svg", alt: "plus") %>
+  <%= "新しいルート" %>
+<% end %>

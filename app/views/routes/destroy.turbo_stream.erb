@@ -1,0 +1,9 @@
+<%# Route詳細（`#route_1`となる要素）を削除する %>
+<%#= turbo_stream.remove @route %>
+<%= turbo_stream.remove "route_item_#{@route.id}" %>
+
+<%# 削除ルートをdata-controller="deleted_route"経由でマップを更新する %>
+<%= turbo_stream.update "deleted_route", partial: "deleted_route", locals: { route: @route } %>
+
+<%# Flashを表示 %>
+<%= turbo_stream_flash %>

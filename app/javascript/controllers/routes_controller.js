@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 import { Common } from '../custom/common';
-import { RouteMap, RouteManager , Route, initSortable } from '../custom/route';
+import { RouteMap, RouteManager, Route, initSortable } from '../custom/route';
 
 export default class extends Controller {
   static targets = ['hamburgerMenu', 'optionsMenu', 'optionsBtn'];
-  
+
   initialize() {}
   
   connect() {
@@ -19,18 +19,17 @@ export default class extends Controller {
     document.documentElement.style.setProperty('--vh', height / 100 + 'px');
 
     // 通知ダイアログを表示（リダイレクト時）
-    Common.showNotification();
+    const message = document.querySelector("#flash_message").value;
+    if (message) {
+      Common.showNotification(message);
+    }
 
-    // 暫定対応
-    document.addEventListener('turbo:submit-end', (event) => {
-      const method = event.target.attributes['method'].value;
-      const parts = event.target.action.split('/');
-      const action = parts[parts.length - 1];
-
-      // ルート削除 または ルートコピーの場合、画面リロード
-      if ((method == 'post' && action == 'copy') || method == 'delete') {
-        window.location.reload();
-      }
+    // Turbo Frameのロード後
+    document.addEventListener("turbo:frame-load", function(event) {
+      // テキストボックスにフォーカスする
+      const element = event.target.querySelector('#route_name');
+      element?.focus();
+      element?.setSelectionRange(element?.value.length, element?.value.length);
     });
   }
 
@@ -141,27 +140,14 @@ export default class extends Controller {
   // **************
   // サイドメニュー
   // **************
-  // 新しいルートボタン
-  clickNewRouteButton() {
-    document.getElementById('route-regist-button').classList.add('hidden');
-    document.getElementById('route-regist-input').classList.remove('hidden');
-    document.getElementById('route-regist-input').querySelector('.form-control').focus();
-  }
-
-  // 新しいルート（キャンセル）
-  clickNewRouteCancelButton() {
-    document.getElementById('route-regist-button').classList.remove('hidden');
-    document.getElementById('route-regist-input').classList.add('hidden');
-  }
-
-  // ルート選択
+  // ルート選択時
   clickRouteItem(event) {    
     let targetItem = event.currentTarget;
     let routeId = targetItem.getAttribute('data-route-id');
     let visible = targetItem.getAttribute('data-visible');
     
     // ルート一覧を取得
-    const listItems = document.getElementById('routes-container').getElementsByClassName('route-item');
+    const listItems = document.getElementById('routes').getElementsByClassName('route-item');
 
     // 全ルート一覧の背景色を通常色に戻す
     for (let j = 0; j < listItems.length; j++) {
@@ -215,7 +201,7 @@ export default class extends Controller {
     });
 
     // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
-    this.displayMostRelevantRoute();
+    this.routeMng.displayMostRelevantRoute();
 
     this.routeMng.selectedDotMarker = null;
     this.routeMng.selectedRouteLine = null;
@@ -258,27 +244,6 @@ export default class extends Controller {
       this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ALL);
       this.postRouteVisible(routeId, Route.VISIBLE_ALL);
     }
-  }
-
-  // 編集
-  clickEditRoute(event) {
-    const routeItem = event.currentTarget.closest('li');
-
-    routeItem.querySelector('.route-item-action').classList.add('hidden');
-    routeItem.querySelector('.route-item-edit').classList.remove('hidden');
-
-    // テキストボックスをフォーカス
-    const edit = routeItem.querySelector('.text-edit');
-    edit.focus();
-    edit.setSelectionRange(edit.value.length, edit.value.length);
-  }
-
-  // 編集 - キャンセル
-  clickEditRouteCancel(event) {
-    const routeItem = event.currentTarget.closest('li');
-
-    routeItem.querySelector('.route-item-action').classList.remove('hidden');
-    routeItem.querySelector('.route-item-edit').classList.add('hidden');
   }
 
   // ユーザートークン
@@ -348,7 +313,7 @@ export default class extends Controller {
     // マップズーム時
     map.addListener('zoom_changed', () => {
       // ルート一覧を取得
-      const listItems = document.getElementById('routes-container').getElementsByClassName('route-item');
+      const listItems = document.getElementById('routes').getElementsByClassName('route-item');
 
       // ルート再描画
       for (let i = 0; i < listItems.length; i++) {
@@ -373,7 +338,7 @@ export default class extends Controller {
           });
 
           // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
-          this.displayMostRelevantRoute();
+          this.routeMng.displayMostRelevantRoute();
         }, 100);
         zoomChanged = false;
       }
@@ -418,7 +383,7 @@ export default class extends Controller {
     // #region 表示処理
     const fetchPromises = [];
     // ルート一覧を取得
-    const listItems = document.getElementById('routes-container').getElementsByClassName('route-item');
+    const listItems = document.getElementById('routes').getElementsByClassName('route-item');
 
     // 各ルートのロケーション情報を取得して、マップ上にルート表示
     for (let i = 0; i < listItems.length; i++) {
@@ -431,7 +396,10 @@ export default class extends Controller {
           .then((data) => {
             let route = new Route(routeId, map, this.routeMng);
             // マップ上にマーカーを表示
-            data.forEach(loc => route.addMarker(new google.maps.LatLng(loc.lat_loc, loc.lon_loc), true, false));
+            data.forEach(loc => {
+              const position = new google.maps.LatLng(loc.lat_loc, loc.lon_loc);
+              route.addMarker(position, {init: true, visibleNotYetSaveLabel: false, pushUndo: false});
+            });
             this.routeMng.routes[routeId] = route;
 
             // ルート非活性
@@ -487,7 +455,7 @@ export default class extends Controller {
           });
 
           // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
-          this.displayMostRelevantRoute();
+          this.routeMng.displayMostRelevantRoute();
         }, 100);
       })
       .catch((error) => {
@@ -501,36 +469,6 @@ export default class extends Controller {
   // 諸々の処理
   // -------------------
   // #region 諸々の処理
-  // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
-  displayMostRelevantRoute() {
-    Object.values(this.routeMng.routes).filter(route => {
-      // 表示ルートのみに絞り込み
-      let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute("data-visible");
-      return visible != Route.INVISIBLE
-    }).forEach((route, index, routeArray) => {
-      route.routeLines.forEach(line => {
-        let lineSt = line.getPath().getAt(0);
-        let lineEd = line.getPath().getAt(1);
-
-        routeArray.slice(index + 1).forEach(routeOther => {
-          routeOther.routeLines.forEach(lineOther => {
-            let lineStOther = lineOther.getPath().getAt(0);
-            let lineEdOther = lineOther.getPath().getAt(1);
-
-            if (lineSt.equals(lineStOther) && lineEd.equals(lineEdOther)) {
-              if (line.strokeColor != '#FF0000') {
-                line.setOptions({ strokeColor: '#00000000' });
-              }
-              if (lineOther.strokeColor != '#FF0000') {
-                lineOther.setOptions({ strokeColor: '#FF000055' });
-              }
-            }
-          });
-        });
-      });
-    });
-  }
-
   // ドットマーカー接触判定
   collisionMarker(position1, position2, collisionThreshold = 5) {
     const distanceToCenter = google.maps.geometry.spherical.computeDistanceBetween(position1, position2);

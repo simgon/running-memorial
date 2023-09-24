@@ -34,18 +34,23 @@ export class Common {
    * @param {String} message   - メッセージ
    * @param {Integer} duration - 表示時間
    */
-  static showNotification(message = null, duration = 3000,) {
-    let notificationPopup = document.getElementById('notification-popup');
-    let notificationMessage = document.getElementById('notification-message');
+  static showNotification(message = null, duration = 3000) {
+    const notificationPopup = document.getElementById('notification-popup');
+    const notificationMessage = document.getElementById('notification-message');
 
-    if (message || notificationMessage?.textContent.trim()) {
-      // メッセージ表示
-      notificationPopup.classList.remove('hidden');
-      if (message) notificationMessage.textContent = message;
+    notificationPopup.classList.remove('hidden');
 
-      // 表示時間経過後、メッセージ非表示
-      setTimeout(() => notificationPopup.classList.add('hidden'), duration);
+    if (message) {
+      notificationMessage.textContent = message;
     }
+    
+    // セットされているTimeoutをクリアする
+    clearTimeout(this.timeout);
+
+    // 表示時間経過後、メッセージ非表示
+    this.timeout = setTimeout(() => {
+      notificationPopup.classList.add('hidden');
+    }, duration);
   }
 
   /**
@@ -69,8 +74,7 @@ export class Common {
     })
       .then(response => response.json())
       .then(data => {
-        console.log(data);
-
+        // console.log(data);
         if (message) Common.showNotification(message);
       })
       .catch(error => console.error(error));

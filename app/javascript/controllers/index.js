@@ -9,3 +9,12 @@ eagerLoadControllersFrom("controllers", application)
 // Lazy load controllers as they appear in the DOM (remember not to preload controllers in import map!)
 // import { lazyLoadControllersFrom } from "@hotwired/stimulus-loading"
 // lazyLoadControllersFrom("controllers", application)
+
+import CreatedRouteController from "./created_route_controller"
+application.register("created_route", CreatedRouteController)
+
+import DeletedRouteController from "./deleted_route_controller"
+application.register("deleted_route", DeletedRouteController)
+
+import CopiedRouteController from "./copied_route_controller"
+application.register("copied_route", CopiedRouteController)

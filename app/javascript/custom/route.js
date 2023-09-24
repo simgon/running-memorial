@@ -72,6 +72,12 @@ export class RouteManager {
     this.selectedRoute = null;      // 選択ルートを保持
     this.selectedDotMarker = null;  // 選択位置マーカーを保持
     this.selectedRouteLine = null;  // 選択ルート線を保持
+
+    RouteManager.instance = this;
+  }
+
+  static getInstance() {
+    return RouteManager.instance;
   }
 
   /**
@@ -375,6 +381,38 @@ export class RouteManager {
     const customLabel = new DistanceLabelOverlay(this.map, position, '0m', distance);
     return customLabel;
   }
+
+  /**
+   * 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
+   */
+  displayMostRelevantRoute() {
+    Object.values(this.routes).filter(route => {
+      // 表示ルートのみに絞り込み
+      let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute("data-visible");
+      return visible != Route.INVISIBLE
+    }).forEach((route, index, routeArray) => {
+      route.routeLines.forEach(line => {
+        let lineSt = line.getPath().getAt(0);
+        let lineEd = line.getPath().getAt(1);
+
+        routeArray.slice(index + 1).forEach(routeOther => {
+          routeOther.routeLines.forEach(lineOther => {
+            let lineStOther = lineOther.getPath().getAt(0);
+            let lineEdOther = lineOther.getPath().getAt(1);
+
+            if (lineSt.equals(lineStOther) && lineEd.equals(lineEdOther)) {
+              if (line.strokeColor != '#FF0000') {
+                line.setOptions({ strokeColor: '#00000000' });
+              }
+              if (lineOther.strokeColor != '#FF0000') {
+                lineOther.setOptions({ strokeColor: '#FF000055' });
+              }
+            }
+          });
+        });
+      });
+    });
+  }
 }
 
 /**
@@ -400,20 +438,18 @@ export class Route {
   /**
    * マーカーを追加
    */
-  addMarker(position, init = false, pushUndo = true) {
+  addMarker(position, options = {init: false, visibleNotYetSaveLabel: true, pushUndo: true}) {
     // ドットマーカーを作成
     const newDotMarker = this.routeMng.createDotMarker(this, {lat: position.lat(), lng: position.lng()});
 
-    if (init) {
-      // 初期表示時、ドラッグ不可
-      newDotMarker.setDraggable(false);
-    } else {
-      // 未保存ラベルを表示
-      this.visibleNotYetSaveLabel(true);
-    }
+    // 初期表示時、ドラッグ不可
+    if (options.init) newDotMarker.setDraggable(false);
+    
+    // 未保存ラベルを表示
+    if (options.visibleNotYetSaveLabel) this.visibleNotYetSaveLabel(true);
 
     // undo保持
-    if (pushUndo) this.undoMng.push(UndoManager.ADD, newDotMarker.customId);
+    if (options.pushUndo) this.undoMng.push(UndoManager.ADD, newDotMarker.customId);
 
     // 配列にマーカーを追加
     this.dotMarkers.push(newDotMarker);
@@ -445,7 +481,7 @@ export class Route {
   /**
    * ルート線上にマーカーを追加
    */
-  addMarkerOnLine(routeLine, position,  pushUndo = true) {
+  addMarkerOnLine(routeLine, position, options = {pushUndo: true}) {
     const routeId = routeLine.customId.split('-')[0];
     const routeLineIdx = routeLine.customId.split('-')[1];
 
@@ -476,7 +512,7 @@ export class Route {
         }
 
         // undo保持
-        if (pushUndo) this.undoMng.push(UndoManager.ADD, dotMarker.customId);
+        if (options.pushUndo) this.undoMng.push(UndoManager.ADD, dotMarker.customId);
 
         // 距離ラベルを作成
         let distance = this.getDistanceBetweenMarkers(this.dotMarkers[dotMarkerIdx], dotMarker);
@@ -507,7 +543,7 @@ export class Route {
   /**
    * マーカーを削除
    */
-  removeMarker(dotMarker, pushUndo = true) {
+  removeMarker(dotMarker, options = {pushUndo: true}) {
     const routeId = dotMarker.customId.split('-')[0];
     const dotMarkerIdx = dotMarker.customId.split('-')[1];
 
@@ -517,21 +553,21 @@ export class Route {
     if (dotMarkerIdx == 0) {
       // 先頭マーカーの場合
       // undo保持
-      if (pushUndo) this.undoMng.push(UndoManager.DEL, this.routeLines[dotMarkerIdx].customId, dotMarker.position, {head: true, tail: false});
+      if (options.pushUndo) this.undoMng.push(UndoManager.DEL, this.routeLines[dotMarkerIdx].customId, dotMarker.position, {head: true, tail: false});
       // ルート線を削除
       this.routeLines[dotMarkerIdx]?.setMap(null);
       this.routeLines?.splice(dotMarkerIdx, 1)
     } else if (dotMarkerIdx == this.dotMarkers.length - 1) {
       // 末尾マーカーの場合
       // undo保持
-      if (pushUndo) this.undoMng.push(UndoManager.DEL, this.routeLines[dotMarkerIdx - 1].customId, dotMarker.position, {head: false, tail: true});
+      if (options.pushUndo) this.undoMng.push(UndoManager.DEL, this.routeLines[dotMarkerIdx - 1].customId, dotMarker.position, {head: false, tail: true});
       // ルート線を削除
       this.routeLines[dotMarkerIdx - 1].setMap(null);
       this.routeLines.splice(dotMarkerIdx - 1, 1)
     } else {
       // 上記以外
       // undo保持
-      if (pushUndo) this.undoMng.push(UndoManager.DEL, this.routeLines[dotMarkerIdx - 1].customId, dotMarker.position);
+      if (options.pushUndo) this.undoMng.push(UndoManager.DEL, this.routeLines[dotMarkerIdx - 1].customId, dotMarker.position);
       // ルート線を削除
       this.routeLines[dotMarkerIdx].setMap(null);
       this.routeLines[dotMarkerIdx - 1].setPath([this.dotMarkers[dotMarkerIdx - 1].position, this.dotMarkers[Number(dotMarkerIdx) + 1].position]);
@@ -597,14 +633,14 @@ export class Route {
   /**
    * マーカーを移動
    */
-  moveMarker(dotMarker, movedPosition, prevPosition, pushUndo = true) {
+  moveMarker(dotMarker, movedPosition, prevPosition, options = {pushUndo: true}) {
     const routeId = dotMarker.customId.split('-')[0];
     const dotMarkerIdx = dotMarker.customId.split('-')[1];
 
     if (this.routeMng.selectedRoute?.routeId != routeId) return;
 
     // undo保持
-    if (pushUndo) this.undoMng.push(UndoManager.MOVE, dotMarker.customId, prevPosition);
+    if (options.pushUndo) this.undoMng.push(UndoManager.MOVE, dotMarker.customId, prevPosition);
 
     if (!movedPosition) movedPosition = dotMarker.position;
 
@@ -810,7 +846,7 @@ export class Route {
    */
   visibleNotYetSaveLabel(visible) {
     // ルート一覧を取得
-    const listItems = document.getElementById('routes-container').getElementsByClassName('route-item');
+    const listItems = document.getElementById('routes').getElementsByClassName('route-item');
 
     let item = Object.values(listItems).filter(item => {
       let routeId = item.getAttribute('data-route-id');
@@ -818,9 +854,9 @@ export class Route {
     })[0];
 
     if (visible) {
-      item.getElementsByClassName('label-not-yet-save')[0].classList.remove('hidden');
+      item?.getElementsByClassName('label-not-yet-save')[0].classList.remove('hidden');
     } else {
-      item.getElementsByClassName('label-not-yet-save')[0].classList.add('hidden');
+      item?.getElementsByClassName('label-not-yet-save')[0].classList.add('hidden');
     }
   }
 }
@@ -907,28 +943,28 @@ class UndoManager {
     switch (undoInfo.undoDiv) {
       case UndoManager.ADD:
         // 追加マーカーを取消
-        this.route.removeMarker(this.route.dotMarkers.filter(marker => marker.customId == undoInfo.customId)[0], false);
+        this.route.removeMarker(this.route.dotMarkers.filter(marker => marker.customId == undoInfo.customId)[0], {pushUndo: false});
         break;
       case UndoManager.DEL:
         // 削除マーカーを復元
         if (!undoInfo.order) {
-          this.route.addMarkerOnLine(this.route.routeLines.filter(line => line.customId == undoInfo.customId)[0], undoInfo.position, false);
+          this.route.addMarkerOnLine(this.route.routeLines.filter(line => line.customId == undoInfo.customId)[0], undoInfo.position, {pushUndo: false});
         } else {
           if (undoInfo.order.head) {
             // 先頭マーカー
-            this.route.addMarkerOnLine(this.route.routeLines[0], undoInfo.position, false);
+            this.route.addMarkerOnLine(this.route.routeLines[0], undoInfo.position, {pushUndo: true});
             let tmpPos = route.dotMarkers[0].position;
-            this.route.moveMarker(this.route.dotMarkers[0], this.route.dotMarkers[1].position, false);
-            this.route.moveMarker(this.route.dotMarkers[1], tmpPos, false);
+            this.route.moveMarker(this.route.dotMarkers[0], this.route.dotMarkers[1].position, {pushUndo: false});
+            this.route.moveMarker(this.route.dotMarkers[1], tmpPos, {pushUndo: false});
           } else {
             // 末尾マーカー
-            this.route.addMarker(undoInfo.position, false, false);
+            this.route.addMarker(undoInfo.position, {init: false, visibleNotYetSaveLabel: false, pushUndo: false});
           }
         }
         break;
       case UndoManager.MOVE:
         // 移動マーカーを移動前に戻す
-        this.route.moveMarker(this.route.dotMarkers.filter(marker => marker.customId == undoInfo.customId)[0], undoInfo.position, null, false);
+        this.route.moveMarker(this.route.dotMarkers.filter(marker => marker.customId == undoInfo.customId)[0], undoInfo.position, null, {pushUndo: false});
         break;
     }
   }
@@ -939,16 +975,16 @@ class UndoManager {
  */
 export function initSortable() {
   // SortableJS：Sortableオブジェクトを作成してリストの並び替えを有効にする
-  const routesContainer = document.getElementById('routes-container');
+  const routesContainer = document.getElementById('routes-list');
   const sortable = new Sortable(routesContainer, {
     animation: 150,
     handle: '.drag-handle',   // ドラッグ可能な領域（ドラッグハンドル）を指定
     onEnd: (event) => {  // ドラッグ終了後の処理
       if (event.oldIndex === event.newIndex) return;
 
-      const listItems = [...routesContainer.getElementsByTagName('li')];
+      const listItems = [...routesContainer.querySelectorAll(".route-item")];
       // ルートの並び順を更新
-      postRouteOrder(listItems.map(item => item.getAttribute('data-route-id'))); 
+      postRouteOrder(listItems.map(item => item.getAttribute('data-route-id')));
     }
   });
 }

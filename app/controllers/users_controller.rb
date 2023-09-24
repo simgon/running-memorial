@@ -21,16 +21,14 @@ class UsersController < ApplicationController
 
         # クッキーに変更先ユーザーIDをセット
         set_cookies_user_id(changedUser)
-
-        redirect_to routes_url
       else
         flash[:success] = "更新できませんでした"
-        render 'index', status: :unprocessable_entity
       end
     else
       flash[:success] = "更新できませんでした"
-      redirect_to routes_url
     end
+
+    redirect_to routes_url
   end
 
   # ユーザー削除

@@ -1,0 +1,54 @@
+<%# オプション開閉ボタン %>
+<div id="options-btn" data-action="click->routes#openOptions" data-routes-target="optionsBtn">
+  <span id="logo-icon"><%= image_tag("icon.png") %></span>
+  <span id="app-name">ランニング・メモリアル</span>
+  <span id="options-icon"><%= image_tag("three-dots.svg") %></span>
+</div>
+<%# オプションメニュー %>
+<ul id="options-menu" class="hidden" data-routes-target="optionsMenu">
+  <%# セッションユーザーID設定 %>
+  <% if @user.allow_session_user_id_setting %>
+  <li>
+    <%= form_with(model: @user) do |f| %>
+      <div class="options-item">
+        <span class="option-item"><%= image_tag("person-up.svg", alt: "person-up") %></span>
+        <span class="option-item-margin"></span>
+        <span class="option-item" style="width: 100%;">
+          <%= f.text_field :changed_user_token, class: "form-control" %>
+        </span>
+        <span class="option-item">
+          <%= button_tag(type: "submit", class: "submit-icon", style: "margin-left: 5px;") do %>
+            <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
+          <% end %>
+        </span>
+        <%= f.hidden_field :id %>
+      </div>
+    <% end %>
+  </li>
+  <% end %>
+  <%# ホーム %>
+  <li>
+    <%#= link_to "/", onclick: "location.href='/'" do %>
+    <%= link_to(root_path) do %>
+      <div class="options-item">
+        <span class="option-item"><%= image_tag("house.svg", alt: "house") %></span>
+        <span class="option-item-margin"></span>
+        <span class="option-item">ホーム</span>
+      </div>
+    <% end %>
+  </li>
+  <hr>
+  <%# ユーザートークン %>
+  <li>
+    <div class="options-item">
+      <span class="option-item">ID</span>
+      <span class="option-item-margin"></span>
+      <span class="option-item" style="width: 100%;"><%= @user.user_token %></span>
+      <span class="option-item">
+        <%= button_tag(id: "copy-user-token", type: "submit", class: "submit-icon", style: "margin-left: 5px;", data: { action: "click->routes#clickCopyUserToken", "user-token": @user.user_token }) do %>
+          <%= image_tag("clipboard.svg", alt: "clipboard") %>
+        <% end %>
+      </span>
+    </div>
+  </li>
+</ul>

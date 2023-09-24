@@ -1,0 +1,51 @@
+<%= turbo_frame_tag route do %>
+<%#= turbo_frame_tag dom_id(route) do %>
+<%#= turbo_frame_tag "route_#{route.id}" do %>
+  <%# ルート項目 %>
+  <div class="route-item-action">
+    <%# ルート名 %>
+    <div><%= route.name %></div>
+    <%# ルート項目ボタン %>
+    <div class="flex-container align-items-center" style="gap: 10px;">
+      <%# 表示／非表示 %>
+      <div class="action-icon eye-toggle" data-action="click->routes#clickEye">
+        <%= image_tag("eye.svg", alt: "eye", class: "eye-icon") %>
+        <%= image_tag("eye-slash.svg", alt: "eye-slash", class: "eye-slash-icon hidden") %>
+        <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon hidden") %>
+      </div>
+      <%# 編集 %>
+      <%= link_to edit_route_path(route), class: "action-icon" do %>
+        <%= image_tag("pencil.svg", alt: "pencil") %>
+      <% end%>
+      <%# ルート機能メニュー %>
+      <div>
+        <%# メニュー開閉ボタン %>
+        <div class="action-icon" data-action="click->routes#openRouteMenu" data-routes-target="routeMenuBtn">
+          <%= image_tag("chevron-down.svg", alt: "chevron-down", id: "route-item-action-menu-btn#{0}") %>
+        </div>
+        <%# ルート機能 %>
+        <ul id="route-item-action-menu" class="hidden" data-routes-target="routeMenu">
+          <%# 削除 %>
+          <li>
+            <%= form_with(model: route, url: route_path(route), method: :delete) do |f| %>
+              <%= button_tag(type: "submit", class: "submit-icon", data: { turbo_confirm: "削除します。よろしいですか？" } ) do %>
+                <%= image_tag("trash.svg", alt: "trash") %>
+                <span>削除</span>
+              <% end %>
+            <% end %>
+          </li>
+          <%# コピー %>
+          <li>
+            <%= form_with(model: route, url: "/routes/copy", method: :post) do |f| %>
+              <%= f.hidden_field :id %>
+              <%= button_tag(type: "submit", class: "submit-icon", data: { turbo_confirm: "コピーします。よろしいですか？" } ) do %>
+                <%= image_tag("files.svg", alt: "files") %>
+                <span>コピー</span>
+              <% end %>
+            <% end %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>

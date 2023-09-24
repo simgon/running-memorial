@@ -1,0 +1,26 @@
+<%# ルート名入力 %>
+<%= turbo_frame_tag route do %>
+  <%= form_with(model: route) do |f| %>
+     <%= f.hidden_field :id, value: @route.id %>
+    <div class="flex-container">
+      <%# ルート名 %>
+      <% if route.id.nil? %>
+        <%# 新規時 %>
+        <%= f.text_field :name, class: "form-control" %>
+      <% else %>
+        <%# 編集時 %>
+        <%= f.text_field :name, class: "route-name-edit" %>
+      <% end %>
+      <div class="flex-container align-items-center">
+        <%# 確定 %>
+        <%= button_tag(type: "submit", class: "submit-icon") do %>
+          <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
+        <% end %>
+        <%# キャンセル %>
+        <%= link_to route, class: "submit-icon" do %>
+          <%= image_tag("x.svg", alt: "x", id: "route-regist-cancel", style: "width: 24px;") %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

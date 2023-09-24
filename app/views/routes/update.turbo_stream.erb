@@ -1,0 +1,23 @@
+<%# renderを省略する場合 %>
+<%#= turbo_stream.replace @route %>
+
+<%# renderを省略しない場合 %>
+<%# partialとlocalsは@routeから推測できるため、通常は省略される %>
+<%#= turbo_stream.replace @route do %>
+  <%#= render partial: "routes/route",
+             locals: { route: @route } %>
+<%# end %>
+
+<%= turbo_stream.replace @route do %>
+  <%= render partial: "routes/route_item",
+             locals: { route: @route } %>
+<% end %>
+
+<%# renderを省略する場合 %>
+<%#= turbo_stream.update "flash", partial: "flash" %>
+<%= turbo_stream_flash %>
+
+<%# renderを省略しない場合 %>
+<%#= turbo_stream.update "flash" %>
+  <%#= render partial: "flash" %>
+<%# end%>

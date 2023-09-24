@@ -1,1 +1,10 @@
-<%= @route.name %>
+<p style="color: green"><%= notice %></p>
+
+<%= render @route %>
+
+<div>
+  <%= link_to "Edit this route", edit_route_path(@route) %> |
+  <%= link_to "Back to route", routes_path %>
+
+  <%= button_to "Destroy this route", @route, method: :delete %>
+</div>

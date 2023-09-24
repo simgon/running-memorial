@@ -1,14 +1,8 @@
-<% content_for :css do %>
-  <%= stylesheet_link_tag 'routes', media: 'all' %>
-<% end %>
-
-<% content_for :js do %>
-  <%# javascript_import_module_tag "custom/routes" %>
-<% end %>
-
 <div class="container-fluid" data-controller="routes">
   <div id="site-container" class="row" data-action="click->routes#clickDocument">
+    <%# ーーーーーーー %>
     <%# サイドメニュー %>
+    <%# ーーーーーーー %>
     <aside id="side-menu" class="col-sm-2">
       <%# ハンバーガーメニュー %>
       <div class="navbar-header">
@@ -24,109 +18,31 @@
         <%# ルート登録 %>
         <section class="route-regist-container">
           <%# 新しいルートボタン %>
-          <button id="route-regist-button" class="flat-button" data-action="click->routes#clickNewRouteButton">
-            <%= image_tag("plus.svg", alt: "plus") %>
-            新しいルート
-          </button>
-          <%# ルート入力 %>
-          <div id="route-regist-input" class="hidden">
-          <%= form_with(model: @route) do |f| %>
-            <div class="flex-container">
-              <%# ルート名 %>
-              <%= f.text_field :name, class: "form-control" %>
-              <%= f.hidden_field :user_id %>
-              <%# 確定 %>
-              <%= button_tag(type: "submit", class: "submit-icon") do %>
-                <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
-              <% end %>
-              <%# キャンセル %>
-              <%= button_tag(type: "button", class: "submit-icon", data: { action: "click->routes#clickNewRouteCancelButton" }) do %>
-                <%= image_tag("x.svg", alt: "x", id: "route-regist-cancel", style: "width: 24px;") %>
-              <% end %>
-            </div>
+          <%= turbo_frame_tag "new_route" do %>
+            <%= render "new_route" %>
           <% end %>
-          </div>
+          <%# 登録ルートをdata-controller="created_route"経由でマップを更新する %>
+          <div id="created_route"></div>
         </section>
         <%# ルート一覧 %>
-        <section class="route-items-container" data-action="scroll->routes#scrollRouteInfo">
-          <%= turbo_stream_from "routes" %>
-          <%= turbo_frame_tag "routes" do %>
-            <%# 更新メッセージ %>
-            <input type="hidden" id="update-message" value="<%= flash[:success] %>">
-            <%# ルート一覧 %>
-            <ul id="routes-container" class="routes">
-            <% @routes.each_with_index do |route, index| %>
-              <%= render route, index: index %>
-            <% end %>
-            </ul>
+        <section id="routes" class="route-items-container">
+          <%= turbo_frame_tag "routes-list" do %>
+            <%= render @routes %>
           <% end %>
+          <%# 削除ルートをdata-controller="deleted_route"経由でマップを更新する %>
+          <div id="deleted_route"></div>
+          <%# コピールートをdata-controller="copied_route"経由でマップを更新する %>
+          <div id="copied_route"></div>
         </section>
-        <%# オプション %>
+        <%# オプションメニュー %>
         <section id="options-container">
-          <%# オプション開閉ボタン %>
-          <div id="options-btn" data-action="click->routes#openOptions" data-routes-target="optionsBtn">
-            <span id="logo-icon">
-              <%= image_tag("icon.png") %>
-            </span>
-            <span id="app-name">
-              ランニング・メモリアル
-            </span>
-            <span id="options-icon">
-              <%= image_tag("three-dots.svg") %>
-            </span>
-          </div>
-          <%# オプションメニュー %>
-          <ul id="options-menu" class="hidden" data-routes-target="optionsMenu">
-            <%# セッションユーザーID設定 %>
-            <% if @user.allow_session_user_id_setting %>
-            <li>
-              <%= form_with(model: @user) do |f| %>
-                <div class="options-item">
-                  <span class="option-item"><%= image_tag("person-up.svg", alt: "person-up") %></span>
-                  <span class="option-item-margin"></span>
-                  <span class="option-item" style="width: 100%;">
-                    <%= f.text_field :changed_user_token, class: "form-control" %>
-                  </span>
-                  <span class="option-item">
-                    <%= button_tag(type: "submit", class: "submit-icon", style: "margin-left: 5px;") do %>
-                      <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
-                    <% end %>
-                  </span>
-                  <%= f.hidden_field :id %>
-                </div>
-              <% end %>
-            </li>
-            <% end %>
-            <%# ホーム %>
-            <li>
-              <%#= link_to "/", onclick: "location.href='/'" do %>
-              <%= link_to(root_path) do %>
-              <div class="options-item">
-                <span class="option-item"><%= image_tag("house.svg", alt: "house") %></span>
-                <span class="option-item-margin"></span>
-                <span class="option-item">ホーム</span>
-              </div>
-              <% end %>
-            </li>
-            <hr>
-            <%# ユーザートークン %>
-            <li>
-              <div class="options-item">
-                <span class="option-item">ID</span>
-                <span class="option-item-margin"></span>
-                <span class="option-item" style="width: 100%;"><%= @user.user_token %></span>
-                <span class="option-item">
-                  <%= button_tag(id: "copy-user-token", type: "submit", class: "submit-icon", style: "margin-left: 5px;", data: { action: "click->routes#clickCopyUserToken", "user-token": @user.user_token }) do %>
-                    <%= image_tag("clipboard.svg", alt: "clipboard") %>
-                  <% end %>
-                </span>
-              </div>
-            </li>
-          </ul>
+          <%= render "options_menu" %>
         </section>
       </div>
     </aside>
-    <%# メイン %>
+    <%# ーーーーー %>
+    <%# マップ画面 %>
+    <%# ーーーーー %>
     <div id="map-contents" class="col-sm-10">
       <%# マップ %>
       <div id="map"></div>
@@ -135,40 +51,19 @@
       <div id="map-board" class="map-board-disabled">
         <div id="marker-container">
           <%# 保存 %>
-          <div id="save-marker" class="map-marker map-marker-normal align-items-center" data-action="click->routes#saveMarker" disabled>
-            <%= image_tag("save.svg", alt: "plus", class: "map-marker-img") %>
-            <span class="map-marker-text">保存</span>
-          </div>
+          <%= map_button("保存", id: "save-marker", img_nm: "save.svg", data_action: "click->routes#saveMarker") %>
           <%# 切替 %>
-          <div id="switch-marker" class="map-marker map-marker-normal align-items-center" data-action="click->routes#switchMarker" disabled>
-            <%= image_tag("arrow-repeat.svg", alt: "arrow-repeat", class: "map-marker-img") %>
-            <span class="map-marker-text">切替</span>
-          </div>
+          <%= map_button("切替", id: "switch-marker", img_nm: "arrow-repeat.svg", data_action: "click->routes#switchMarker") %>
           <%# 追加 %>
-          <div id="add-marker" class="map-marker align-items-center" data-action="click->routes#addMarker" disabled>
-            <%= image_tag("plus-circle.svg", alt: "plus", class: "map-marker-img-large") %>
-            <span class="map-marker-text">追加</span>
-          </div>
+          <%= map_button("追加", id: "add-marker", img_nm: "plus-circle.svg", data_action: "click->routes#addMarker", large: true) %>
           <%# ルート上追加 %>
-          <div id="add-line-marker" class="map-marker align-items-center hidden" data-action="click->routes#addLineMarker" disabled>
-            <%= image_tag("node-plus.svg", alt: "node-plus", class: "map-marker-img-large") %>
-            <span class="map-marker-text">ルート上追加</span>
-          </div>
+          <%= map_button("ルート上追加", id: "add-line-marker", img_nm: "node-plus.svg", data_action: "click->routes#addLineMarker", large: true, hidden: true) %>
           <%# 削除 %>
-          <div id="remove-marker" class="map-marker align-items-center hidden" data-action="click->routes#removeMarker" disabled>
-            <%= image_tag("dash-circle.svg", alt: "dash-circle", class: "map-marker-img-large") %>
-            <span class="map-marker-text">削除</span>
-          </div>
+          <%= map_button("削除", id: "remove-marker", img_nm: "dash-circle.svg", data_action: "click->routes#removeMarker", large: true, hidden: true) %>
           <%# 1つ戻す %>
-          <div id="undo-marker" class="map-marker map-marker-normal align-items-center" data-action="click->routes#undoMarker" disabled>
-            <%= image_tag("backspace.svg", alt: "backspace", class: "map-marker-img") %>
-            <span class="map-marker-text">1つ戻す</span>
-          </div>
+          <%= map_button("1つ戻す", id: "undo-marker", img_nm: "backspace.svg", data_action: "click->routes#undoMarker") %>
           <%# クリア %>
-          <div id="clear-marker" class="map-marker map-marker-normal align-items-center" data-action="click->routes#clearMarker" disabled>
-            <%= image_tag("eraser.svg", alt: "eraser", class: "map-marker-img") %>
-            <span class="map-marker-text">クリア</span>
-          </div>
+          <%= map_button("クリア", id: "clear-marker", img_nm: "eraser.svg", data_action: "click->routes#clearMarker") %>
         </div>
       </div>
     </div>

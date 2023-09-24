@@ -2,32 +2,28 @@
 @import "bootstrap";
 @import "variables";
 
-/* 全体 */
+// 開発用：Turbo Frameの見える化
+// turbo-frame {
+//   border: 1px red solid;
+//   display: block;
+// }
+
+// turbo-frame::before {
+//   content: "Frame: #" attr(id);
+//   position: relative;
+//   top: -14px;
+//   right: -4px;
+//   display: inline-block;
+//   color: red;
+//   font-size: 12px;
+//   z-index: 9999;
+//   background-color: white;
+//   padding: 4px;
+//   border: 1px red solid;
+// }
 
 #site-container {
   height: 100vh;
-}
-
-aside {
-  section {
-    margin-top: 10px;
-    &:first-child {
-      border: 0;
-      padding-top: 0;
-    }
-    span {
-      display: block;
-      margin-bottom: 3px;
-      line-height: 1;
-    }
-    h1 {
-      font-size: 1.4em;
-      text-align: left;
-      letter-spacing: -1px;
-      margin-bottom: 3px;
-      margin-top: 0px;
-    }
-  }
 }
 
 #side-menu {
@@ -42,17 +38,6 @@ aside {
   flex-direction: column;
   max-height: 100%;
   padding: 0px 8px;
-}
-
-.routes {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  >li {
-    overflow: auto;
-    padding: 10px 5px;
-    border-bottom: 1px solid $gray-lighter;
-  }
 }
 
 #map-contents {
@@ -154,7 +139,17 @@ aside {
 
 /* ルート項目 */
 
+.routes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 .route-item {
+  overflow: auto;
+  padding: 10px 5px;
+  border-bottom: 1px solid $gray-lighter;
+
   align-items: center;
   background-color: $main-color;
   &:hover {
@@ -184,26 +179,26 @@ aside {
   }
 }
 
-.route-item-edit {
+.route-name-edit {
   width: 100%;
   height: 23px;
-  .text-edit {
-    background-color: #00000000;
-    width: 100%;
-    border: solid 1px;
-    border-color: #1E90FF;
-    background: none;
-    outline: none;
-    padding: 0;
-    margin: -1px;
-    margin-left: 1px;
-    font: inherit;
-    color: inherit;
-  }
+  background-color: #00000000;
+  width: 100%;
+  border: solid 1px;
+  border-color: #1E90FF;
+  background: none;
+  outline: none;
+  padding: 0;
+
+  margin-top: -1px;
+  margin-left: -1px;
+
+  font: inherit;
+  color: inherit;
 }
 
 .label-not-yet-save {
-  display: flex;
+  display: flex !important;
   align-items: center;
   margin: 1px;
   margin-left: 4px;
@@ -232,9 +227,7 @@ aside {
 }
 
 .route-items-container {
-  flex-grow: 1;
   height: 100vh;
-  overflow-y: auto;
 }
 
 #notification-popup {

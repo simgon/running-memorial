@@ -1,4 +1,4 @@
-<li id="route-item<%= index %>" class="route-item" data-action="click->routes#clickRouteItem" data-route-id="<%= route.id %>" data-visible="<%= route.visible %>" > 
+<div id="<%= "route_item_#{route.id}" %>" class="route-item" data-action="click->routes#clickRouteItem" data-route-id="<%= route.id %>" data-visible="<%= route.visible %>">
   <%# ルート項目表示 %>
   <div class="route-display-container">
     <%# 並び替え用ドラッグハンドル %>
@@ -9,69 +9,8 @@
 
     <%# ルート項目（通常時／編集時） %>
     <div class="route-item-container">
-      <%# ルート項目（通常時） %>
-      <div class="route-item-action">
-        <%# ルート名 %>
-        <div><%= route.name %></div>
-        <%# ルート項目ボタン %>
-        <div class="route-item-btn-container">
-          <%# 表示／非表示 %>
-          <div class="action-icon eye-toggle" data-action="click->routes#clickEye">
-            <%= image_tag("eye.svg", alt: "eye", class: "eye-icon") %>
-            <%= image_tag("eye-slash.svg", alt: "eye-slash", class: "eye-slash-icon hidden") %>
-            <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon hidden") %>
-          </div>
-          <%# 編集 %>
-          <div class="action-icon" data-action="click->routes#clickEditRoute">
-            <%= image_tag("pencil.svg", alt: "pencil") %>
-          </div>
-          <%# ルート機能メニュー %>
-          <div>
-            <%# メニュー開閉ボタン %>
-            <div class="action-icon" data-action="click->routes#openRouteMenu" data-routes-target="routeMenuBtn">
-              <%= image_tag("chevron-down.svg", alt: "chevron-down", id: "route-item-action-menu-btn#{index}") %>
-            </div>
-            <%# ルート機能 %>
-            <ul id="route-item-action-menu" class="hidden" data-routes-target="routeMenu">
-              <%# 削除 %>
-              <li>
-                <%= link_to route, data: { "turbo-method": :delete, turbo_confirm: "削除します。よろしいですか？" } do %>
-                  <%= image_tag("trash.svg", alt: "trash") %>
-                  <span>削除</span>
-                <% end %>
-              </li>
-              <%# コピー %>
-              <li>
-                <%= form_with(model: route, url: "/routes/copy", method: :post) do |f| %>
-                  <%= f.hidden_field :id %>
-                  <%= button_tag(type: "submit", class: "submit-icon", data: { turbo_confirm: "コピーします。よろしいですか？" } ) do %>
-                    <%= image_tag("files.svg", alt: "files") %>
-                    <span>コピー</span>
-                  <% end %>
-                <% end %>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <%# ルート項目（編集時） %>
-      <div class="route-item-edit hidden">
-        <%= form_with(model: route) do |f| %>
-          <div class="flex-container" style="margin: -2px;">
-            <%# ルート名 %>
-            <%= f.text_field :name, class: "text-edit" %>
-            <%# 確定 %>
-            <%= button_tag(type: "submit", class: "submit-icon") do %>
-              <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
-            <% end %>
-            <%# キャンセル %>
-            <%= button_tag(type: "button", class: "submit-icon", data: { action: "click->routes#clickEditRouteCancel" }) do %>
-              <%= image_tag("x.svg", alt: "x", id: "x", style: "width: 24px;") %>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
+      <%= render "route_item", route: route %>
     </div>
   </div>
-</li>
+</div>
+

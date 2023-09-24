@@ -3,6 +3,12 @@
   <head>
     <title>RunningMemorialApp</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <%# Turboのキャッシュの無効化 %>
+    <%# <meta name="turbo-cache-control" content="no-cache"> %>
+    <%# プレビューだけ無効にする %>
+    <meta name="turbo-cache-control" content="no-preview">
+    <%# 強制リロード（window.location.reload()） %>
+    <%# <meta name="turbo-visit-control" content="reload"> %>
     <meta charset="utf-8">
 
     <%= favicon_link_tag "/assets/icon.png" %>
@@ -12,29 +18,23 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag 'common', :media => "all" %>
-
     <%= javascript_importmap_tags %>
+
     <%# Google Maps API %>
     <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>"></script>
     <%# SortableJSのCDNリンク %>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
-
-    <%= yield :js  %>
-    <%= yield :css %>
   </head>
 
   <body>
-    <% flash.each do |message_type, message| %>
-      <div class="alert alert-<%= message_type %> hidden"><%= message %></div>
-    <% end %>
-    <div id="notification-popup" class="hidden">
-      <span id="notification-message">
-        <% flash.each do |message_type, message| %>
-          <%= message %>
-        <% end %>
-      </span>
-    </div>
     <%= yield %>
+    <%# 更新後メッセージ表示 %>
+    <div id="flash">
+      <div id="notification-popup" class="hidden">
+        <span id="notification-message">
+        </span>
+      </div>
+    </div>
+    <input type="hidden" id="flash_message" name="flash_message" value="<%= flash[:success] %>">
   </body>
 </html>

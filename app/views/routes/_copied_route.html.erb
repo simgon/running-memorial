@@ -1,0 +1,5 @@
+<%# 登録したルートをdata-controller="copied_route"経由でマップに反映する %>
+<div data-controller="copied_route">
+  <input type="hidden" name="org_route_id" value="<%= org_route.id %>">
+  <input type="hidden" name="new_route_id" value="<%= route.id %>">
+</div>

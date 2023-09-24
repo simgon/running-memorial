@@ -1,0 +1,8 @@
+<div id="notification-popup" data-controller="toast">
+  <span id="notification-message">
+    <%# 成功時 %>
+    <% if notice %><%= notice %><% end %>
+    <%# エラー時 %>
+    <% if alert %><%= alert %><% end %>
+  </span>
+</div>
