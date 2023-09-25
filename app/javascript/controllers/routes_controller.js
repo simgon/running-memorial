@@ -383,7 +383,8 @@ export default class extends Controller {
 
     // アイドル状態時（マップ移動後等）
     map.addListener('idle', () => {
-      // マップ読込後にマップ操作ボタン一覧を表示
+      // マップ読込後にマップカーソルとマップ操作ボタン一覧を表示
+      document.getElementById('map-cursor').classList.remove('hidden');
       document.getElementById('map-board').classList.remove('hidden');
 
       if (!this.routeMng.selectedRoute) return;
