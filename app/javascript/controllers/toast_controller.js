@@ -1,4 +1,4 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 import { Common } from '../custom/common';
 
 // Connects to data-controller="toast"

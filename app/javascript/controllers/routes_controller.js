@@ -1,4 +1,4 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 import { Common } from '../custom/common';
 import { RouteMap, RouteManager, Route, initSortable } from '../custom/route';
 
@@ -19,13 +19,13 @@ export default class extends Controller {
     document.documentElement.style.setProperty('--vh', height / 100 + 'px');
 
     // 通知ダイアログを表示（リダイレクト時）
-    const message = document.querySelector("#flash_message").value;
+    const message = document.querySelector('#flash_message').value;
     if (message) {
       Common.showNotification(message);
     }
 
     // Turbo Frameのロード後
-    document.addEventListener("turbo:frame-load", function(event) {
+    document.addEventListener('turbo:frame-load', function(event) {
       // テキストボックスにフォーカスする
       const element = event.target.querySelector('#route_name');
       element?.focus();
@@ -44,12 +44,12 @@ export default class extends Controller {
   // **************
   // ハンバーガーメニューの開閉
   openHamburgerMenu() {
-    this.hamburgerMenuTarget.classList.toggle("collapse");
+    this.hamburgerMenuTarget.classList.toggle('collapse');
   }
 
   // オプションメニューの開閉
   openOptions(event) {
-    this.optionsMenuTarget.classList.toggle("hidden");
+    this.optionsMenuTarget.classList.toggle('hidden');
   }
 
   // ルート機能メニューの開閉
@@ -66,21 +66,21 @@ export default class extends Controller {
     // routeMenu の位置を設定
     routeMenu.style.top = `${bottom}px`;
 
-    routeMenu.classList.toggle("hidden");
+    routeMenu.classList.toggle('hidden');
   }
 
   // ドキュメント全体クリック時
   clickDocument(event) {
     // オプションメニューを閉じる
-    if (!this.optionsBtnTarget.contains(event.target) && !event.target.closest("#options-container")) {
-      this.optionsMenuTarget.classList.add("hidden");
+    if (!this.optionsBtnTarget.contains(event.target) && !event.target.closest('#options-container')) {
+      this.optionsMenuTarget.classList.add('hidden');
     }
 
     // ルート機能メニューを閉じる
     if (!this.prevRouteMenu?.contains(event.target)) {
-      this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]').nextElementSibling?.classList.add("hidden");
+      this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]').nextElementSibling?.classList.add('hidden');
 
-      if (event.target.id.includes("route-item-action-menu-btn")) {
+      if (event.target.id.includes('route-item-action-menu-btn')) {
         this.prevRouteMenu = event.target;
       }
     }
@@ -89,7 +89,7 @@ export default class extends Controller {
   // ルート一覧スクロール時
   scrollRouteInfo() {
     // ルート機能メニューを閉じる
-    this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]')?.nextElementSibling?.classList.add("hidden");
+    this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]')?.nextElementSibling?.classList.add('hidden');
   }
   
   // **************
@@ -97,36 +97,36 @@ export default class extends Controller {
   // **************
   // 新しいルートボタン押下時
   clickNewRoute() {
-    document.getElementById("btn-new-route").classList.add("hidden");
-    document.getElementById("text-new-route").classList.remove("hidden");
-    document.getElementById("route_name").focus();
+    document.getElementById('btn-new-route').classList.add('hidden');
+    document.getElementById('text-new-route').classList.remove('hidden');
+    document.getElementById('route_name').focus();
   }
 
   // キャンセル押下時
   clickNewRouteCancel() {
-    document.getElementById("btn-new-route").classList.remove("hidden");
-    document.getElementById("text-new-route").classList.add("hidden");
+    document.getElementById('btn-new-route').classList.remove('hidden');
+    document.getElementById('text-new-route').classList.add('hidden');
   }
 
   // ルート名編集ボタン押下時
   clickEditRoute(event) {
-    const routeItemAction = event.target.closest(".route-item-action");
+    const routeItemAction = event.target.closest('.route-item-action');
     const routeItemEdit = routeItemAction.nextElementSibling;
 
-    routeItemAction.classList.add("hidden");
-    routeItemEdit.classList.remove("hidden");
-    const text = routeItemEdit.querySelector(".route-name-edit");
+    routeItemAction.classList.add('hidden');
+    routeItemEdit.classList.remove('hidden');
+    const text = routeItemEdit.querySelector('.route-name-edit');
     text.focus();
     text.setSelectionRange(text.value.length, text.value.length);
   }
 
   // キャンセル押下時
   clickEditRouteCancel(event) {
-    const routeItemEdit = event.target.closest(".route-item-edit");
+    const routeItemEdit = event.target.closest('.route-item-edit');
     const routeItemAction = routeItemEdit.previousElementSibling;
 
-    routeItemEdit.classList.add("hidden");
-    routeItemAction.classList.remove("hidden");
+    routeItemEdit.classList.add('hidden');
+    routeItemAction.classList.remove('hidden');
   }
 
   // **************
@@ -383,6 +383,9 @@ export default class extends Controller {
 
     // アイドル状態時（マップ移動後等）
     map.addListener('idle', () => {
+      // マップ読込後にマップ操作ボタン一覧を表示
+      document.getElementById('map-board').classList.remove('hidden');
+
       if (!this.routeMng.selectedRoute) return;
 
       const addLineMarker = document.getElementById('add-line-marker');

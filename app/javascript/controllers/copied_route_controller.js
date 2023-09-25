@@ -1,12 +1,12 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 import { RouteManager, Route } from '../custom/route';
 
-// Connects to data-controller="copied_route"
+// Connects to data-controller='copied_route'
 export default class extends Controller {
   connect() {
     // コピールートをマップに反映する
-    const orgRouteId = document.getElementById("copied_route").querySelector('input[name="org_route_id"]')?.value;
-    const newRouteId = document.getElementById("copied_route").querySelector('input[name="new_route_id"]').value;
+    const orgRouteId = this.element.getAttribute('data-org-route-id');
+    const newRouteId = this.element.getAttribute('data-new-route-id');
 
     if (!orgRouteId || !newRouteId) return;
 

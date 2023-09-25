@@ -13,6 +13,9 @@
              locals: { route: @route } %>
 <% end %>
 
+<%# 更新ルートをdata-controller="updated_route"経由でマップを更新する %>
+<%= turbo_stream.update "updated_route", partial: "updated_route", locals: { route: @route } %>
+
 <%# renderを省略する場合 %>
 <%#= turbo_stream.update "flash", partial: "flash" %>
 <%= turbo_stream_flash %>

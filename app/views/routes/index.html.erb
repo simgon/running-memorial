@@ -29,6 +29,8 @@
           <%= turbo_frame_tag "routes-list" do %>
             <%= render @routes %>
           <% end %>
+          <%# 更新ルートをdata-controller="updated_route"経由でマップを更新する %>
+          <div id="updated_route"></div>
           <%# 削除ルートをdata-controller="deleted_route"経由でマップを更新する %>
           <div id="deleted_route"></div>
           <%# コピールートをdata-controller="copied_route"経由でマップを更新する %>
@@ -48,7 +50,7 @@
       <div id="map"></div>
       <div class="crosshair"></div>
       <%# マップ操作ボタン一覧 %>
-      <div id="map-board" class="map-board-disabled">
+      <div id="map-board" class="map-board-disabled hidden">
         <div id="marker-container">
           <%# 保存 %>
           <%= map_button("保存", id: "save-marker", img_nm: "save.svg", data_action: "click->routes#saveMarker") %>
