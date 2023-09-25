@@ -93,6 +93,43 @@ export default class extends Controller {
   }
   
   // **************
+  // 新しいルートボタン、ルート名編集ボタン
+  // **************
+  // 新しいルートボタン押下時
+  clickNewRoute() {
+    document.getElementById("btn-new-route").classList.add("hidden");
+    document.getElementById("text-new-route").classList.remove("hidden");
+    document.getElementById("route_name").focus();
+  }
+
+  // キャンセル押下時
+  clickNewRouteCancel() {
+    document.getElementById("btn-new-route").classList.remove("hidden");
+    document.getElementById("text-new-route").classList.add("hidden");
+  }
+
+  // ルート名編集ボタン押下時
+  clickEditRoute(event) {
+    const routeItemAction = event.target.closest(".route-item-action");
+    const routeItemEdit = routeItemAction.nextElementSibling;
+
+    routeItemAction.classList.add("hidden");
+    routeItemEdit.classList.remove("hidden");
+    const text = routeItemEdit.querySelector(".route-name-edit");
+    text.focus();
+    text.setSelectionRange(text.value.length, text.value.length);
+  }
+
+  // キャンセル押下時
+  clickEditRouteCancel(event) {
+    const routeItemEdit = event.target.closest(".route-item-edit");
+    const routeItemAction = routeItemEdit.previousElementSibling;
+
+    routeItemEdit.classList.add("hidden");
+    routeItemAction.classList.remove("hidden");
+  }
+
+  // **************
   // マップ上ボタン
   // **************
   // マーカー追加ボタン

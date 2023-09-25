@@ -12,5 +12,10 @@ export default class extends Controller {
     // 登録ルートを選択状態にする
     const routeItemElement = document.getElementById(`route_item_${routeId}`);
     routeItemElement.click();
+
+    // 入力テキストを非表示にして、新しいルートボタンを表示
+    document.getElementById("text-new-route").classList.add("hidden");
+    document.getElementById("route_name").value="";
+    document.getElementById("btn-new-route").classList.remove("hidden");
   }
 }

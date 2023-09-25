@@ -14,9 +14,17 @@
         <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon hidden") %>
       </div>
       <%# 編集 %>
-      <%= link_to edit_route_path(route), class: "action-icon" do %>
+      <%#= link_to edit_route_path(route), class: "action-icon" do %>
+        <%#= image_tag("pencil.svg", alt: "pencil") %>
+      <%# end%>
+      <%#
+      スマホ画面においてボタン押下時にキーボードが表示するように対応
+      単純にテキストをフォーカスしてもキーボードが表示されないため、Turbo Framesによる画面更新をやめる
+      ボタンを非表示にして、テキストを表示・フォーカスするとキーボードが表示されるのでこちらで実装
+      %>
+      <%= button_tag(type: "button", id: "btn-edit-route", class: "submit-icon", data: { action: "click->routes#clickEditRoute"}) do %>
         <%= image_tag("pencil.svg", alt: "pencil") %>
-      <% end%>
+      <% end %>
       <%# ルート機能メニュー %>
       <div>
         <%# メニュー開閉ボタン %>
@@ -47,5 +55,31 @@
         </ul>
       </div>
     </div>
+  </div>
+
+  <%# ルート項目（編集時） %>
+  <div class="route-item-edit hidden">
+    <%= turbo_frame_tag route do %>
+      <%= form_with(model: route) do |f| %>
+        <%= f.hidden_field :id, value: route.id %>
+        <div class="flex-container">
+          <%# ルート名 %>
+          <%= f.text_field :name, class: "route-name-edit" %>
+          <div class="flex-container align-items-center">
+            <%# 確定 %>
+            <%= button_tag(type: "submit", class: "submit-icon") do %>
+              <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
+            <% end %>
+            <%# キャンセル %>
+            <%#= link_to @route, class: "submit-icon" do %>
+              <%#= image_tag("x.svg", alt: "x", id: "route-regist-cancel", style: "width: 24px;") %>
+            <%# end %>
+            <%= button_tag(type: "button", class: "submit-icon", data: { action: "click->routes#clickEditRouteCancel"}) do %>
+              <%= image_tag("x.svg", alt: "x", style: "width: 24px;") %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
   </div>
 <% end %>

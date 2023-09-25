@@ -1,5 +1,39 @@
 <%# 新しいルートボタン %>
-<%= link_to new_route_path, class: "flat-button", data: { turbo_frame: "new_route" } do %>
+<%#= link_to new_route_path, class: "flat-button", data: { turbo_frame: "new_route" } do %>
+  <%#= image_tag("plus.svg", alt: "plus") %>
+  <%#= "新しいルート" %>
+<%# end %>
+
+<%#
+スマホ画面においてボタン押下時にキーボードが表示するように対応
+単純にテキストをフォーカスしてもキーボードが表示されないため、Turbo Framesによる画面更新をやめる
+ボタンを非表示にして、テキストを表示・フォーカスするとキーボードが表示されるのでこちらで実装
+%>
+<%= button_tag(type: "button", id: "btn-new-route", class: "flat-button", data: { action: "click->routes#clickNewRoute"}) do %>
   <%= image_tag("plus.svg", alt: "plus") %>
   <%= "新しいルート" %>
+<% end %>
+
+<%# ルート名入力 %>
+<%= turbo_frame_tag @route do %>
+  <%= form_with(model: @route, id: "text-new-route", class: "hidden") do |f| %>
+     <%= f.hidden_field :id, value: @route.id %>
+    <div class="flex-container">
+      <%# ルート名 %>
+      <%= f.text_field :name, class: "form-control" %>
+      <div class="flex-container align-items-center">
+        <%# 確定 %>
+        <%= button_tag(type: "submit", class: "submit-icon") do %>
+          <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
+        <% end %>
+        <%# キャンセル %>
+        <%#= link_to @route, class: "submit-icon" do %>
+          <%#= image_tag("x.svg", alt: "x", id: "route-regist-cancel", style: "width: 24px;") %>
+        <%# end %>
+        <%= button_tag(type: "button", class: "submit-icon", data: { action: "click->routes#clickNewRouteCancel"}) do %>
+          <%= image_tag("x.svg", alt: "x", style: "width: 24px;") %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 <% end %>
