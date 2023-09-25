@@ -1,11 +1,11 @@
 <%# `#routes`の先頭に登録されたrouteを追加する %>
 <%= turbo_stream.prepend "routes-list", @route %>
 
-<%# `#new_route`を"routes/new_route"に更新（新しいルートボタンに更新） %>
-<%= turbo_stream.update "new_route", partial: "routes/new_route" %>
-
 <%# 登録ルートをdata-controller="created_route"経由でマップを更新する %>
 <%= turbo_stream.update "created_route", partial: "created_route", locals: { route: @route } %>
+
+<%# `#new_route`を"routes/new_route"に更新（新しいルートボタンに更新） %>
+<%= turbo_stream.update "new_route", partial: "routes/new_route" %>
 
 <%# Flashを表示 %>
 <%= turbo_stream_flash %>
