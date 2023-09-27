@@ -28,9 +28,16 @@ body {
   width: 100%;
 }
 
+.instruction-container {
+  display: flex;
+  flex-flow: row-reverse wrap;
+  justify-content: left;
+}
+
 .image-container {
-  img {
-    max-width: 100%;
+  width: 75%;
+  video {
+    width: 100%;
     height: auto;
     display: block;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -46,19 +53,12 @@ body {
   text-align: center;
 }
 
-.instruction-container {
-  display: flex;
-  flex-flow: row-reverse wrap;
-  justify-content: left;
-}
-
 .instruction {
+  flex-grow: 1;
+  flex-basis: max-content;
   background-color: #f7f7f7;
   padding: 10px;
   border: 1px solid #ddd;
-
-  flex-grow: 1;
-  flex-basis: max-content;
 
   p {
     font-weight: bold;
@@ -69,6 +69,12 @@ body {
   li {
     margin-bottom: 5px;
     list-style: none;
+  }
+}
+
+@media (max-width: 952px) {
+  .image-container {
+    width: 100%;
   }
 }
 
