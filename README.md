@@ -1,27 +1,45 @@
 # ランニング・メモリアル（ルート記録サイト）
+https://running-memorial.com/
+
+ランニングルートを作成・記録できるアプリ。<br>
+マップ上にマーカーを設置してルートを作成する。複数のルートを視覚的に比較もできる。
+
 ## 画面
-![紹介_ルート作成_900](https://github.com/simgon/running-memorial/assets/23553796/b71a2f6e-dd0a-4178-9538-1c7443f19c41)
-![紹介_ルート表示_900](https://github.com/simgon/running-memorial/assets/23553796/0fc0ddaf-a33a-4c38-ad59-a2c82e1710b3)
-## アプリ仕様
-### マップ上にルートを記録するアプリ
-- ランニングルート等を記録する
-- マップ上にマーカーを設置して、ルートを作成する
+![map1](https://github.com/simgon/running-memorial/assets/23553796/102d296b-93b2-4d47-bb8d-7e050b9bb8a9)
+![map2](https://github.com/simgon/running-memorial/assets/23553796/565123c6-3bf1-4251-854c-dca23b7f0ae9)
+
+## 使用技術
+- プログラミング言語
+  - Ruby 3.1.4
+  - JavaScript
+- フレームワーク
+  - Ruby on Rails 7.0.4
+- ライブラリ
+  - Hotwire(Turbo, Stimulus)
+- API
+  - Google Maps API
+- デプロイメント
+  - Render.com
+
+## アプリの使用方法
 ### マップ操作
 - マーカーを追加
   - 追加ボタンをクリック
   - マップ上をクリック
-- 直前に追加したマーカーを１つ戻す
+- 直前の操作を取り消し
   - 1つ戻すボタンをクリック
 - 全てのマーカーを削除
   - クリアボタンをクリック
 - マーカーを移動
   - マーカーをドラッグ
 - ルート線上にマーカーを追加
+  - ルート上追加ボタンをクリック
   - PC
     - ルート線上を右クリック
   - スマホ
     - ルート線上をロングタップ
 - マーカーを削除
+  - 削除ボタンをクリック
   - PC
     - マーカーを右クリック
   - スマホ
