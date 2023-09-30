@@ -13,18 +13,6 @@
         <%= image_tag("eye-slash.svg", alt: "eye-slash", class: "eye-slash-icon hidden") %>
         <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon hidden") %>
       </div>
-      <%# 編集 %>
-      <%#= link_to edit_route_path(route), class: "action-icon" do %>
-        <%#= image_tag("pencil.svg", alt: "pencil") %>
-      <%# end%>
-      <%#
-      スマホ画面においてボタン押下時にキーボードが表示するように対応
-      単純にテキストをフォーカスしてもキーボードが表示されないため、Turbo Framesによる画面更新をやめる
-      ボタンを非表示にして、テキストを表示・フォーカスするとキーボードが表示されるのでこちらで実装
-      %>
-      <%= button_tag(type: "button", id: "btn-edit-route", class: "submit-icon", data: { action: "click->routes#clickEditRoute"}) do %>
-        <%= image_tag("pencil.svg", alt: "pencil") %>
-      <% end %>
       <%# ルート機能メニュー %>
       <div>
         <%# メニュー開閉ボタン %>
@@ -33,6 +21,21 @@
         </div>
         <%# ルート機能 %>
         <ul id="route-item-action-menu" class="hidden" data-routes-target="routeMenu">
+          <%# 編集 %>
+          <li>
+            <%#
+              スマホ画面においてボタン押下時にキーボードが表示するように対応
+              単純にテキストをフォーカスしてもキーボードが表示されないため、Turbo Framesによる画面更新をやめる
+              ボタンを非表示にして、テキストを表示・フォーカスするとキーボードが表示されるのでこちらで実装
+            %>
+            <%#= link_to edit_route_path(route), class: "action-icon" do %>
+              <%#= image_tag("pencil.svg", alt: "pencil") %>
+            <%# end%>
+            <%= button_tag(type: "button", id: "btn-edit-route", class: "submit-icon", data: { action: "click->routes#clickEditRoute"}) do %>
+              <%= image_tag("pencil.svg", alt: "pencil") %>
+              <span>編集</span>
+            <% end %>
+          </li>
           <%# 削除 %>
           <li>
             <%= form_with(model: route, url: route_path(route), method: :delete) do |f| %>
@@ -64,18 +67,18 @@
         <%= f.hidden_field :id, value: route.id %>
         <div class="flex-container">
           <%# ルート名 %>
-          <%= f.text_field :name, class: "route-name-edit" %>
-          <div class="flex-container align-items-center">
+          <%= f.text_field :name, class: "route-name-edit", style: "margin-right: 10px;" %>
+          <div class="flex-container align-items-center" style="gap: 10px;">
             <%# 確定 %>
             <%= button_tag(type: "submit", class: "submit-icon") do %>
-              <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
+              <%= image_tag("check.svg", alt: "check") %>
             <% end %>
             <%# キャンセル %>
             <%#= link_to @route, class: "submit-icon" do %>
               <%#= image_tag("x.svg", alt: "x", id: "route-regist-cancel", style: "width: 24px;") %>
             <%# end %>
             <%= button_tag(type: "button", class: "submit-icon", data: { action: "click->routes#clickEditRouteCancel"}) do %>
-              <%= image_tag("x.svg", alt: "x", style: "width: 24px;") %>
+              <%= image_tag("x.svg", alt: "x", style: "width: 12px;margin: 0 2px;") %>
             <% end %>
           </div>
         </div>
