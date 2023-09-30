@@ -237,7 +237,7 @@ export default class extends Controller {
       }
     });
 
-    // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
+    // 同一地点で重なったルート線と距離ラベルの重複を排除
     this.routeMng.displayMostRelevantRoute();
 
     this.routeMng.selectedDotMarker = null;
@@ -374,7 +374,7 @@ export default class extends Controller {
             route.disableRoute(route.routeId === this.routeMng.selectedRoute?.routeId ? false : true);
           });
 
-          // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
+          // 同一地点で重なったルート線と距離ラベルの重複を排除
           this.routeMng.displayMostRelevantRoute();
         }, 100);
         zoomChanged = false;
@@ -495,7 +495,7 @@ export default class extends Controller {
             route.disableRoute(true);
           });
 
-          // 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
+          // 同一地点で重なったルート線と距離ラベルの重複を排除
           this.routeMng.displayMostRelevantRoute();
         }, 100);
       })

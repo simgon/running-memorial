@@ -383,14 +383,16 @@ export class RouteManager {
   }
 
   /**
-   * 重なったルート線の場合、ルート色を考慮して１つのルート線のみを表示
+   * 同一地点で重なったルート線と距離ラベルの重複を排除（ルート色を考慮して１つのルート線のみを表示）
    */
   displayMostRelevantRoute() {
+    // ルート線の重複を非表示にする
     Object.values(this.routes).filter(route => {
-      // 表示ルートのみに絞り込み
+      // 「ルート表示」、「ルート表示(ルートのみ)」のみに絞り込む
       let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute("data-visible");
-      return visible != Route.INVISIBLE
+      return visible == Route.VISIBLE_ALL || visible == Route.VISIBLE_ROUTE;
     }).forEach((route, index, routeArray) => {
+      // ルート線同士を比較
       route.routeLines.forEach(line => {
         let lineSt = line.getPath().getAt(0);
         let lineEd = line.getPath().getAt(1);
@@ -400,18 +402,39 @@ export class RouteManager {
             let lineStOther = lineOther.getPath().getAt(0);
             let lineEdOther = lineOther.getPath().getAt(1);
 
+            // 同一地点のルート線の場合、片方のルート線を非表示にする
             if (lineSt.equals(lineStOther) && lineEd.equals(lineEdOther)) {
-              if (line.strokeColor != '#FF0000') {
-                line.setOptions({ strokeColor: '#00000000' });
-              }
-              if (lineOther.strokeColor != '#FF0000') {
-                lineOther.setOptions({ strokeColor: '#FF000055' });
-              }
+              line.setMap(null);
             }
           });
         });
       });
     });
+
+    // 距離ラベルの重複を非表示にする
+    Object.values(this.routes).filter(route => {
+      // 「ルート表示」のみに絞り込む
+      let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute("data-visible");
+      return visible == Route.VISIBLE_ALL;
+    }).forEach((route, index, routeArray) => {
+      // 距離ラベル同士を比較
+      route.distanceLabels.forEach(label => {
+        routeArray.slice(index + 1).forEach(routeOther => {
+          routeOther.distanceLabels.forEach(labelOther => {
+            // 同一地点の距離ラベルの場合、片方の距離ラベルを非表示にする
+            if (label.position.equals(labelOther.position)) {
+              label.setMap(null);
+            }
+          });
+        });
+      });
+    });
+
+    // 選択中ルートを表示
+    if (this.selectedRoute) {
+      let visible = document.querySelector(`[data-route-id="${this.selectedRoute.routeId}"]`).getAttribute("data-visible");
+      this.selectedRoute.displayMarkers(visible);
+    }
   }
 }
 
