@@ -1,7 +1,7 @@
 class RoutesController < ApplicationController
   before_action :set_route, only: %i[ show edit update destroy ]
 
-  # GET /cats
+  # GET /routes
   # Route一覧を表示
   def index
     # クッキーのユーザーIDからユーザーを取得
@@ -16,6 +16,9 @@ class RoutesController < ApplicationController
       set_cookies_user_id(@user)
     end
 
+    # 最終ログイン日時を更新
+    @user.update_last_login_at
+
     # Route情報を取得
     @routes = Route.where(user_id: @user.id).order(:order, created_at: :desc)
     @route = Route.new
@@ -27,20 +30,20 @@ class RoutesController < ApplicationController
     end
   end
 
-  # GET /cats/1
+  # GET /routes/1
   def show
   end
 
-  # GET /cats/new
+  # GET /routes/new
   def new
     @route = Route.new
   end
 
-  # GET /cats/1/edit
+  # GET /routes/1/edit
   def edit
   end
 
-  # POST /cats
+  # POST /routes
   # Route新規登録
   def create
     @route = Route.new(route_params_create)
@@ -56,7 +59,7 @@ class RoutesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /cats/1
+  # PATCH/PUT /routes/1
   # Route情報更新
   def update
     if @route.update(route_params_update)
@@ -69,7 +72,7 @@ class RoutesController < ApplicationController
     end
   end
 
-  # DELETE /cats/1
+  # DELETE /routes/1
   # Route情報削除
   def destroy
     @route.destroy

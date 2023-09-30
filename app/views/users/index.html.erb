@@ -7,6 +7,8 @@
           <tr>
             <th>ID</th>
             <th>ルート数</th>
+            <th>最終ログイン日時</th>
+            <th>最終ログイン日時（日本時間）</th>
             <th>ユーザー変更可否</th>
             <th>ユーザートークン</th>
             <th>管理者</th>
@@ -18,6 +20,12 @@
           <tr>
             <td><%= user.id %></td>
             <td><%= user.routes.count %></td>
+            <td><%= user.last_login_at %></td>
+            <td>
+              <% if user.last_login_at.present? %>
+                <%= user.last_login_at.in_time_zone("Tokyo") %>
+              <% end %>
+            </td>
             <td><%= user.allow_session_user_id_setting? %></td>
             <td><%= user.user_token %></td>
             <td><%= user.admin? %></td>

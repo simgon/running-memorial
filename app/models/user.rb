@@ -14,6 +14,11 @@ class User < ApplicationRecord
     SecureRandom.urlsafe_base64
   end
 
+  # 最終ログイン日時を更新
+  def update_last_login_at
+    self.update(last_login_at: Time.current)
+  end
+
   private
 
     # ユーザートークンを作成および代入する
