@@ -22,17 +22,17 @@
     <div class="flex-container">
       <%# ルート名 %>
       <%= f.text_field :name, class: "form-control" %>
-      <div class="flex-container align-items-center">
+      <div class="flex-container align-items-center" style="gap: 10px; margin: 0 10px;">
         <%# 確定 %>
         <%= button_tag(type: "submit", class: "submit-icon") do %>
-          <%= image_tag("check.svg", alt: "check", style: "width: 24px;") %>
+          <%= image_tag("check.svg", alt: "check") %>
         <% end %>
         <%# キャンセル %>
         <%#= link_to @route, class: "submit-icon" do %>
           <%#= image_tag("x.svg", alt: "x", id: "route-regist-cancel", style: "width: 24px;") %>
         <%# end %>
         <%= button_tag(type: "button", class: "submit-icon", data: { action: "click->routes#clickNewRouteCancel"}) do %>
-          <%= image_tag("x.svg", alt: "x", style: "width: 24px;") %>
+          <%= image_tag("x.svg", alt: "x", style: "width: 12px;margin: 0 2px;") %>
         <% end %>
       </div>
     </div>
