@@ -22,6 +22,10 @@ body {
   }
 }
 
+.heading-text {
+  line-height: 1.5;
+}
+
 .home-container {
   display: flex;
   flex-direction: column;
@@ -83,6 +87,10 @@ body {
 }
 
 @media (max-width: 767px) {
+  .heading-text {
+    font-size: 28px;
+  }
+
   .title {
     padding: 5px;
 
