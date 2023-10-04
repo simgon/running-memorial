@@ -27,7 +27,27 @@
   </head>
 
   <body>
+    <%# ヘッダー %>
+    <% if content_for?(:header_display) && yield(:header_display) %>
+      <div class="title navbar navbar-default navbar-fixed-top">
+        <div style="flex: 1;">
+          <%= link_to "/", style: "text-decoration: none;" do %>
+            <span id="logo-icon"><%= image_tag("icon_t.png") %></span>
+            <span id="title-icon"><%= image_tag("title_t.png") %></span>
+          <% end %>
+        </div>
+
+        <% if logged_in? %>
+          <%= link_to "ログアウト", logout_path, data: { "turbo-method": :delete }, class: "btn btn-danger", style: "margin-right: 10px;" %>
+        <% else %>
+          <%= link_to "ログイン", login_path, class: "btn btn-primary", style: "margin-right: 10px;" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# コンテンツ %>
     <%= yield %>
+
     <%# 更新後メッセージ表示 %>
     <div id="flash">
       <div id="notification-popup" class="hidden">
@@ -36,5 +56,7 @@
       </div>
     </div>
     <input type="hidden" id="flash_message" name="flash_message" value="<%= flash[:success] %>">
+
+    <%#= debug(params) if Rails.env.development? %>
   </body>
 </html>

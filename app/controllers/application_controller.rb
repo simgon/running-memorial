@@ -1,8 +1,5 @@
 class ApplicationController < ActionController::Base
-
-  def current_user
-    @current_user ||= User.find_by_id(get_cookies_user_id)
-  end
+  include SessionsHelper
 
   # クッキーから値を取得
   def get_cookies_value(key)

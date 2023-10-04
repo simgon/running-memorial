@@ -1,20 +1,22 @@
 class RoutesController < ApplicationController
-  before_action :set_route, only: %i[ show edit update destroy ]
+  before_action :set_route, only: [:show, :edit, :update, :destroy]
+  before_action :set_user, only: [:index, :create]
 
   # GET /routes
   # Route一覧を表示
   def index
-    # クッキーのユーザーIDからユーザーを取得
-    @user = User.find_by(id: get_cookies_user_id)
-
     # ユーザーを取得できなかった場合
     if !@user
       # ユーザーを新規作成
       @user = User.new
+      @user.password = "tmp_password"
       @user.save
-      # クッキーにユーザーIDをセット
-      set_cookies_user_id(@user)
+
+      cookies.delete(:user_id)
+      cookies.delete(:remember_token)
     end
+
+    cookies.permanent.encrypted[:user_token] = @user.user_token
 
     # 最終ログイン日時を更新
     @user.update_last_login_at
@@ -47,7 +49,7 @@ class RoutesController < ApplicationController
   # Route新規登録
   def create
     @route = Route.new(route_params_create)
-    @route.user_id = get_cookies_user_id
+    @route.user_id = @user.id
     @route.order = 0
 
     if @route.save
@@ -137,6 +139,19 @@ class RoutesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_route
       @route = Route.find(params[:id])
+    end
+
+    def set_user
+      @user = current_user
+
+      # 未ログインの場合
+      if !@user
+        # ユーザートークンが保持されている場合
+        if (user_token = cookies.encrypted[:user_token])
+          # ユーザートークンからユーザーを取得
+          @user = User.find_by(user_token: user_token)
+        end
+      end
     end
 
     # ルート登録時のストロングパラメータ

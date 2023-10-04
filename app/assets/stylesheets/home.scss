@@ -30,7 +30,7 @@ body {
 
 .instruction-container {
   display: flex;
-  flex-flow: row-reverse wrap;
+  flex-flow: row-reverse;
   justify-content: left;
 }
 
@@ -73,6 +73,10 @@ body {
 }
 
 @media (max-width: 952px) {
+  .instruction-container {
+    flex-flow: row-reverse wrap;
+  }
+
   .image-container {
     width: 100%;
   }

@@ -31,24 +31,45 @@
     <%#= link_to "/", onclick: "location.href='/'" do %>
     <%= link_to(root_path) do %>
       <div class="options-item">
-        <span class="option-item"><%= image_tag("house.svg", alt: "house") %></span>
+        <span class="option-item" style="width:25px;text-align:center;"><%= image_tag("house.svg", alt: "house") %></span>
         <span class="option-item-margin"></span>
         <span class="option-item">ホーム</span>
       </div>
     <% end %>
   </li>
-  <hr>
   <%# ユーザートークン %>
   <li>
     <div class="options-item">
-      <span class="option-item">ID</span>
+      <span class="option-item" style="width:25px;text-align:center;">ID</span>
       <span class="option-item-margin"></span>
-      <span class="option-item" style="width: 100%;"><%= @user.user_token %></span>
+      <span class="option-item"><%= @user.user_token %></span>
+      <span class="option-item-margin"></span>
       <span class="option-item">
         <%= button_tag(id: "copy-user-token", type: "submit", class: "submit-icon", style: "margin-left: 5px;", data: { action: "click->routes#clickCopyUserToken", "user-token": @user.user_token }) do %>
           <%= image_tag("clipboard.svg", alt: "clipboard") %>
         <% end %>
       </span>
     </div>
+  </li>
+  <hr>
+  <%# ログイン／ログアウト %>
+  <li>
+    <% if logged_in? %>
+      <%= link_to logout_path, data: { "turbo-method": :delete } do %>
+        <div class="options-item">
+          <span class="option-item" style="width:25px;text-align:center;"><%= image_tag("logout.svg", alt: "logout") %></span>
+          <span class="option-item-margin"></span>
+          <span class="option-item">ログアウト</span>
+        </div>
+      <% end %>
+    <% else %>
+      <%= link_to login_path do %>
+        <div class="options-item">
+          <span class="option-item" style="width:25px;text-align:center;"><%= image_tag("login.svg", alt: "login") %></span>
+          <span class="option-item-margin"></span>
+          <span class="option-item">ログイン</span>
+        </div>
+      <% end %>
+    <% end %>
   </li>
 </ul>

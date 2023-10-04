@@ -1,18 +1,12 @@
-<div class="title navbar navbar-default navbar-fixed-top">
-  <div style="flex: 1;">
-    <span id="logo-icon">
-      <%= image_tag("icon_t.png") %>
-    </span>
-    <span id="title-icon">
-      <%= image_tag("title_t.png") %>
-    </span>
-  </div>
-  <%= link_to("ルート作成を開始する", routes_url, class: "btn btn-danger", style: "font-weight: bold;") %>
-  <%# button_tag 'ルート作成を開始する', type: 'button', class: "btn btn-danger", style: "font-weight: bold;", onclick: "location.href='/routes'" %>
-</div>
+<% provide(:header_display, true) %>
 
-<div class="flex-container" style="margin-top: 50px;">
+<div class="flex-container" style="background-color: #f7f7f7;">
   <div class="home-container">
+    <div style="text-align: center; padding-bottom: 30px;">
+      <h1 style="line-height: 1.5;">ランニングの思い出を残そう</h1>
+      <%= link_to("ルート作成を開始する", routes_url, class: "btn btn-danger btn-lg", style: "font-weight: bold;") %>
+    </div>
+
     <div class="instruction-container">
       <div class="image-container">
         <div class="caption">ルート作成〜ルート保存</div>
@@ -70,6 +64,13 @@
               <li>マーカーをロングタップ</li>
             </ul>
           </li>
+        </ul>
+
+        <h2>その他</h2>
+        <p>保存データについて</p>
+        <ul>
+          <li>作成したルート情報を永続的に保存するにはアカウントを作成してログインしてください。</li>
+          <li>未ログイン状態においてもCookie情報が削除されない限り、ルート情報は保持されます。</li>
         </ul>
       </div>
     </div>
