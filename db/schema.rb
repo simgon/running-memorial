@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_02_113109) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_07_063923) do
   create_table "locations", force: :cascade do |t|
     t.decimal "lat_loc"
     t.decimal "lon_loc"
@@ -41,6 +41,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_02_113109) do
     t.string "email"
     t.string "password_digest"
     t.string "remember_digest"
+    t.string "activation_digest"
+    t.boolean "activated", default: false
+    t.datetime "activated_at"
+    t.string "reset_digest"
+    t.datetime "reset_sent_at"
   end
 
   add_foreign_key "locations", "routes"

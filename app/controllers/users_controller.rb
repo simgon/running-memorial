@@ -13,7 +13,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    # ユーザートークンが保持されている場合
+    # ユーザートークンが保持されている場合（一度でもマップ画面を開いていた場合）
     if (user_token = cookies.encrypted[:user_token])
       # ユーザートークンからユーザーを取得
       @user = User.find_by(user_token: user_token)
@@ -21,17 +21,27 @@ class UsersController < ApplicationController
 
     # ユーザーが存在しない または emailが設定済の場合
     if @user.nil? || @user.email.present?
+      # ユーザーを新規作成
       @user = User.new(user_params_create)
     else
-      # ユーザートークンを引き継ぐ
-      @user.update(user_params_create)
+      # ユーザーを更新（ユーザートークンを引き継ぐ）
+      @user.attributes = user_params_create
     end
 
+    # 有効化トークンとダイジェストを作成および代入する
+    @user.create_activation_digest
+
     if @user.save
-      reset_session
-      log_in @user
-      flash[:success] = "ようこそ"
-      redirect_to routes_url
+      # 確認メール送信
+      @user.send_activation_email
+      flash[:success] = "アカウントを有効にするには、メールをご確認ください。"
+
+      # 一度もマップ画面を開いていない場合、ユーザートークンをセット
+      if cookies.permanent.encrypted[:user_token].blank?
+        cookies.permanent.encrypted[:user_token] = @user.user_token
+      end
+      
+      redirect_to root_url
     else
       render 'new', status: :unprocessable_entity
     end

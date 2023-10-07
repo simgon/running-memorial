@@ -1,0 +1,7 @@
+<h1>メールアドレスを確認</h1>
+
+<p>
+ランニング・メモリアルのアカウントを有効化するには、メッセージ内のリンクをクリックしてメールアドレスを確認してください。
+</p>
+
+<%= link_to "メールアドレスを確認", edit_account_activation_url(@user.activation_token, email: @user.email) %>

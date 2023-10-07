@@ -1,5 +1,9 @@
 <% provide(:header_display, true) %>
 
+<% flash.each do |message_type, message| %>
+  <%= content_tag(:div, message, class: "alert alert-#{message_type}", style: "margin-bottom: 0;") %>
+<% end %>
+
 <div class="flex-container" style="background-color: #f7f7f7;">
   <div class="home-container">
     <div style="text-align: center; padding-bottom: 30px;">

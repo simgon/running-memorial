@@ -5,11 +5,17 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by(email: params[:session][:email].downcase)
     if user && user.authenticate(params[:session][:password])
-      forwarding_url = session[:forwarding_url]
-      reset_session
-      remember user
-      log_in user
-      redirect_to forwarding_url || routes_url
+      if user.activated?
+        forwarding_url = session[:forwarding_url]
+        reset_session
+        remember user
+        log_in user
+        redirect_to forwarding_url || routes_url
+      else
+        message  = "アカウントが有効化されていません。メールをご確認ください。"
+        flash[:warning] = message
+        redirect_to root_url
+      end
     else
       flash.now[:danger] = "メールアドレスまたはパスワードが間違っています"
       # エラーメッセージを作成する

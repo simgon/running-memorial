@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  attr_accessor :remember_token
+  attr_accessor :remember_token, :activation_token, :reset_token
   has_many :routes, dependent: :destroy
   before_create :create_user_token
   before_save { self.email = email.downcase if email.present? }
@@ -37,9 +37,16 @@ class User < ApplicationRecord
   end
 
   # 渡されたトークンがダイジェストと一致したらtrueを返す
-  def authenticated?(remember_token)
-    return nil unless remember_digest || remember_token
-    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  # def authenticated?(remember_token)
+  #   return nil unless remember_digest || remember_token
+  #   BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  # end
+
+  # 渡されたトークンがダイジェストと一致したらtrueを返す
+  def authenticated?(attribute, token)
+    digest = send("#{attribute}_digest")
+    return false if digest.nil?
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   # ユーザーのログイン情報を破棄する
@@ -52,10 +59,45 @@ class User < ApplicationRecord
     update_attribute(:last_login_at, Time.current)
   end
 
+  # アカウントを有効にする
+  def activate
+    update_attribute(:activated,    true)
+    update_attribute(:activated_at, Time.zone.now)
+  end
+
+  # 有効化用のメールを送信する
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
+  end
+
+  # 有効化トークンとダイジェストを作成および代入する
+  def create_activation_digest
+    self.activation_token  = User.new_token
+    self.activation_digest = User.digest(activation_token)
+  end
+
+  # パスワード再設定の属性を設定する
+  def create_reset_digest
+    self.reset_token = User.new_token
+    update_attribute(:reset_digest,  User.digest(reset_token))
+    update_attribute(:reset_sent_at, Time.zone.now)
+  end
+
+  # パスワード再設定のメールを送信する
+  def send_password_reset_email
+    UserMailer.password_reset(self).deliver_now
+  end
+
+  # パスワード再設定の期限が切れている場合はtrueを返す
+  def password_reset_expired?
+    reset_sent_at < 2.hours.ago
+  end
+
   private
 
     # ユーザートークンを作成および代入する
     def create_user_token
       self.user_token = User.new_token
     end
+
 end

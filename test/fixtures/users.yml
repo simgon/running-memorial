@@ -2,6 +2,9 @@ user1:
   user_token: user-token1
   allow_session_user_id_setting: true
   admin: true
+  password_digest: <%= User.digest('password') %>
+  activated: true
+  activated_at: <%= Time.zone.now %>
 user2:
   user_token: user-token2
 user3:
