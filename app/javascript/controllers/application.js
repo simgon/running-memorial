@@ -18,7 +18,7 @@ document.addEventListener('turbo:load', function(event) {
   // }
 
   // videoの再生
-  document.querySelectorAll('video').forEach(video => {
-    video.play();
-  });
+  // document.querySelectorAll('video').forEach(video => {
+  //   video.play();
+  // });
 });

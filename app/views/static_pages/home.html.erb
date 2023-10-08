@@ -14,16 +14,20 @@
     <div class="instruction-container">
       <div class="image-container">
         <div class="caption">ルート作成〜ルート保存</div>
+        <%# WebKitにおける動画の挙動の制御がうまくできなかったので、gif画像とする %>
         <%# autoplayにはせずに'turbo:load'イベント内（application.js）にて再生する(iOSだとTurboの影響で再生されないのため。（リロードすれば再生はされる）) %>
         <%# <video class="video" autoplay loop muted playsinline> %>
-        <video class="video" loop muted playsinline>
+        <%# <video class="video" loop muted playsinline>
           <source src="/assets/introduction_route_create.mp4" type="video/mp4">
-        </video>
+        </video> %>
+        <%= image_tag("introduction_route_create.gif") %>
+
         <div class="caption">ルート表示・非表示</div>
         <%# <video class="video" autoplay loop muted playsinline> %>
-        <video class="video" loop muted playsinline>
+        <%# <video class="video" loop muted playsinline>
           <source src="/assets/introduction_route_display.mp4" type="video/mp4">
-        </video>
+        </video> %>
+        <%= image_tag("introduction_route_display.gif") %>
       </div>
       
       <div class="instruction">
