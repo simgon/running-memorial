@@ -1,6 +1,8 @@
 class RoutesController < ApplicationController
+  MAX_ROUTE = 10;          # 登録ルート上限数
+
   before_action :set_route, only: [:show, :edit, :update, :destroy]
-  before_action :set_user, only: [:index, :create]
+  before_action :set_user, only: [:index, :create, :copy]
 
   # GET /routes
   # Route一覧を表示
@@ -48,6 +50,12 @@ class RoutesController < ApplicationController
   # POST /routes
   # Route新規登録
   def create
+    # ルート上限数チェック
+    if invalid_create_route
+      flash.now.notice = "ルート数が上限(#{MAX_ROUTE}ルート)に達しました。"
+      return
+    end
+
     @route = Route.new(route_params_create)
     @route.user_id = @user.id
     @route.order = 0
@@ -85,6 +93,12 @@ class RoutesController < ApplicationController
 
   # Route情報コピー新規登録
   def copy
+    # ルート上限数チェック
+    if invalid_create_route
+      flash.now.notice = "ルート数が上限(#{MAX_ROUTE}ルート)に達しました。"
+      return
+    end
+    
     # コピー元のRouteを取得
     @org_route = Route.find(params[:route][:id])
 
@@ -162,5 +176,10 @@ class RoutesController < ApplicationController
     # ルート登録時のストロングパラメータ
     def route_params_update
       params.require(:route).permit(:name)
+    end
+
+    # ルート上限数チェック。無効な場合、true
+    def invalid_create_route
+      return Route.where(user_id: @user.id).count >= MAX_ROUTE && !@user.admin
     end
 end

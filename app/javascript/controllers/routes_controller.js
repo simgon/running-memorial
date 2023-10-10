@@ -97,6 +97,16 @@ export default class extends Controller {
   // **************
   // 新しいルートボタン押下時
   clickNewRoute() {
+    // ルート一覧を取得
+    const listItems = document.getElementById('routes').getElementsByClassName('route-item');
+    // admin有無
+    const admin = document.querySelector("#admin")?.value == 'true';
+    // ルート上限数チェック
+    if (listItems.length >= RouteManager.MAX_ROUTE && !admin) {
+      Common.showNotification(`ルート数が上限(${RouteManager.MAX_ROUTE}ルート)に達しました。`);
+      return;
+    }
+
     document.getElementById('btn-new-route').classList.add('hidden');
     document.getElementById('text-new-route').classList.remove('hidden');
     document.getElementById('route_name').focus();

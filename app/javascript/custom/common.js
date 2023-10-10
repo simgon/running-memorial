@@ -75,7 +75,11 @@ export class Common {
       .then(response => response.json())
       .then(data => {
         // console.log(data);
-        if (message) Common.showNotification(message);
+        if (data.result == 'Success') {
+          if (message) Common.showNotification(message);
+        } else {
+          if (data.message) Common.showNotification(data.message);
+        }
       })
       .catch(error => console.error(error));
   }

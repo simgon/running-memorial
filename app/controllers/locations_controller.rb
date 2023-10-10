@@ -1,4 +1,6 @@
 class LocationsController < ApplicationController
+  MAX_ROUTE_MARKER = 100;  # 登録ルートマーカー上限数
+
   # Routeに紐づくLocation情報を取得
   def show
     @route = Route.find(params[:id])
@@ -14,6 +16,13 @@ class LocationsController < ApplicationController
   def create
     route_param = params[:route_param]
     @route = Route.find(route_param[:routeId])
+    user = User.find(@route.user_id)
+
+    # ルート地点上限数チェック
+    if route_param["locations"].count > MAX_ROUTE_MARKER && !user.admin
+      render json: { result: "Failure", message: "ルート地点数が上限(#{MAX_ROUTE_MARKER}地点)に達しました。" }
+      return
+    end
 
     # トランザクションを開始
     ActiveRecord::Base.transaction do
@@ -30,10 +39,10 @@ class LocationsController < ApplicationController
         end
       rescue => e
         puts "エラーが発生しました: #{e.message}"
-        render json: { message: 'Failure' }
+        render json: { result: "Failure" }
       end
     end
 
-    render json: { message: 'Success' }
+    render json: { result: "Success" }
   end
 end

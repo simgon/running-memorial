@@ -66,6 +66,11 @@ export class RouteMap extends google.maps.Map {
  * RouteManagerクラス
  */
 export class RouteManager {
+  // 登録ルート上限数
+  static MAX_ROUTE = 10;
+  // 登録ルートマーカー上限数
+  static MAX_ROUTE_MARKER = 100;
+
   constructor(map) {
     this.map = map;
     this.routes = {};               // ルート一覧を保持
@@ -86,6 +91,15 @@ export class RouteManager {
   addMarker(position) {
     // ルート未選択の場合
     if (!this.selectedRoute) return;
+
+    // admin有無
+    const admin = document.querySelector("#admin")?.value == 'true';
+    // ルート地点上限数チェック
+    if (this.selectedRoute.dotMarkers.length >= RouteManager.MAX_ROUTE_MARKER && !admin) {
+      Common.showNotification(`ルート地点数が上限(${RouteManager.MAX_ROUTE_MARKER}地点)に達しました。`);
+      return;
+    }
+
     // マーカー追加
     this.selectedRoute.addMarker(position);
   }
@@ -96,6 +110,7 @@ export class RouteManager {
   addMarkerOnLine(position) {
     // ルート未選択の場合
     if (!this.selectedRoute || !this.selectedRouteLine) return;
+
     // ルート上にマーカー追加
     this.selectedRoute.addMarkerOnLine(this.selectedRouteLine, position);
     this.selectedRouteLine = null;
@@ -505,6 +520,14 @@ export class Route {
    * ルート線上にマーカーを追加
    */
   addMarkerOnLine(routeLine, position, options = {pushUndo: true}) {
+    // admin有無
+    const admin = document.querySelector("#admin")?.value == 'true';
+    // ルート地点上限数チェック
+    if (this.dotMarkers.length >= RouteManager.MAX_ROUTE_MARKER && !admin) {
+      Common.showNotification(`ルート地点数が上限(${RouteManager.MAX_ROUTE_MARKER}地点)に達しました。`);
+      return;
+    }
+
     const routeId = routeLine.customId.split('-')[0];
     const routeLineIdx = routeLine.customId.split('-')[1];
 
