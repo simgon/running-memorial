@@ -76,6 +76,11 @@ body {
   }
 }
 
+.disable-click {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 @media (max-width: 952px) {
   .instruction-container {
     flex-flow: row-reverse wrap;

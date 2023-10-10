@@ -31,6 +31,21 @@
       </div>
       
       <div class="instruction">
+        <div style="display: flex; justify-content: space-evenly; margin-top:20px;">
+          <%= link_to "/", class: "btn btn-default", style: "width:115px; height: 40px; background-color:black; color:white; display: flex; align-items: center; gap: 5px;" do %>
+            <%= image_tag("browser-chrome.svg") %>
+            <span>ブラウザ版</span>
+          <% end %>
+
+          <%= link_to "/", class: "disable-click" do %>
+            <%= image_tag("app_store.png", style: "height:40px;") %>
+          <% end %>
+
+          <%= link_to "/", class: "disable-click" do %>
+            <%= image_tag("google_play.png", style: "height:40px;") %>
+          <% end %>
+        </div>
+
         <h2>操作方法</h2>
         <p>マーカーを追加</p>
         <ul>
@@ -81,7 +96,12 @@
         <p>保存データについて</p>
         <ul>
           <li>作成したルート情報を永続的に保存するにはアカウントを作成してログインしてください。</li>
-          <li>未ログイン状態においてもCookie情報が削除されない限り、ルート情報は保持されます。</li>
+          <li>未ログイン状態においてもルート情報は保持されますが、Cookie情報の削除等でルート情報が削除される可能性があります。</li>
+        </ul>
+        <p>ルート数とルート地点数の上限について</p>
+        <ul>
+          <li>ルート数の上限：１０ルートまで</li>
+          <li>ルート地点数の上限：１００地点まで</li>
         </ul>
       </div>
     </div>
