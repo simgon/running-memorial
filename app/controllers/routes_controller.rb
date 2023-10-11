@@ -128,10 +128,10 @@ class RoutesController < ApplicationController
     @route = Route.find(route_param[:routeId])
     @route.visible = route_param[:visible]
     unless @route.save
-      render json: { message: 'Failure' }
+      render json: { result: 'Failure' }
     end
 
-    render json: { message: 'Success' }
+    render json: { result: 'Success' }
   end
 
   # Routeの並び順を更新
@@ -142,11 +142,11 @@ class RoutesController < ApplicationController
       @route = Route.find(routeId)
       @route.order = index + 1
       unless @route.save
-        render json: { message: 'Failure' }
+        render json: { result: 'Failure' }
       end
     end
 
-    render json: { message: 'Success' }
+    render json: { result: 'Success' }
   end
 
   private
