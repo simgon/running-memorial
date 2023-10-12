@@ -58,6 +58,7 @@ export class RouteMap extends google.maps.Map {
       .catch((error) => {
         // 位置情報の取得に失敗した場合の処理
         console.error('Error:', error);
+        Common.showNotification('位置情報を取得できませんでした。');
       });
   }
 }
@@ -831,7 +832,7 @@ export class Route {
             label.setMap(this.map);
           });
         }
-        
+
         // ルート線
         this.routeLines.forEach((line) => {
           line.setMap(this.map);
