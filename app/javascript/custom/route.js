@@ -448,7 +448,7 @@ export class RouteManager {
     // 選択中ルートを表示
     if (this.selectedRoute) {
       let visible = document.querySelector(`[data-route-id="${this.selectedRoute.routeId}"]`).getAttribute("data-visible");
-      this.selectedRoute.displayMarkers(visible);
+      this.selectedRoute.displayMarkers(visible, {selected: true});
     }
   }
 }
@@ -761,29 +761,36 @@ export class Route {
   /**
    * マーカーを表示／非表示
    */
-  displayMarkers(visible) {
+  displayMarkers(visible, options = {selected: false}) {
+
+    // 初期化
+    // ドットマーカー
+    this.dotMarkers.forEach((marker) => {
+      marker.setMap(null);
+    });
+    // 距離ラベル
+    this.distanceLabels.forEach((label) => {
+      label.setMap(null);
+    });
+    // ルート線
+    this.routeLines.forEach((line) => {
+      line.setMap(null);
+    });
+
     switch (visible){
       // 非表示
       case Route.INVISIBLE:
-        // ドットマーカー
-        this.dotMarkers.forEach((marker) => {
-          marker.setMap(null);
-        });
-        // 距離ラベル
-        this.distanceLabels.forEach((label) => {
-          label.setMap(null);
-        });
-        // ルート線
-        this.routeLines.forEach((line) => {
-          line.setMap(null);
-        });
+        // 処理なし
         break;
       // 表示
       case Route.VISIBLE_ALL:
-        // ドットマーカー
-        this.dotMarkers.forEach((marker) => {
-          marker.setMap(this.map);
-        });
+        // 選択ルート時のみ表示
+        if (options.selected) {
+          // ドットマーカー
+          this.dotMarkers.forEach((marker) => {
+            marker.setMap(this.map);
+          });
+        }
 
         // 距離ラベル
         if (this.map.getZoom() <= 14) {
@@ -824,6 +831,7 @@ export class Route {
             label.setMap(this.map);
           });
         }
+        
         // ルート線
         this.routeLines.forEach((line) => {
           line.setMap(this.map);
@@ -832,9 +840,9 @@ export class Route {
       // 表示(ルートのみ)
       case Route.VISIBLE_ROUTE:
         // ドットマーカー
-        this.dotMarkers.forEach((marker) => {
-          marker.setMap(this.map);
-        });
+        // this.dotMarkers.forEach((marker) => {
+        //   marker.setMap(this.map);
+        // });
         // 距離ラベル
         this.distanceLabels.forEach((label) => {
           label.setMap(null);

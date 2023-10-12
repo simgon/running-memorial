@@ -272,7 +272,7 @@ export default class extends Controller {
       eyeVisibleRoute.classList.remove('hidden');
       visible.setAttribute('data-visible', Route.VISIBLE_ROUTE);
       // ルートを表示(ルートのみ)
-      this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ROUTE);
+      this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ROUTE, {selected: true});
       this.postRouteVisible(routeId, Route.VISIBLE_ROUTE);
     } else if (!eyeVisibleRoute.classList.contains('hidden')) {
       // 表示(ルートのみ) → 非表示
@@ -280,7 +280,7 @@ export default class extends Controller {
       eyeInvisible.classList.remove('hidden');
       visible.setAttribute('data-visible', Route.INVISIBLE);
       // ルートを非表示
-      this.routeMng.routes[routeId].displayMarkers(Route.INVISIBLE);
+      this.routeMng.routes[routeId].displayMarkers(Route.INVISIBLE, {selected: true});
       this.postRouteVisible(routeId, Route.INVISIBLE);
     } else {
       // 非表示 → 表示
@@ -288,7 +288,7 @@ export default class extends Controller {
       eyeVisibleAll.classList.remove('hidden');
       visible.setAttribute('data-visible', Route.VISIBLE_ALL);
       // ルートを表示
-      this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ALL);
+      this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ALL, {selected: true});
       this.postRouteVisible(routeId, Route.VISIBLE_ALL);
     }
   }
@@ -366,8 +366,8 @@ export default class extends Controller {
       for (let i = 0; i < listItems.length; i++) {
         let routeId = listItems[i].getAttribute('data-route-id');
         let visible = listItems[i].getAttribute('data-visible');
-        
-        this.routeMng.routes[routeId]?.displayMarkers(visible);
+
+        this.routeMng.routes[routeId]?.displayMarkers(visible, {selected: this.routeMng.selectedRoute?.routeId == routeId});
       }
 
       zoomChanged = true;
