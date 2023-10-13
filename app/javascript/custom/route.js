@@ -175,8 +175,22 @@ export class RouteManager {
   clearMarkers() {
     // ルート未選択の場合
     if (!this.selectedRoute) return;
-    // クリア
+
+    // 全てのマーカーを削除
     this.selectedRoute.clearMarkers();
+    
+    // ロケーション情報を取得
+    RouteManager.fetchLocations(this.selectedRoute.routeId)
+      .then((data) => {
+        // マップ上にマーカーを表示
+        data.forEach(loc => {
+          const position = new google.maps.LatLng(loc.lat_loc, loc.lon_loc);
+          this.selectedRoute.addMarker(position, {init: true, visibleNotYetSaveLabel: false, pushUndo: false});
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      })
   }
 
   /**
@@ -448,9 +462,33 @@ export class RouteManager {
 
     // 選択中ルートを表示
     if (this.selectedRoute) {
-      let visible = document.querySelector(`[data-route-id="${this.selectedRoute.routeId}"]`).getAttribute("data-visible");
+      let visible = document.getElementById(`route_item_${this.selectedRoute.routeId}`).getAttribute("data-visible");
       this.selectedRoute.displayMarkers(visible, {selected: true});
     }
+  }
+
+  // -------------------
+  // データの取得
+  // -------------------
+  /**
+   * ロケーション情報を取得
+   * @param {String} route_id - ルートID
+   */
+  static fetchLocations(route_id) {
+    return fetch(`/locations/${route_id}`, {
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        return data;
+      });
   }
 }
 
@@ -463,8 +501,6 @@ export class Route {
   static VISIBLE_ALL = '1';
   static VISIBLE_ROUTE = '2';
 
-  undoMng = new UndoManager(this);
-
   constructor(routeId, map, routeMng) {
     this.routeId = routeId;
     this.map = map;
@@ -472,6 +508,7 @@ export class Route {
     this.dotMarkers = [];       // ドットマーカー
     this.distanceLabels = [];   // 距離ラベル
     this.routeLines = [];       // ルート線
+    this.undoMng = new UndoManager(this);
   }
 
   /**
@@ -576,15 +613,17 @@ export class Route {
   }
 
   /**
-   * 直前に追加したマーカーを削除
+   * 末尾マーカーを削除
    */
   delMarker() {
-    [this.dotMarkers, this.distanceLabels, this.routeLines].forEach(markers => {
-      if (markers.length) markers.pop().setMap(null);
-    });
+    // [this.dotMarkers, this.distanceLabels, this.routeLines].forEach(markers => {
+    //   if (markers.length) markers.pop().setMap(null);
+    // });
 
-    // 未保存ラベルを表示
-    this.visibleNotYetSaveLabel(true);
+    // // 未保存ラベルを表示
+    // this.visibleNotYetSaveLabel(true);
+
+    this.removeMarker(this.dotMarkers[this.dotMarkers.length - 1], {pushUndo: false});
   }
 
   /**
@@ -673,8 +712,11 @@ export class Route {
     this.distanceLabels = [];
     this.routeLines = [];
 
-    // 未保存ラベルを表示
-    this.visibleNotYetSaveLabel(true);
+    // undo初期化
+    this.undoMng = new UndoManager(this);
+
+    // 未保存ラベルを非表示
+    this.visibleNotYetSaveLabel(false);
   }
 
   /**

@@ -443,7 +443,7 @@ export default class extends Controller {
 
       // ロケーション情報を取得
       fetchPromises.push(
-        this.fetchLocations(routeId)
+        RouteManager.fetchLocations(routeId)
           .then((data) => {
             let route = new Route(routeId, map, this.routeMng);
             // マップ上にマーカーを表示
@@ -575,30 +575,9 @@ export default class extends Controller {
   // #endregion
 
   // -------------------
-  // データの取得、更新
+  // データの更新
   // -------------------
-  // #region データの取得、更新
-  /**
-   * ロケーション情報を取得
-   * @param {String} route_id - ルートID
-   */
-  fetchLocations(route_id) {
-    return fetch(`/locations/${route_id}`, {
-        headers: {
-          'Accept': 'application/json'
-        }
-      })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        return data;
-      });
-  }
-
+  // #region データの更新
   /**
    * ルートの表示情報を更新
    * @param {String} routeId - ルートID
