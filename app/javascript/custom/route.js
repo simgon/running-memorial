@@ -862,20 +862,28 @@ export class Route {
         }
 
         // 距離ラベル
-        if (this.map.getZoom() <= 14) {
-          // **************
-          // ズームアウト時
-          // **************
-          this.distanceLabels.forEach(label => label.setMap(null));
-          // 先頭の距離ラベルを表示
-          this.distanceLabels[0].setMap(this.map);
-          // 末尾の距離ラベルを表示
-          this.distanceLabels[this.distanceLabels.length - 1].setMap(this.map);
+        this.distanceLabels.forEach(label => label.setMap(null));
+        // 先頭の距離ラベルを表示
+        this.distanceLabels[0].setMap(this.map);
+        // 末尾の距離ラベルを表示
+        this.distanceLabels[this.distanceLabels.length - 1].setMap(this.map);
 
-          // Nm単位で距離ラベルを表示
-          let N = 500;
+        // Nm単位で距離ラベルを表示
+        let N = 0;
+        if (this.routeMng.selectedRoute?.routeId == this.routeId) {
+          // 選択ルートの場合
+          if (this.map.getZoom() <= 14) N = 500;
           if (this.map.getZoom() <= 13) N = 1000;
+        } else {
+          // 未選択ルートの場合
+          N = 1000;
+        }
+        if (this.map.getZoom() <= 11) N = 2000;
+        if (this.map.getZoom() <= 10) N = 3000;
+        if (this.map.getZoom() <= 9) N = 4000;
 
+        if (N > 0) {
+          // Nm単位で距離ラベルを表示
           let dispDistance = [];
           for (let i = 1; i <= 40000 / N; i++) {
             dispDistance.push({flg: false, distance: i * N});
@@ -893,9 +901,7 @@ export class Route {
             });
           });
         } else {
-          // **************
-          // ズームイン時
-          // **************
+          // 全ての距離ラベルを表示
           this.distanceLabels.forEach((label) => {
             label.setMap(this.map);
           });
