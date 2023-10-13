@@ -5,8 +5,8 @@ https://running-memorial.com/
 マップ上にマーカーを設置してルートを作成する。複数のルートを視覚的に比較もできる。
 
 ## 画面
-![map1](https://github.com/simgon/running-memorial/assets/23553796/102d296b-93b2-4d47-bb8d-7e050b9bb8a9)
-![map2](https://github.com/simgon/running-memorial/assets/23553796/565123c6-3bf1-4251-854c-dca23b7f0ae9)
+![map1_圧縮](https://github.com/simgon/running-memorial/assets/23553796/335ba5ff-8bce-46f6-aeec-333102e1bd3f)
+![map2_圧縮](https://github.com/simgon/running-memorial/assets/23553796/328a9280-f436-4a2c-a802-e2383301f60b)
 
 ## 使用技術
 - プログラミング言語
