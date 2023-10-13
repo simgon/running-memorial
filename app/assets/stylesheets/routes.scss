@@ -260,6 +260,7 @@
   color: $sub-color;
   list-style: none;
   border-radius: 6px;
+  z-index: 1;
 
   >li {
     overflow: auto;
