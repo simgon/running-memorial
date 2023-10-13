@@ -186,6 +186,8 @@ export class RouteManager {
         data.forEach(loc => {
           const position = new google.maps.LatLng(loc.lat_loc, loc.lon_loc);
           this.selectedRoute.addMarker(position, {init: true, visibleNotYetSaveLabel: false, pushUndo: false});
+          // ドラッグ可能
+          this.selectedRoute.dotMarkers.forEach(dotMarker => dotMarker.setDraggable(true));
         });
       })
       .catch((error) => {
@@ -616,14 +618,9 @@ export class Route {
    * 末尾マーカーを削除
    */
   delMarker() {
-    // [this.dotMarkers, this.distanceLabels, this.routeLines].forEach(markers => {
-    //   if (markers.length) markers.pop().setMap(null);
-    // });
-
-    // // 未保存ラベルを表示
-    // this.visibleNotYetSaveLabel(true);
-
-    this.removeMarker(this.dotMarkers[this.dotMarkers.length - 1], {pushUndo: false});
+    if (this.dotMarkers.length) {
+      this.removeMarker(this.dotMarkers[this.dotMarkers.length - 1], {pushUndo: false});
+    }
   }
 
   /**
