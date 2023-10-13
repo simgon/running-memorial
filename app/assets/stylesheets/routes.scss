@@ -422,14 +422,39 @@
   background-color: #FFFFFF;
   margin-right: 10px;
   border-radius: 2px;
-  div {
+  .icon {
+    padding: 10px;
+    margin: 10px;
     background-image: url('mylocation.png');
     background-size: 100%;
     background-repeat: no-repeat;
     background-color: #FFFFFF;
-    padding: 10px;
-    margin: 10px;
-    text-align: center;
+    background-position: center;
+  }
+}
+
+.zoom-map {
+  margin-top: 10px;
+  margin-right: 10px;
+  border-radius: 2px;
+
+  .icon {
+    background-color: white;
+    padding: 19px;
+    font-size: 14px;
+    background-image: url('pin-map.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    &.S {
+      background-size: 45%;
+    }
+    &.M {
+      background-size: 60%;
+    }
+    &.L {
+      background-size: 75%;
+    }
   }
 }
 

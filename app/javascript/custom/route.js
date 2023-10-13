@@ -8,18 +8,47 @@ export class RouteMap extends google.maps.Map {
     super(element, mapOptions);
   
     // 現在位置へ移動カスタムコントロールを作成
-    const customControlDiv = document.createElement('div');
-    const controlUI = document.createElement('div');
-    customControlDiv.className = 'my-location';
-    customControlDiv.appendChild(controlUI);
+    const myLocationContainer = document.createElement('div');
+    myLocationContainer.className = 'my-location';
+
+    const myLocationIcon = document.createElement('div');
+    myLocationIcon.className = 'icon';
+    myLocationContainer.appendChild(myLocationIcon);
   
-    google.maps.event.addDomListener(customControlDiv, 'click', () => {
+    google.maps.event.addDomListener(myLocationContainer, 'click', () => {
       // マップをユーザーの現在位置に設定
       this.setMapMyLocation();
     });
   
-    // 地図の右下にカスタムコントロールを配置
-    this.controls[(Common.isMobileScreen ? google.maps.ControlPosition.RIGHT_TOP : google.maps.ControlPosition.RIGHT_BOTTOM)].push(customControlDiv);
+    // カスタムコントロールを配置
+    this.controls[(Common.isMobileScreen ? google.maps.ControlPosition.RIGHT_TOP : google.maps.ControlPosition.RIGHT_BOTTOM)].push(myLocationContainer);
+
+    // ズーム値変更カスタムコントロールを作成
+    const zoomContainer = document.createElement('div');
+    zoomContainer.className = 'zoom-map';
+    
+    const zoomIconS = document.createElement('div');
+    zoomIconS.className = 'icon S';
+    google.maps.event.addDomListener(zoomIconS, 'click', () => {
+      this.setZoom(16);
+    });
+    zoomContainer.appendChild(zoomIconS);
+
+    const zoomIconM = document.createElement('div');
+    zoomIconM.className = 'icon M';
+    google.maps.event.addDomListener(zoomIconM, 'click', () => {
+      this.setZoom(14);
+    });
+    zoomContainer.appendChild(zoomIconM);
+
+    const zoomIconL = document.createElement('div');
+    zoomIconL.className = 'icon L';
+    google.maps.event.addDomListener(zoomIconL, 'click', () => {
+      this.setZoom(13);
+    });
+    zoomContainer.appendChild(zoomIconL);
+
+    this.controls[google.maps.ControlPosition.RIGHT].push(zoomContainer);
   }
 
   /**
@@ -94,7 +123,7 @@ export class RouteManager {
     if (!this.selectedRoute) return;
 
     // admin有無
-    const admin = document.querySelector("#admin")?.value == 'true';
+    const admin = document.querySelector('#admin')?.value == 'true';
     // ルート地点上限数チェック
     if (this.selectedRoute.dotMarkers.length >= RouteManager.MAX_ROUTE_MARKER && !admin) {
       Common.showNotification(`ルート地点数が上限(${RouteManager.MAX_ROUTE_MARKER}地点)に達しました。`);
@@ -421,7 +450,7 @@ export class RouteManager {
     // ルート線の重複を非表示にする
     Object.values(this.routes).filter(route => {
       // 「ルート表示」、「ルート表示(ルートのみ)」のみに絞り込む
-      let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute("data-visible");
+      let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute('data-visible');
       return visible == Route.VISIBLE_ALL || visible == Route.VISIBLE_ROUTE;
     }).forEach((route, index, routeArray) => {
       // ルート線同士を比較
@@ -446,7 +475,7 @@ export class RouteManager {
     // 距離ラベルの重複を非表示にする
     Object.values(this.routes).filter(route => {
       // 「ルート表示」のみに絞り込む
-      let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute("data-visible");
+      let visible = document.querySelector(`[data-route-id="${route.routeId}"]`).getAttribute('data-visible');
       return visible == Route.VISIBLE_ALL;
     }).forEach((route, index, routeArray) => {
       // 距離ラベル同士を比較
@@ -464,7 +493,7 @@ export class RouteManager {
 
     // 選択中ルートを表示
     if (this.selectedRoute) {
-      let visible = document.getElementById(`route_item_${this.selectedRoute.routeId}`).getAttribute("data-visible");
+      let visible = document.getElementById(`route_item_${this.selectedRoute.routeId}`).getAttribute('data-visible');
       this.selectedRoute.displayMarkers(visible, {selected: true});
     }
   }
@@ -561,7 +590,7 @@ export class Route {
    */
   addMarkerOnLine(routeLine, position, options = {pushUndo: true}) {
     // admin有無
-    const admin = document.querySelector("#admin")?.value == 'true';
+    const admin = document.querySelector('#admin')?.value == 'true';
     // ルート地点上限数チェック
     if (this.dotMarkers.length >= RouteManager.MAX_ROUTE_MARKER && !admin) {
       Common.showNotification(`ルート地点数が上限(${RouteManager.MAX_ROUTE_MARKER}地点)に達しました。`);
@@ -1076,7 +1105,7 @@ export function initSortable() {
     onEnd: (event) => {  // ドラッグ終了後の処理
       if (event.oldIndex === event.newIndex) return;
 
-      const listItems = [...routesContainer.querySelectorAll(".route-item")];
+      const listItems = [...routesContainer.querySelectorAll('.route-item')];
       // ルートの並び順を更新
       postRouteOrder(listItems.map(item => item.getAttribute('data-route-id')));
     }
