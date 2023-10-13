@@ -498,6 +498,61 @@ export class RouteManager {
     }
   }
 
+  /**
+   * ルートのアニメーション
+   */
+  routeAnimation() {
+    clearInterval(this.timerId);
+    
+    Object.values(this.routes).forEach(route => {
+      route.routeLines.forEach(line => {
+        line.setOptions({
+          icons: []
+        });
+      })
+    });
+
+    let count = 0;
+    let idx = 0;
+
+    this.timerId = window.setInterval(() => {
+      let line = this.selectedRoute.routeLines[idx];
+
+      if (count == 0) {
+        line.setOptions({
+          icons: [
+            {
+              icon: {
+                path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
+                scale: 3,
+                strokeColor: '#3CB371'
+              },
+              offset: '0%'
+            }
+          ]
+        });
+      }
+
+      count = (count + 1) % 100;
+      const icons = line.get('icons');
+      icons[0].offset = (count) + '%';
+      line.set('icons', icons);
+
+      if (count >= 99) {
+        count = 0;
+        idx = idx + 1;
+
+        line.setOptions({
+          icons: []
+        });
+
+        if (idx >= this.selectedRoute.routeLines.length) {
+          idx = 0;
+        }
+      }
+    }, 5);
+  }
+
   // -------------------
   // データの取得
   // -------------------
@@ -862,49 +917,50 @@ export class Route {
         }
 
         // 距離ラベル
-        this.distanceLabels.forEach(label => label.setMap(null));
-        // 先頭の距離ラベルを表示
-        this.distanceLabels[0].setMap(this.map);
-        // 末尾の距離ラベルを表示
-        this.distanceLabels[this.distanceLabels.length - 1].setMap(this.map);
+        if (this.distanceLabels.length) {
+          // 先頭の距離ラベルを表示
+          this.distanceLabels[0].setMap(this.map);
+          // 末尾の距離ラベルを表示
+          this.distanceLabels[this.distanceLabels.length - 1].setMap(this.map);
 
-        // Nm単位で距離ラベルを表示
-        let N = 0;
-        if (this.routeMng.selectedRoute?.routeId == this.routeId) {
-          // 選択ルートの場合
-          if (this.map.getZoom() <= 14) N = 500;
-          if (this.map.getZoom() <= 13) N = 1000;
-        } else {
-          // 未選択ルートの場合
-          N = 1000;
-        }
-        if (this.map.getZoom() <= 11) N = 2000;
-        if (this.map.getZoom() <= 10) N = 3000;
-        if (this.map.getZoom() <= 9) N = 4000;
-
-        if (N > 0) {
           // Nm単位で距離ラベルを表示
-          let dispDistance = [];
-          for (let i = 1; i <= 40000 / N; i++) {
-            dispDistance.push({flg: false, distance: i * N});
+          let N = 0;
+          if (this.routeMng.selectedRoute?.routeId == this.routeId) {
+            // 選択ルートの場合
+            if (this.map.getZoom() <= 14) N = 500;
+            if (this.map.getZoom() <= 13) N = 1000;
+          } else {
+            // 未選択ルートの場合
+            N = 1000;
           }
+          if (this.map.getZoom() <= 11) N = 2000;
+          if (this.map.getZoom() <= 10) N = 3000;
+          if (this.map.getZoom() <= 9) N = 4000;
 
-          this.distanceLabels.forEach(label => {
-            dispDistance.forEach(d => {
-              if (!d.flg) {
-                if (label.labelContent.slice(0, -1) / d.distance >= 1) {
-                  label.setMap(this.map);
-                  d.flg = true;
+          if (N > 0) {
+            // Nm単位で距離ラベルを表示
+            let dispDistance = [];
+            for (let i = 1; i <= 40000 / N; i++) {
+              dispDistance.push({flg: false, distance: i * N});
+            }
+
+            this.distanceLabels.forEach(label => {
+              dispDistance.forEach(d => {
+                if (!d.flg) {
+                  if (label.labelContent.slice(0, -1) / d.distance >= 1) {
+                    label.setMap(this.map);
+                    d.flg = true;
+                  }
+                  return;
                 }
-                return;
-              }
+              });
             });
-          });
-        } else {
-          // 全ての距離ラベルを表示
-          this.distanceLabels.forEach((label) => {
-            label.setMap(this.map);
-          });
+          } else {
+            // 全ての距離ラベルを表示
+            this.distanceLabels.forEach((label) => {
+              label.setMap(this.map);
+            });
+          }
         }
 
         // ルート線
