@@ -375,6 +375,24 @@ export class RouteManager {
       // editable: true, // ライン上の点をドラッグ可能にする
     });
 
+    // const routeLine = new google.maps.Polyline({
+    //   path: path,
+    //   strokeColor: '#FF0000',
+    //   strokeOpacity: 0,
+    //   icons: [
+    //     {
+    //       icon: {
+    //         path: 'M 0,-1 0,1',
+    //         strokeOpacity: 1,
+    //         scale: 4
+    //       },
+    //       offset: '0%',
+    //       repeat: '20px'
+    //     }
+    //   ],
+    //   map: this.map
+    // });
+
     routeLine.customId = route.routeId + '-' + route.routeLines.length;
 
     // -------------------

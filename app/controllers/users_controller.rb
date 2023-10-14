@@ -5,7 +5,7 @@ class UsersController < ApplicationController
 
   # ユーザー一覧
   def index
-    @users = User.all
+    @users = User.all.order(admin: :desc, last_login_at: :desc)
   end
 
   def new
