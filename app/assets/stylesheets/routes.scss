@@ -447,14 +447,14 @@
     background-repeat: no-repeat;
     background-position: center;
     
-    &.S {
-      background-size: 45%;
+    &.near {
+      background-size: 75%;
     }
-    &.M {
+    &.medium {
       background-size: 60%;
     }
-    &.L {
-      background-size: 75%;
+    &.far {
+      background-size: 45%;
     }
   }
 }
