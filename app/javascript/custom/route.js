@@ -26,27 +26,27 @@ export class RouteMap extends google.maps.Map {
     // ズーム値変更カスタムコントロールを作成
     const zoomContainer = document.createElement('div');
     zoomContainer.className = 'zoom-map';
-    
-    const zoomIconS = document.createElement('div');
-    zoomIconS.className = 'icon S';
-    google.maps.event.addDomListener(zoomIconS, 'click', () => {
+
+    const zoomIconNear = document.createElement('div');
+    zoomIconNear.className = 'icon near';
+    google.maps.event.addDomListener(zoomIconNear, 'click', () => {
       this.setZoom(16);
     });
-    zoomContainer.appendChild(zoomIconS);
+    zoomContainer.appendChild(zoomIconNear);
 
-    const zoomIconM = document.createElement('div');
-    zoomIconM.className = 'icon M';
-    google.maps.event.addDomListener(zoomIconM, 'click', () => {
+    const zoomIconMedium = document.createElement('div');
+    zoomIconMedium.className = 'icon medium';
+    google.maps.event.addDomListener(zoomIconMedium, 'click', () => {
       this.setZoom(14);
     });
-    zoomContainer.appendChild(zoomIconM);
+    zoomContainer.appendChild(zoomIconMedium);
 
-    const zoomIconL = document.createElement('div');
-    zoomIconL.className = 'icon L';
-    google.maps.event.addDomListener(zoomIconL, 'click', () => {
+    const zoomIconFar = document.createElement('div');
+    zoomIconFar.className = 'icon far';
+    google.maps.event.addDomListener(zoomIconFar, 'click', () => {
       this.setZoom(13);
     });
-    zoomContainer.appendChild(zoomIconL);
+    zoomContainer.appendChild(zoomIconFar);
 
     this.controls[google.maps.ControlPosition.RIGHT].push(zoomContainer);
   }
