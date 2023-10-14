@@ -928,11 +928,11 @@ export class Route {
           if (this.routeMng.selectedRoute?.routeId == this.routeId) {
             // 選択ルートの場合
             if (this.map.getZoom() <= 14) N = 500;
-            if (this.map.getZoom() <= 13) N = 1000;
           } else {
             // 未選択ルートの場合
-            N = 1000;
+            N = 500;
           }
+          if (this.map.getZoom() <= 13) N = 1000;
           if (this.map.getZoom() <= 11) N = 2000;
           if (this.map.getZoom() <= 10) N = 3000;
           if (this.map.getZoom() <= 9) N = 4000;
