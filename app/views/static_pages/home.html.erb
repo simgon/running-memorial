@@ -4,106 +4,112 @@
   <%= content_tag(:div, message, class: "alert alert-#{message_type}", style: "margin-bottom: 0;") %>
 <% end %>
 
-<div class="flex-container" style="background-color: #f7f7f7;">
-  <div class="home-container">
-    <div style="text-align: center; padding-bottom: 30px;">
-      <h1 class="heading-text">ランニングの思い出を残そう</h1>
-      <%= link_to("ルート作成を開始する", routes_url, class: "btn btn-danger btn-lg", style: "font-weight: bold; font-size: 22px;") %>
-    </div>
-
-    <div class="instruction-container">
-      <div class="image-container">
-        <div class="caption">ルート作成〜ルート保存</div>
-        <%# WebKitにおける動画の挙動の制御がうまくできなかったので、gif画像とする %>
-        <%# autoplayにはせずに'turbo:load'イベント内（application.js）にて再生する(iOSだとTurboの影響で再生されないのため。（リロードすれば再生はされる）) %>
-        <%# <video class="video" autoplay loop muted playsinline> %>
-        <%# <video class="video" loop muted playsinline>
-          <source src="/assets/introduction_route_create.mp4" type="video/mp4">
-        </video> %>
-        <%= image_tag("introduction_route_create.gif") %>
-
-        <div class="caption">ルート表示・非表示</div>
-        <%# <video class="video" autoplay loop muted playsinline> %>
-        <%# <video class="video" loop muted playsinline>
-          <source src="/assets/introduction_route_display.mp4" type="video/mp4">
-        </video> %>
-        <%= image_tag("introduction_route_display.gif") %>
+<div style="background-color: #f7f7f7;">
+  <div class="flex-container">
+    <div class="home-container">
+      <div style="text-align: center; padding-bottom: 30px;">
+        <h1 class="heading-text">ランニングの思い出を残そう</h1>
+        <%= link_to("ルート作成を開始する", routes_url, class: "btn btn-danger btn-lg", style: "font-weight: bold; font-size: 22px;") %>
       </div>
-      
-      <div class="instruction">
-        <div style="display: flex; justify-content: space-evenly; margin-top:20px;">
-          <%= link_to "/", target: "_blank", rel: "noopener noreferrer", class: "btn btn-default", style: "width:115px; height: 40px; background-color:black; color:white; display: flex; align-items: center; gap: 5px;" do %>
-            <%= image_tag("browser-chrome.svg") %>
-            <span>ブラウザ版</span>
-          <% end %>
 
-          <%= link_to "/", class: "disable-click" do %>
-            <%= image_tag("app_store.png", style: "height:40px;") %>
-          <% end %>
+      <div class="instruction-container">
+        <div class="image-container">
+          <div class="caption">ルート作成〜ルート保存</div>
+          <%# WebKitにおける動画の挙動の制御がうまくできなかったので、gif画像とする %>
+          <%# autoplayにはせずに'turbo:load'イベント内（application.js）にて再生する(iOSだとTurboの影響で再生されないのため。（リロードすれば再生はされる）) %>
+          <%# <video class="video" autoplay loop muted playsinline> %>
+          <%# <video class="video" loop muted playsinline>
+            <source src="/assets/introduction_route_create.mp4" type="video/mp4">
+          </video> %>
+          <%= image_tag("introduction_route_create.gif") %>
 
-          <%= link_to "/", class: "disable-click" do %>
-            <%= image_tag("google_play.png", style: "height:40px;") %>
-          <% end %>
+          <div class="caption">ルート表示・非表示</div>
+          <%# <video class="video" autoplay loop muted playsinline> %>
+          <%# <video class="video" loop muted playsinline>
+            <source src="/assets/introduction_route_display.mp4" type="video/mp4">
+          </video> %>
+          <%= image_tag("introduction_route_display.gif") %>
         </div>
+        
+        <div class="instruction">
+          <div style="display: flex; justify-content: space-evenly; margin-top:20px;">
+            <%= link_to "/", target: "_blank", rel: "noopener noreferrer", class: "btn btn-default", style: "width:115px; height: 40px; background-color:black; color:white; display: flex; align-items: center; gap: 5px;" do %>
+              <%= image_tag("browser-chrome.svg") %>
+              <span>ブラウザ版</span>
+            <% end %>
 
-        <h2>操作方法</h2>
-        <p>マーカーを追加</p>
-        <ul>
-          <li>追加ボタンをクリック</li>
-          <li>マップ上をクリック</li>
-        </ul>
+            <%= link_to "/", class: "disable-click" do %>
+              <%= image_tag("app_store.png", style: "height:40px;") %>
+            <% end %>
 
-        <p>マーカーを移動</p>
-        <ul>
-          <li>マーカーをドラッグ</li>
-        </ul>
+            <%= link_to "/", class: "disable-click" do %>
+              <%= image_tag("google_play.png", style: "height:40px;") %>
+            <% end %>
+          </div>
 
-        <p>ルート線上にマーカーを追加</p>
-        <ul>
-          <li>ルート上追加ボタンをクリック</li>
-          <li>
-            <p>PC</p>
-            <ul>
-              <li>ルート線上を右クリック</li>
-            </ul>
-          </li>
-          <li>
-            <p>スマホ</p>
-            <ul>
-              <li>ルート線上をロングタップ</li>
-            </ul>
-          </li>
-        </ul>
+          <h2>操作方法</h2>
+          <p>マーカーを追加</p>
+          <ul>
+            <li>追加ボタンをクリック</li>
+            <li>マップ上をクリック</li>
+          </ul>
 
-        <p>マーカーを削除</p>
-        <ul>
-          <li>削除ボタンをクリック</li>
-          <li>
-            <p>PC</p>
-            <ul>
-              <li>マーカーを右クリック</li>
-            </ul>
-          </li>
-          <li>
-            <p>スマホ</p>
-            <ul>
-              <li>マーカーをロングタップ</li>
-            </ul>
-          </li>
-        </ul>
+          <p>マーカーを移動</p>
+          <ul>
+            <li>マーカーをドラッグ</li>
+          </ul>
 
-        <h2>その他</h2>
-        <p>保存データについて</p>
-        <ul>
-          <li>作成したルート情報を永続的に保存するにはアカウントを作成してログインしてください。</li>
-          <li>未ログイン状態においてもルート情報は保持されますが、Cookie情報の削除等でルート情報が削除される可能性があります。</li>
-        </ul>
-        <p>ルート数とルート地点数の上限について</p>
-        <ul>
-          <li>ルート数の上限：１０ルートまで</li>
-          <li>ルート地点数の上限：１００地点まで</li>
-        </ul>
+          <p>ルート線上にマーカーを追加</p>
+          <ul>
+            <li>ルート上追加ボタンをクリック</li>
+            <li>
+              <p>PC</p>
+              <ul>
+                <li>ルート線上を右クリック</li>
+              </ul>
+            </li>
+            <li>
+              <p>スマホ</p>
+              <ul>
+                <li>ルート線上をロングタップ</li>
+              </ul>
+            </li>
+          </ul>
+
+          <p>マーカーを削除</p>
+          <ul>
+            <li>削除ボタンをクリック</li>
+            <li>
+              <p>PC</p>
+              <ul>
+                <li>マーカーを右クリック</li>
+              </ul>
+            </li>
+            <li>
+              <p>スマホ</p>
+              <ul>
+                <li>マーカーをロングタップ</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h2>その他</h2>
+          <p>保存データについて</p>
+          <ul>
+            <li>作成したルート情報を永続的に保存するにはアカウントを作成してログインしてください。</li>
+            <li>未ログイン状態においてもルート情報は保持されますが、Cookie情報の削除等でルート情報が削除される可能性があります。</li>
+          </ul>
+          <p>ルート数とルート地点数の上限について</p>
+          <ul>
+            <li>ルート数の上限：１０ルートまで</li>
+            <li>ルート地点数の上限：１００地点まで</li>
+          </ul>
+        </div>
       </div>
     </div>
+  </div>
+
+  <div class="copyright">
+    <small>Copyright <%= Date.today.year.to_s %> Simgonsoft <%= link_to "プライバシーポリシー", privacypolicy_path, style: "color:#000000" %></small>
   </div>
 </div>

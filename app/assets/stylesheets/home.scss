@@ -81,6 +81,11 @@ body {
   opacity: 0.5;
 }
 
+.copyright {
+  padding: 20px 0;
+  text-align: center;
+}
+
 @media (max-width: 952px) {
   .instruction-container {
     flex-flow: row-reverse wrap;
