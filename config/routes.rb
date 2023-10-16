@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   post   "/routes/visible", to: "routes#visible"
   post   "/routes/order",   to: "routes#order"
   resources :users #,     only: [:index, :update, :destroy]
+  delete "/account_destroy",to: "users#account_destroy"
   get    "/signup",         to: "users#new"
   get    "/login",          to: "sessions#new"
   post   "/login",          to: "sessions#create"

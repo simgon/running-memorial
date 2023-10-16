@@ -109,6 +109,13 @@
     </div>
   </div>
 
+  <% if logged_in? %>
+    <div class="account-destroy">
+      <%= link_to "アカウントの削除はこちら", account_destroy_path, data: { turbo_method: :delete, turbo_confirm: "アカウントを削除します。\nアカウント情報、ルート情報の全てのデータが削除され復元はできません。よろしいですか？" }, style: "color:#000000" %>
+      <small>アカウント情報、ルート情報の全てのデータが削除され復元はできません。</small>
+    </div>
+  <% end %>
+
   <div class="copyright">
     <small>Copyright <%= Date.today.year.to_s %> Simgonsoft <%= link_to "プライバシーポリシー", privacypolicy_path, style: "color:#000000" %></small>
   </div>

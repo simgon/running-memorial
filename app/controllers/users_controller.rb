@@ -83,6 +83,18 @@ class UsersController < ApplicationController
     end
   end
 
+  # アカウントの削除
+  def account_destroy
+    @user = current_user
+
+    if @user.destroy
+      flash[:success] = "アカウントを削除しました"
+      redirect_to root_url, status: :see_other
+    else
+      render 'index', status: :see_other
+    end
+  end
+
   private
 
     # ストロングパラメータ

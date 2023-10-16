@@ -81,8 +81,15 @@ body {
   opacity: 0.5;
 }
 
+.account-destroy {
+  display:flex;
+  flex-direction: column;
+  text-align: center;
+  padding: 10px 0;
+}
+
 .copyright {
-  padding: 20px 0;
+  padding: 10px 0;
   text-align: center;
 }
 
