@@ -1,35 +1,16 @@
-@import "bootstrap-sprockets";
 @import "bootstrap";
 @import "variables";
 
-body {
-  background-color: $sub-color;
-  color: $main-color;
+#logo-icon img {
+  width: 30px;
 }
 
-.title {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 5px;
-
-  #logo-icon img {
-    width: 30px;
-  }
-
-  #title-icon img {
-    width: 250px;
-  }
+#title-icon img {
+  width: 250px;
 }
 
 .heading-text {
   line-height: 1.5;
-}
-
-.home-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
 }
 
 .instruction-container {
@@ -81,6 +62,16 @@ body {
   opacity: 0.5;
 }
 
+.btn-browser {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width:127px;
+  height: 40px;
+  background-color:black;
+  color:white;
+}
+
 .account-destroy {
   display:flex;
   flex-direction: column;
@@ -103,20 +94,11 @@ body {
   }
 }
 
-@media (max-width: 767px) {
+@include media-breakpoint-down(md) { 
   .heading-text {
     font-size: 28px;
   }
-
-  .title {
-    padding: 5px;
-
-    #logo-icon img {
-      width: 20px;
-    }
-  
-    #title-icon img {
-      width: 160px;
-    }
+  #title-icon img {
+    width: 180px;
   }
 }

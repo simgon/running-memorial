@@ -38,7 +38,7 @@ export class Common {
     const notificationPopup = document.getElementById('notification-popup');
     const notificationMessage = document.getElementById('notification-message');
 
-    notificationPopup.classList.remove('hidden');
+    notificationPopup.classList.remove('d-none');
 
     if (message) {
       notificationMessage.textContent = message;
@@ -49,7 +49,7 @@ export class Common {
 
     // 表示時間経過後、メッセージ非表示
     this.timeout = setTimeout(() => {
-      notificationPopup.classList.add('hidden');
+      notificationPopup.classList.add('d-none');
     }, duration);
   }
 

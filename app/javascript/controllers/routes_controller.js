@@ -3,7 +3,7 @@ import { Common } from '../custom/common';
 import { RouteMap, RouteManager, Route, initSortable } from '../custom/route';
 
 export default class extends Controller {
-  static targets = ['hamburgerMenu', 'optionsMenu', 'optionsBtn'];
+  static targets = ['optionsMenu', 'optionsBtn'];
 
   initialize() {}
   
@@ -42,16 +42,6 @@ export default class extends Controller {
   // **************
   // 各種メニューの開閉
   // **************
-  // ハンバーガーメニューの開閉
-  openHamburgerMenu() {
-    this.hamburgerMenuTarget.classList.toggle('collapse');
-  }
-
-  // オプションメニューの開閉
-  openOptions(event) {
-    this.optionsMenuTarget.classList.toggle('hidden');
-  }
-
   // ルート機能メニューの開閉
   openRouteMenu(event) {
     const routeMenuBtn = event.currentTarget;
@@ -66,30 +56,24 @@ export default class extends Controller {
     // routeMenu の位置を設定
     routeMenu.style.top = `${bottom}px`;
 
-    routeMenu.classList.toggle('hidden');
+    routeMenu.classList.toggle('d-none');
   }
 
   // ドキュメント全体クリック時
   clickDocument(event) {
     // オプションメニューを閉じる
     if (!this.optionsBtnTarget.contains(event.target) && !event.target.closest('#options-container')) {
-      this.optionsMenuTarget.classList.add('hidden');
+      this.optionsMenuTarget.classList.remove('show');
     }
 
     // ルート機能メニューを閉じる
     if (!this.prevRouteMenu?.contains(event.target)) {
-      this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]').nextElementSibling?.classList.add('hidden');
+      this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]').nextElementSibling?.classList.add('d-none');
 
       if (event.target.id.includes('route-item-action-menu-btn')) {
         this.prevRouteMenu = event.target;
       }
     }
-  }
-
-  // ルート一覧スクロール時
-  scrollRouteInfo() {
-    // ルート機能メニューを閉じる
-    this.prevRouteMenu?.closest('[data-routes-target="routeMenuBtn"]')?.nextElementSibling?.classList.add('hidden');
   }
   
   // **************
@@ -107,15 +91,15 @@ export default class extends Controller {
       return;
     }
 
-    document.getElementById('btn-new-route').classList.add('hidden');
-    document.getElementById('text-new-route').classList.remove('hidden');
+    document.getElementById('btn-new-route').classList.add('d-none');
+    document.getElementById('text-new-route').classList.remove('d-none');
     document.getElementById('route_name').focus();
   }
 
   // キャンセル押下時
   clickNewRouteCancel() {
-    document.getElementById('btn-new-route').classList.remove('hidden');
-    document.getElementById('text-new-route').classList.add('hidden');
+    document.getElementById('btn-new-route').classList.remove('d-none');
+    document.getElementById('text-new-route').classList.add('d-none');
   }
 
   // ルート名編集ボタン押下時
@@ -123,8 +107,8 @@ export default class extends Controller {
     const routeItemAction = event.target.closest('.route-item-action');
     const routeItemEdit = routeItemAction.nextElementSibling;
 
-    routeItemAction.classList.add('hidden');
-    routeItemEdit.classList.remove('hidden');
+    routeItemAction.classList.add('d-none');
+    routeItemEdit.classList.remove('d-none');
     const text = routeItemEdit.querySelector('.route-name-edit');
     text.focus();
     text.setSelectionRange(text.value.length, text.value.length);
@@ -135,8 +119,8 @@ export default class extends Controller {
     const routeItemEdit = event.target.closest('.route-item-edit');
     const routeItemAction = routeItemEdit.previousElementSibling;
 
-    routeItemEdit.classList.add('hidden');
-    routeItemAction.classList.remove('hidden');
+    routeItemEdit.classList.add('d-none');
+    routeItemAction.classList.remove('d-none');
   }
 
   // **************
@@ -266,26 +250,26 @@ export default class extends Controller {
     let routeId = targetEye.closest('[data-route-id]').getAttribute('data-route-id');
     let visible = targetEye.closest('[data-visible]');
     
-    if (!eyeVisibleAll.classList.contains('hidden')) {
+    if (!eyeVisibleAll.classList.contains('d-none')) {
       // 表示 → 表示(ルートのみ)
-      eyeVisibleAll.classList.add('hidden');
-      eyeVisibleRoute.classList.remove('hidden');
+      eyeVisibleAll.classList.add('d-none');
+      eyeVisibleRoute.classList.remove('d-none');
       visible.setAttribute('data-visible', Route.VISIBLE_ROUTE);
       // ルートを表示(ルートのみ)
       this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ROUTE, {selected: true});
       this.postRouteVisible(routeId, Route.VISIBLE_ROUTE);
-    } else if (!eyeVisibleRoute.classList.contains('hidden')) {
+    } else if (!eyeVisibleRoute.classList.contains('d-none')) {
       // 表示(ルートのみ) → 非表示
-      eyeVisibleRoute.classList.add('hidden');
-      eyeInvisible.classList.remove('hidden');
+      eyeVisibleRoute.classList.add('d-none');
+      eyeInvisible.classList.remove('d-none');
       visible.setAttribute('data-visible', Route.INVISIBLE);
       // ルートを非表示
       this.routeMng.routes[routeId].displayMarkers(Route.INVISIBLE, {selected: true});
       this.postRouteVisible(routeId, Route.INVISIBLE);
     } else {
       // 非表示 → 表示
-      eyeInvisible.classList.add('hidden');
-      eyeVisibleAll.classList.remove('hidden');
+      eyeInvisible.classList.add('d-none');
+      eyeVisibleAll.classList.remove('d-none');
       visible.setAttribute('data-visible', Route.VISIBLE_ALL);
       // ルートを表示
       this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ALL, {selected: true});
@@ -394,8 +378,8 @@ export default class extends Controller {
     // アイドル状態時（マップ移動後等）
     map.addListener('idle', () => {
       // マップ読込後にマップカーソルとマップ操作ボタン一覧を表示
-      document.getElementById('map-cursor').classList.remove('hidden');
-      document.getElementById('map-board').classList.remove('hidden');
+      document.getElementById('map-cursor').classList.remove('d-none');
+      document.getElementById('map-board').classList.remove('d-none');
 
       if (!this.routeMng.selectedRoute) return;
 
@@ -465,25 +449,25 @@ export default class extends Controller {
             switch (visible){
               // 非表示
               case Route.INVISIBLE:
-                eyeVisibleAll.classList.add('hidden');
-                eyeVisibleRoute.classList.add('hidden');
-                eyeInvisible.classList.remove('hidden');
+                eyeVisibleAll.classList.add('d-none');
+                eyeVisibleRoute.classList.add('d-none');
+                eyeInvisible.classList.remove('d-none');
                 // ルートを非表示
                 this.routeMng.routes[routeId].displayMarkers(Route.INVISIBLE);
                 break;
               // 表示
               case Route.VISIBLE_ALL:
-                eyeVisibleAll.classList.remove('hidden');
-                eyeVisibleRoute.classList.add('hidden');
-                eyeInvisible.classList.add('hidden');
+                eyeVisibleAll.classList.remove('d-none');
+                eyeVisibleRoute.classList.add('d-none');
+                eyeInvisible.classList.add('d-none');
                 // ルートを表示
                 this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ALL);
                 break;
               // 表示(ルートのみ)
               case Route.VISIBLE_ROUTE:
-                eyeVisibleAll.classList.add('hidden');
-                eyeVisibleRoute.classList.remove('hidden');
-                eyeInvisible.classList.add('hidden');
+                eyeVisibleAll.classList.add('d-none');
+                eyeVisibleRoute.classList.remove('d-none');
+                eyeInvisible.classList.add('d-none');
                 // ルートを表示
                 this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ROUTE);
                 break;

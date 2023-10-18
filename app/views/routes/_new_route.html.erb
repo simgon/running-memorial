@@ -17,9 +17,9 @@
 <%# ルート名入力 %>
 <% @route = Route.new %>
 <%= turbo_frame_tag @route do %>
-  <%= form_with(model: @route, id: "text-new-route", class: "hidden") do |f| %>
+  <%= form_with(model: @route, id: "text-new-route", class: "d-none") do |f| %>
      <%= f.hidden_field :id, value: @route.id %>
-    <div class="flex-container">
+    <div class="flex-container" style="height: 34px;">
       <%# ルート名 %>
       <%= f.text_field :name, class: "form-control" %>
       <div class="flex-container align-items-center" style="gap: 10px; margin: 0 10px;">

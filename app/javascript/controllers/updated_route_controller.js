@@ -17,21 +17,21 @@ export default class extends Controller {
     switch (routeVisible){
       // 非表示
       case Route.INVISIBLE:
-        eyeVisibleAll.classList.add('hidden');
-        eyeVisibleRoute.classList.add('hidden');
-        eyeInvisible.classList.remove('hidden');
+        eyeVisibleAll.classList.add('d-none');
+        eyeVisibleRoute.classList.add('d-none');
+        eyeInvisible.classList.remove('d-none');
         break;
       // 表示
       case Route.VISIBLE_ALL:
-        eyeVisibleAll.classList.remove('hidden');
-        eyeVisibleRoute.classList.add('hidden');
-        eyeInvisible.classList.add('hidden');
+        eyeVisibleAll.classList.remove('d-none');
+        eyeVisibleRoute.classList.add('d-none');
+        eyeInvisible.classList.add('d-none');
         break;
       // 表示(ルートのみ)
       case Route.VISIBLE_ROUTE:
-        eyeVisibleAll.classList.add('hidden');
-        eyeVisibleRoute.classList.remove('hidden');
-        eyeInvisible.classList.add('hidden');
+        eyeVisibleAll.classList.add('d-none');
+        eyeVisibleRoute.classList.remove('d-none');
+        eyeInvisible.classList.add('d-none');
         break;
     }
   }

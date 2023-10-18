@@ -40,8 +40,13 @@ gem "bootsnap", require: false
 # Use Sass to process CSS
 # gem "sassc-rails"
 
-gem "bootstrap-sass",  "3.4.1"
-gem "sassc-rails",     "2.1.2"
+# gem "bootstrap-sass",  "3.4.1"
+# gem "sassc-rails",     "2.1.2"
+
+# bootstrap
+gem 'bootstrap', '~> 5.3.0'
+#jquery
+gem 'jquery-rails'
 
 gem 'dotenv-rails'
 

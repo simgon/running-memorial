@@ -169,22 +169,22 @@ export class RouteManager {
     let removeMarker = document.getElementById('remove-marker');
 
     // 追加ボタン → ルート上追加ボタン
-    if (!addMarker.classList.contains('hidden')) {
-      addMarker.classList.add('hidden');
-      addLineMarker.classList.remove('hidden');
-      removeMarker.classList.add('hidden');
+    if (!addMarker.classList.contains('d-none')) {
+      addMarker.classList.add('d-none');
+      addLineMarker.classList.remove('d-none');
+      removeMarker.classList.add('d-none');
 
     // ルート上追加ボタン → 削除ボタン
-    } else if (!addLineMarker.classList.contains('hidden')) {
-      addMarker.classList.add('hidden');
-      addLineMarker.classList.add('hidden');
-      removeMarker.classList.remove('hidden');
+    } else if (!addLineMarker.classList.contains('d-none')) {
+      addMarker.classList.add('d-none');
+      addLineMarker.classList.add('d-none');
+      removeMarker.classList.remove('d-none');
 
     // 削除ボタン → 追加ボタン
-    } else if (!removeMarker.classList.contains('hidden')) {
-      addMarker.classList.remove('hidden');
-      addLineMarker.classList.add('hidden');
-      removeMarker.classList.add('hidden');
+    } else if (!removeMarker.classList.contains('d-none')) {
+      addMarker.classList.remove('d-none');
+      addLineMarker.classList.add('d-none');
+      removeMarker.classList.add('d-none');
     }
   }
 
@@ -1057,9 +1057,9 @@ export class Route {
     })[0];
 
     if (visible) {
-      item?.getElementsByClassName('label-not-yet-save')[0].classList.remove('hidden');
+      item?.getElementsByClassName('label-not-yet-save')[0].classList.remove('d-none');
     } else {
-      item?.getElementsByClassName('label-not-yet-save')[0].classList.add('hidden');
+      item?.getElementsByClassName('label-not-yet-save')[0].classList.add('d-none');
     }
   }
 }

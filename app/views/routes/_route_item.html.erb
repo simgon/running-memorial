@@ -10,17 +10,17 @@
       <%# 表示／非表示 %>
       <div class="action-icon eye-toggle" data-action="click->routes#clickEye">
         <%= image_tag("eye.svg", alt: "eye", class: "eye-icon") %>
-        <%= image_tag("eye-slash.svg", alt: "eye-slash", class: "eye-slash-icon hidden") %>
-        <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon hidden") %>
+        <%= image_tag("eye-slash.svg", alt: "eye-slash", class: "eye-slash-icon d-none") %>
+        <%= image_tag("eye-fill.svg", alt: "eye-fill", class: "eye-fill-icon d-none") %>
       </div>
       <%# ルート機能メニュー %>
       <div>
         <%# メニュー開閉ボタン %>
         <div class="action-icon" data-action="click->routes#openRouteMenu" data-routes-target="routeMenuBtn">
-          <%= image_tag("chevron-down.svg", alt: "chevron-down", id: "route-item-action-menu-btn#{0}") %>
+          <%= image_tag("chevron-down.svg", alt: "chevron-down", id: "route-item-action-menu-btn#{route.id}") %>
         </div>
         <%# ルート機能 %>
-        <ul id="route-item-action-menu" class="hidden" data-routes-target="routeMenu">
+        <ul id="<%= "route-item-action-menu#{route.id}" %>" class="route-item-action-menu d-none" data-routes-target="routeMenu">
           <%# 編集 %>
           <li>
             <%#
@@ -61,7 +61,7 @@
   </div>
 
   <%# ルート項目（編集時） %>
-  <div class="route-item-edit hidden">
+  <div class="route-item-edit d-none">
     <%= turbo_frame_tag route do %>
       <%= form_with(model: route) do |f| %>
         <%= f.hidden_field :id, value: route.id %>

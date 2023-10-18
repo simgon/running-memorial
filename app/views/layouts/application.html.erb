@@ -52,18 +52,17 @@
   <body>
     <%# ヘッダー %>
     <% if content_for?(:header_display) && yield(:header_display) %>
-      <div class="title navbar navbar-default navbar-fixed-top">
-        <div style="flex: 1;">
-          <%= link_to "/", style: "text-decoration: none;" do %>
-            <span id="logo-icon"><%= image_tag("icon_t.png") %></span>
-            <span id="title-icon"><%= image_tag("title_t.png") %></span>
-          <% end %>
-        </div>
-
+      <div class="container-fluid sticky-top navbar bg-light border px-2">
+        <%# ロゴ %>
+        <%= link_to "/", style: "text-decoration: none;" do %>
+          <span id="logo-icon"><%= image_tag("icon_t.png") %></span>
+          <span id="title-icon"><%= image_tag("title_t.png") %></span>
+        <% end %>
+        <%# ログイン／ログアウトボタン %>
         <% if logged_in? %>
-          <%= link_to "ログアウト", logout_path, data: { "turbo-method": :delete }, class: "btn btn-danger", style: "margin-right: 10px;" %>
+          <%= link_to "ログアウト", logout_path, data: { "turbo-method": :delete }, class: "btn btn-danger" %>
         <% else %>
-          <%= link_to "ログイン", login_path, class: "btn btn-primary", style: "margin-right: 10px;" %>
+          <%= link_to "ログイン", login_path, class: "btn btn-primary" %>
         <% end %>
       </div>
     <% end %>
@@ -73,7 +72,7 @@
 
     <%# 更新後メッセージ表示 %>
     <div id="flash">
-      <div id="notification-popup" class="hidden">
+      <div id="notification-popup" class="d-none">
         <span id="notification-message">
         </span>
       </div>

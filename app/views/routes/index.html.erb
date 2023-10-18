@@ -1,57 +1,61 @@
 <div class="container-fluid" data-controller="routes">
-  <div id="site-container" class="row" data-action="click->routes#clickDocument">
+  <div class="row d-flex flex-column vh-100" data-action="click->routes#clickDocument">
     <%# ーーーーーーー %>
     <%# サイドメニュー %>
     <%# ーーーーーーー %>
-    <aside id="side-menu" class="col-sm-2">
-      <%# ハンバーガーメニュー %>
-      <div class="navbar-header">
-        <button id="hamburger" type="button" class="navbar-toggle" data-action="click->routes#openHamburgerMenu">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-      </div>
-      <%# メニュー %>
-      <div id="navbar-menu" class="collapse" data-routes-target="hamburgerMenu">
-        <%# ルート登録 %>
-        <section class="route-regist-container">
-          <%# 新しいルートボタン %>
-          <%= turbo_frame_tag "new_route" do %>
-            <%= render "new_route" %>
-          <% end %>
-          <%# 登録ルートをdata-controller="created_route"経由でマップを更新する %>
-          <div id="created_route"></div>
-        </section>
-        <%# ルート一覧 %>
-        <section id="routes" class="route-items-container">
-          <%= turbo_frame_tag "routes-list" do %>
-            <%= render @routes %>
-          <% end %>
-          <%# 更新ルートをdata-controller="updated_route"経由でマップを更新する %>
-          <div id="updated_route"></div>
-          <%# 削除ルートをdata-controller="deleted_route"経由でマップを更新する %>
-          <div id="deleted_route"></div>
-          <%# コピールートをdata-controller="copied_route"経由でマップを更新する %>
-          <div id="copied_route"></div>
-        </section>
-        <%# オプションメニュー %>
-        <section id="options-container">
-          <%= render "options_menu" %>
-        </section>
-      </div>
+    <aside id="side-menu" class="col-xl-2 py-0 px-2">
+      <nav class="navbar navbar-expand-xl p-0" data-bs-theme="dark">
+        <div class="container-fluid p-0">
+          <!-- ハンバーガーメニュー -->
+          <button class="navbar-toggler ms-auto my-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="ナビゲーションの切替">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <!-- メニュー -->
+          <div class="collapse navbar-collapse" id="navbar">
+            <div class="d-flex flex-column w-100 vh-100" id="navbar-container">
+              <!-- ルート登録 -->
+              <section class="overflow-visible w-100">
+                <!-- 新しいルートボタン -->
+                <%= turbo_frame_tag "new_route" do %>
+                  <%= render "new_route" %>
+                <% end %>
+                <!-- 登録ルートをdata-controller="created_route"経由でマップを更新する -->
+                <div id="created_route"></div>
+              </section>
+
+              <!-- ルート一覧 -->
+              <section id="routes" class="route-items-container w-100 overflow-auto flex-grow-1">
+                <%= turbo_frame_tag "routes-list" do %>
+                  <%= render @routes %>
+                <% end %>
+                <!-- 更新ルートをdata-controller="updated_route"経由でマップを更新する -->
+                <div id="updated_route"></div>
+                <!-- 削除ルートをdata-controller="deleted_route"経由でマップを更新する -->
+                <div id="deleted_route"></div>
+                <!-- コピールートをdata-controller="copied_route"経由でマップを更新する -->
+                <div id="copied_route"></div>
+              </section>
+
+              <!-- オプションメニュー -->
+              <section id="options-container" class="w-100 mt-auto">
+                <%= render "options_menu" %>
+              </section>
+            </div>
+          </div>
+        </div>
+      </nav>
     </aside>
+    
     <%# ーーーーー %>
     <%# マップ画面 %>
     <%# ーーーーー %>
-    <div id="map-contents" class="col-sm-10">
+    <div id="map-contents" class="col-xl-10">
       <%# マップ %>
       <div id="map"></div>
       <%# マップカーソル %>
-      <div id="map-cursor" class="crosshair hidden"></div>
+      <div id="map-cursor" class="crosshair d-none"></div>
       <%# マップ操作ボタン一覧 %>
-      <div id="map-board" class="map-board-disabled hidden">
+      <div id="map-board" class="map-board-disabled d-none">
         <div id="marker-container">
           <%# 保存 %>
           <%= map_button("保存", id: "save-marker", img_nm: "save.svg", data_action: "click->routes#saveMarker") %>

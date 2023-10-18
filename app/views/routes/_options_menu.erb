@@ -1,11 +1,12 @@
 <%# オプション開閉ボタン %>
-<div id="options-btn" data-action="click->routes#openOptions" data-routes-target="optionsBtn">
+<div id="options-btn" data-routes-target="optionsBtn" data-bs-toggle="collapse" data-bs-target="#options-menu" aria-controls="options-menu" aria-expanded="false" aria-label="オプションの切替">
   <span id="logo-icon"><%= image_tag("icon.png") %></span>
   <span id="app-name">ランニング・メモリアル</span>
   <span id="options-icon"><%= image_tag("three-dots.svg") %></span>
 </div>
+
 <%# オプションメニュー %>
-<ul id="options-menu" class="hidden" data-routes-target="optionsMenu">
+<ul id="options-menu" class="collapse" data-routes-target="optionsMenu">
   <%# セッションユーザーID設定 %>
   <% if @user.allow_session_user_id_setting %>
   <li>
@@ -13,7 +14,7 @@
       <div class="options-item">
         <span class="option-item"><%= image_tag("person-up.svg", alt: "person-up") %></span>
         <span class="option-item-margin"></span>
-        <span class="option-item" style="width: 100%;">
+        <span class="option-item w-100">
           <%= f.text_field :changed_user_token, class: "form-control" %>
         </span>
         <span class="option-item">
@@ -27,11 +28,11 @@
   </li>
   <% end %>
   <%# ホーム %>
-  <li>
+  <li id="home">
     <%#= link_to "/", onclick: "location.href='/'" do %>
     <%= link_to(root_path) do %>
       <div class="options-item">
-        <span class="option-item" style="width:25px;text-align:center;"><%= image_tag("house.svg", alt: "house") %></span>
+        <span class="option-item text-center" style="width:25px;"><%= image_tag("house.svg", alt: "house") %></span>
         <span class="option-item-margin"></span>
         <span class="option-item">ホーム</span>
       </div>
@@ -40,12 +41,12 @@
   <%# ユーザートークン %>
   <li>
     <div class="options-item">
-      <span class="option-item" style="width:25px;text-align:center;">ID</span>
+      <span class="option-item text-center" style="width:25px;">ID</span>
       <span class="option-item-margin"></span>
       <span class="option-item"><%= @user.user_token %></span>
       <span class="option-item-margin"></span>
       <span class="option-item">
-        <%= button_tag(id: "copy-user-token", type: "submit", class: "submit-icon", style: "margin-left: 5px;", data: { action: "click->routes#clickCopyUserToken", "user-token": @user.user_token }) do %>
+        <%= button_tag(id: "copy-user-token", type: "submit", class: "submit-icon", data: { action: "click->routes#clickCopyUserToken", "user-token": @user.user_token }) do %>
           <%= image_tag("clipboard.svg", alt: "clipboard") %>
         <% end %>
       </span>
@@ -57,7 +58,7 @@
     <% if logged_in? %>
       <%= link_to logout_path, data: { "turbo-method": :delete } do %>
         <div class="options-item">
-          <span class="option-item" style="width:25px;text-align:center;"><%= image_tag("logout.svg", alt: "logout") %></span>
+          <span class="option-item text-center" style="width:25px;"><%= image_tag("logout.svg", alt: "logout") %></span>
           <span class="option-item-margin"></span>
           <span class="option-item">ログアウト</span>
         </div>
@@ -65,7 +66,7 @@
     <% else %>
       <%= link_to login_path do %>
         <div class="options-item">
-          <span class="option-item" style="width:25px;text-align:center;"><%= image_tag("login.svg", alt: "login") %></span>
+          <span class="option-item text-center" style="width:25px;"><%= image_tag("login.svg", alt: "login") %></span>
           <span class="option-item-margin"></span>
           <span class="option-item">ログイン</span>
         </div>
