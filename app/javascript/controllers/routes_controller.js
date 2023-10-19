@@ -5,7 +5,10 @@ import { RouteMap, RouteManager, Route, initSortable } from '../custom/route';
 export default class extends Controller {
   static targets = ['optionsMenu', 'optionsBtn'];
 
-  initialize() {}
+  initialize() {
+    // iOSにおけるリンクをロングタップ時の新規タブ表示（コールアウト表示）を無効
+    document.documentElement.style.webkitTouchCallout='none';
+  }
   
   connect() {
     // マップ初期化処理
