@@ -18,6 +18,11 @@ export default class extends Controller {
     let height = window.innerHeight;
     document.documentElement.style.setProperty('--vh', height / 100 + 'px');
 
+    // モバイルアプリからの場合、「ホーム」を削除（モバイルアプリの場合、ホーム画面は表示しない）
+    if (Common.getCookie("mobile_device")) {
+      document.querySelector('#home').remove();
+    }
+
     // メッセージ表示（リダイレクト時）
     const flash_messages = document.querySelectorAll('.flash_messages');
 
