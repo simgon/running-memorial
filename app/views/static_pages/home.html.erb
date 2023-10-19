@@ -1,7 +1,9 @@
 <% provide(:header_display, true) %>
 
 <% flash.each do |message_type, message| %>
-  <%= content_tag(:div, message, class: "alert alert-#{message_type} mb-0") %>
+  <% if message_type != "autohide" %>
+    <%= content_tag(:div, message, class: "alert alert-#{message_type} mb-0") %>
+  <% end %>
 <% end %>
 
 <div class="bg-light">
@@ -30,13 +32,13 @@
         <%= image_tag("introduction_route_display.gif") %>
       </div>
       
-      <div class="instruction">
+      <div class="instruction" style="border: 1px solid #ddd;">
         <%# 各プラットフォームへのリンク %>
         <div class="d-flex justify-content-evenly my-4">
-          <%= link_to "/", target: "_blank", rel: "noopener noreferrer", class: "btn btn-default btn-browser" do %>
-            <%= image_tag("browser-chrome.svg") %>
-            <span>ブラウザ版</span>
-          <% end %>
+          <%#= link_to "/", target: "_blank", rel: "noopener noreferrer", class: "btn btn-default btn-browser" do %>
+            <%#= image_tag("browser-chrome.svg") %>
+            <%# <span>ブラウザ版</span> %>
+          <%# end %>
 
           <%= link_to "/", class: "disable-click" do %>
             <%= image_tag("app_store.png", style: "height:40px;") %>

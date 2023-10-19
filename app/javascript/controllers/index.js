@@ -21,3 +21,12 @@ application.register('deleted_route', DeletedRouteController)
 
 import CopiedRouteController from './copied_route_controller'
 application.register('copied_route', CopiedRouteController)
+
+import CreatedSessionController from './created_session_controller'
+application.register('created_session', CreatedSessionController)
+
+import CreatedPasswordResetController from './created_password_reset_controller'
+application.register('created_password_reset', CreatedPasswordResetController)
+
+import CreatedUserController from './created_user_controller'
+application.register('created_user', CreatedUserController)

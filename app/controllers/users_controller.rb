@@ -34,6 +34,7 @@ class UsersController < ApplicationController
     if @user.save
       # 確認メール送信
       @user.send_activation_email
+      flash[:autohide] = false
       flash[:success] = "アカウントを有効にするには、メールをご確認ください。"
 
       # 一度もマップ画面を開いていない場合、ユーザートークンをセット
@@ -41,7 +42,7 @@ class UsersController < ApplicationController
         cookies.permanent.encrypted[:user_token] = @user.user_token
       end
       
-      redirect_to root_url
+      # redirect_to root_url
     else
       render 'new', status: :unprocessable_entity
     end
@@ -89,7 +90,8 @@ class UsersController < ApplicationController
 
     if @user.destroy
       flash[:success] = "アカウントを削除しました"
-      redirect_to root_url, status: :see_other
+      # redirect_to root_url, status: :see_other
+      redirect_to request.original_url, status: :see_other
     else
       render 'index', status: :see_other
     end

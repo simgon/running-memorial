@@ -62,7 +62,7 @@
         <% if logged_in? %>
           <%= link_to "ログアウト", logout_path, data: { "turbo-method": :delete }, class: "btn btn-danger" %>
         <% else %>
-          <%= link_to "ログイン", login_path, class: "btn btn-primary" %>
+          <%= link_to "ログイン", login_path, class: "btn btn-primary", data: { turbo_frame: "modal" } %>
         <% end %>
       </div>
     <% end %>
@@ -70,14 +70,34 @@
     <%# コンテンツ %>
     <%= yield %>
 
-    <%# 更新後メッセージ表示 %>
+    <%# メッセージ表示（turbo_stream更新時） %>
     <div id="flash">
       <div id="notification-popup" class="d-none">
-        <span id="notification-message">
-        </span>
+        <div class="d-flex">
+          <span id="notification-message"></span>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" id="notification-close"></button>
+        </div>
       </div>
     </div>
-    <input type="hidden" id="flash_message" name="flash_message" value="<% flash.each do |message_type, message| %><%= message %><% end %>">
+
+    <%# メッセージ表示（リダイレクト時（routes_controller.jsにて表示）） %>
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+      <div id="toast_message" class="toast w-auto" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body"></div>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+    <% flash.each do |message_type, message| %>
+      <div class="flash_messages">
+        <input type="hidden" class="message_type" value="<%= message_type %>">
+        <input type="hidden" class="message" value="<%= message %>">
+      </div>
+    <% end %>
+
+    <%# Turbo Framesのターゲット、モーダル %>
+    <%= turbo_frame_tag "modal" %>
 
     <%#= debug(params) if Rails.env.development? %>
   </body>

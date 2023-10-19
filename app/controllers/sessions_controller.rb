@@ -10,21 +10,31 @@ class SessionsController < ApplicationController
         reset_session
         remember user
         log_in user
-        redirect_to forwarding_url || routes_url
+
+        flash[:autohide] = true
+        flash[:success] = "ログインしました。"
+
+        # redirect_to forwarding_url || routes_url
       else
-        message  = "アカウントが有効化されていません。メールをご確認ください。"
-        flash[:warning] = message
-        redirect_to root_url
+        flash.now[:warning] = "アカウントが有効化されていません。メールをご確認ください。"
+        # redirect_to routes_url
+        render 'new', status: :unprocessable_entity
       end
     else
       flash.now[:danger] = "メールアドレスまたはパスワードが間違っています"
-      # エラーメッセージを作成する
+      # render 'static_pages/home', status: :unprocessable_entity
+      # redirect_to routes_url
       render 'new', status: :unprocessable_entity
     end
   end
 
   def destroy
     log_out
-    redirect_to root_url, status: :see_other
+
+    flash[:autohide] = true
+    flash[:success] = "ログアウトしました。"
+
+    # redirect_to root_url, status: :see_other
+    redirect_to request.original_url, status: :see_other
   end
 end

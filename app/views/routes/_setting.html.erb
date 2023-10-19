@@ -1,0 +1,36 @@
+<div class="modal fade" id="settingModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">設定</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="instruction">
+          <%# アカウント削除 %>
+          <% if logged_in? %>
+            <p>アカウント削除</p>
+            <ul>
+              <li>
+                <small>アカウント情報、ルート情報の全てのデータが削除され復元はできません。</small>
+              </li>
+              <li class="text-end">
+                <%= link_to "削除", account_destroy_path, class: "btn btn-danger", data: { turbo_method: :delete, turbo_confirm: "アカウントを削除します。\nアカウント情報、ルート情報の全てのデータが削除され復元はできません。よろしいですか？" } %>
+              </li>
+            </ul>
+          <% end %>
+          <%# ユーザートークン %>
+          <p>ID</p>
+          <ul>
+            <li>
+              <%= @user.user_token %>
+              <%#= button_tag(id: "copy-user-token", type: "submit", class: "submit-icon ms-2", data: { action: "click->routes#clickCopyUserToken", "user-token": @user.user_token }) do %>
+                <%#= image_tag("clipboard.svg", alt: "clipboard") %>
+              <%# end %>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

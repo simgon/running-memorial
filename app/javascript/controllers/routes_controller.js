@@ -18,10 +18,30 @@ export default class extends Controller {
     let height = window.innerHeight;
     document.documentElement.style.setProperty('--vh', height / 100 + 'px');
 
-    // 通知ダイアログを表示（リダイレクト時）
-    const message = document.querySelector('#flash_message').value;
-    if (message) {
-      Common.showNotification(message);
+    // メッセージ表示（リダイレクト時）
+    const flash_messages = document.querySelectorAll('.flash_messages');
+
+    if (flash_messages) {
+      let autohide = true;
+
+      flash_messages.forEach(flash_message => {
+        let message_type = flash_message.querySelector('.message_type').value;
+        let message = flash_message.querySelector('.message').value;
+
+        if (message_type == 'autohide') {
+          // 自動非表示
+          autohide = JSON.parse(message);
+        } else {
+          // メッセージ内容をセット
+          document.querySelector('.toast-body').textContent = message;
+          // メッセージ表示
+          const toast = document.getElementById('toast_message');
+          const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast, {
+            autohide: autohide
+          });
+          toastBootstrap.show();
+        }
+      });
     }
 
     // Turbo Frameのロード後

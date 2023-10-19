@@ -11,8 +11,9 @@ class PasswordResetsController < ApplicationController
     if @user
       @user.create_reset_digest
       @user.send_password_reset_email
-      flash[:info] = "パスワードの再設定リンクを記載したメールを送信しました。"
-      redirect_to root_url
+      flash[:autohide] = false
+      flash[:success] = "パスワードの再設定リンクを記載したメールを送信しました。"
+      # redirect_to root_url
     else
       flash.now[:danger] = "アカウント未登録のメールアドレスです。"
       render 'new', status: :unprocessable_entity

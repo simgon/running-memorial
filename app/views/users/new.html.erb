@@ -4,8 +4,14 @@
 <div class="container mt-4">
   <h1>新規アカウントを作成</h1>
 
+  <%= render "modal", title: "新規アカウント作成" do %>
+
   <div class="row justify-content-center">
     <div class="col-md-6">
+      <% flash.each do |message_type, message| %>
+        <%= content_tag(:div, message, class: "alert alert-#{message_type}") %>
+      <% end %>
+
       <%= form_with(model: @user) do |f| %>
         <%= render 'application/error_messages' %>
 
@@ -22,4 +28,9 @@
       <% end %>
     </div>
   </div>
+
+    <%# data-controller="created_user"経由で更新 %>
+    <div id="created_user"></div>
+  <% end %>
+
 </div>
