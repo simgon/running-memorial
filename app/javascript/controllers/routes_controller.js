@@ -18,7 +18,7 @@ export default class extends Controller {
     let height = window.innerHeight;
     document.documentElement.style.setProperty('--vh', height / 100 + 'px');
 
-    // モバイルアプリからの場合、「ホーム」を削除（モバイルアプリの場合、ホーム画面は表示しない）
+    // モバイルアプリからの場合、「ホーム」ボタンを削除（モバイルアプリの場合、ホーム画面は表示しない）
     if (Common.getCookie("mobile_device")) {
       document.querySelector('#home').remove();
     }
