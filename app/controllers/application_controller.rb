@@ -1,12 +1,14 @@
 class ApplicationController < ActionController::Base
   include SessionsHelper
 
+  # iOS(WKWebView)でのみInvalidAuthenticityTokenが発生する場合がある。（ブラウザ版とAndroid版では発生しない）
+  # iOSアプリ側で対応する
   # Resque form for invalid authentificitytoken
-  rescue_from ActionController::InvalidAuthenticityToken, :with => :bad_token
-  def bad_token
-    flash[:warning] = "Session expired"
-    redirect_to routes_path
-  end
+  # rescue_from ActionController::InvalidAuthenticityToken, :with => :bad_token
+  # def bad_token
+  #   flash[:warning] = "Session expired"
+  #   redirect_to routes_path
+  # end
 
   # クッキーから値を取得
   def get_cookies_value(key)
