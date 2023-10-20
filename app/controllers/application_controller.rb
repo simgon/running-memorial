@@ -1,6 +1,13 @@
 class ApplicationController < ActionController::Base
   include SessionsHelper
 
+  # Resque form for invalid authentificitytoken
+  rescue_from ActionController::InvalidAuthenticityToken, :with => :bad_token
+  def bad_token
+    flash[:warning] = "Session expired"
+    redirect_to routes_path
+  end
+
   # クッキーから値を取得
   def get_cookies_value(key)
     if Rails.env.test?
