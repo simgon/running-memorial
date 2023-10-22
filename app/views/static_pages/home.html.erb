@@ -32,7 +32,7 @@
         <%= image_tag("introduction_route_display.gif") %>
       </div>
       
-      <div class="instruction" style="border: 1px solid #ddd;">
+      <div class="instruction" style="border-top: 1px solid #ddd;">
         <%# 各プラットフォームへのリンク %>
         <div class="d-flex justify-content-evenly my-4">
           <%#= link_to "/", target: "_blank", rel: "noopener noreferrer", class: "btn btn-default btn-browser" do %>
@@ -49,11 +49,19 @@
           <% end %>
         </div>
 
+        <h2>基本操作</h2>
+        <p>ルート作成</p>
+        <ul>
+          <li>「新しいルート」ボタンをクリックして新規ルートを作成</li>
+          <li>マップ上にマーカーを追加して、ルートを作成</li>
+          <li>「保存」ボタンをクリック</li>
+        </ul>
+
         <h2>操作方法</h2>
         <p>マーカーを追加</p>
         <ul>
-          <li>追加ボタンをクリック</li>
-          <li>マップ上をクリック</li>
+          <li>「追加」ボタンをクリック（「切替」ボタンで切り替え）</li>
+          <li>or マップ上をクリック</li>
         </ul>
 
         <p>マーカーを移動</p>
@@ -63,7 +71,7 @@
 
         <p>ルート線上にマーカーを追加</p>
         <ul>
-          <li>ルート上追加ボタンをクリック</li>
+          <li>画面中心にルート線上を合わせて、「ルート上追加」ボタンをクリック（「切替」ボタンで切り替え）</li>
           <li>
             <p>PC</p>
             <ul>
@@ -80,7 +88,7 @@
 
         <p>マーカーを削除</p>
         <ul>
-          <li>削除ボタンをクリック</li>
+          <li>画面中心にマーカーを合わせて、「削除」ボタンをクリック（「切替」ボタンで切り替え）</li>
           <li>
             <p>PC</p>
             <ul>
@@ -93,6 +101,26 @@
               <li>マーカーをロングタップ</li>
             </ul>
           </li>
+        </ul>
+
+        <p>「追加」、「ルート上追加」、「削除」ボタンを切替</p>
+        <ul>
+          <li>「切替」ボタンをクリック</li>
+        </ul>
+
+        <p>１つ操作を戻す</p>
+        <ul>
+          <li>「１つ戻す」ボタンをクリック</li>
+        </ul>
+
+        <p>全ての操作をクリア</p>
+        <ul>
+          <li>「クリア」ボタンをクリック</li>
+        </ul>
+
+        <p>作成したルートを保存</p>
+        <ul>
+          <li>「保存」ボタンをクリック</li>
         </ul>
 
         <h2>その他</h2>
@@ -117,7 +145,7 @@
     </div>
   <% end %>
 
-  <div class="copyright">
+  <div class="copyright" style="border-top: 1px solid #ddd;">
     <small>Copyright <%= Date.today.year.to_s %> Simgonsoft <%= link_to "プライバシーポリシー", privacypolicy_path, style: "color:#000000" %></small>
   </div>
 </div>
