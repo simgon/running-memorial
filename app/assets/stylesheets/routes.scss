@@ -22,6 +22,7 @@
 // }
 
 #side-menu {
+  min-width: 300px;
   background-color: $main-color;
   color: $sub-color;
   font-size: 14px;
@@ -165,6 +166,11 @@
     display: flex;
     gap: 10px;
   }
+}
+
+.route-item-action_nm {
+  overflow-x: auto;
+  width: 200px;
 }
 
 .route-name-edit {
@@ -438,6 +444,10 @@
 @include media-breakpoint-down(xl) { 
   #navbar-container {
     height: 255px !important;
+  }
+
+  .route-item-action_nm {
+    width: 70vw;
   }
   
   #map-contents {
