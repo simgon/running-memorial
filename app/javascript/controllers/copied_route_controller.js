@@ -16,7 +16,7 @@ export default class extends Controller {
 
     // マップ上にコピールートのマーカーを反映
     orgRoute.dotMarkers.forEach(marker => {
-      newRoute.addMarker(marker.position, {init: false, visibleNotYetSaveLabel: false, pushUndo: false});
+      newRoute.addMarker(marker.position, {init: false, visibleUnsavedLabel: false, pushUndo: false});
     });
     routeMng.routes[newRouteId] = newRoute;
 

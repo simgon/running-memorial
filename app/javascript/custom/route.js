@@ -214,7 +214,7 @@ export class RouteManager {
         // マップ上にマーカーを表示
         data.forEach(loc => {
           const position = new google.maps.LatLng(loc.lat_loc, loc.lon_loc);
-          this.selectedRoute.addMarker(position, {init: true, visibleNotYetSaveLabel: false, pushUndo: false});
+          this.selectedRoute.addMarker(position, {init: true, visibleUnsavedLabel: false, pushUndo: false});
           // ドラッグ可能
           this.selectedRoute.dotMarkers.forEach(dotMarker => dotMarker.setDraggable(true));
         });
@@ -233,7 +233,7 @@ export class RouteManager {
     // 保存
     this.postRoute();
     // 未保存ラベルを非表示
-    this.selectedRoute.visibleNotYetSaveLabel(false);
+    this.selectedRoute.visibleUnsavedLabel(false);
   }
 
   /**
@@ -613,12 +613,13 @@ export class Route {
     this.distanceLabels = [];   // 距離ラベル
     this.routeLines = [];       // ルート線
     this.undoMng = new UndoManager(this);
+    this.unsaved = false;       // 未保存状態を保持
   }
 
   /**
    * マーカーを追加
    */
-  addMarker(position, options = {init: false, visibleNotYetSaveLabel: true, pushUndo: true}) {
+  addMarker(position, options = {init: false, visibleUnsavedLabel: true, pushUndo: true}) {
     // ドットマーカーを作成
     const newDotMarker = this.routeMng.createDotMarker(this, {lat: position.lat(), lng: position.lng()});
 
@@ -626,7 +627,7 @@ export class Route {
     if (options.init) newDotMarker.setDraggable(false);
     
     // 未保存ラベルを表示
-    if (options.visibleNotYetSaveLabel) this.visibleNotYetSaveLabel(true);
+    if (options.visibleUnsavedLabel) this.visibleUnsavedLabel(true);
 
     // undo保持
     if (options.pushUndo) this.undoMng.push(UndoManager.ADD, newDotMarker.customId);
@@ -713,7 +714,7 @@ export class Route {
     }
 
     // 未保存ラベルを表示
-    this.visibleNotYetSaveLabel(true);
+    this.visibleUnsavedLabel(true);
   }
 
   /**
@@ -788,7 +789,7 @@ export class Route {
     }
 
     // 未保存ラベルを表示
-    this.visibleNotYetSaveLabel(true);
+    this.visibleUnsavedLabel(true);
   }
 
   /**
@@ -815,7 +816,7 @@ export class Route {
     this.undoMng = new UndoManager(this);
 
     // 未保存ラベルを非表示
-    this.visibleNotYetSaveLabel(false);
+    this.visibleUnsavedLabel(false);
   }
 
   /**
@@ -863,7 +864,7 @@ export class Route {
     }
 
     // 未保存ラベルを表示
-    this.visibleNotYetSaveLabel(true);
+    this.visibleUnsavedLabel(true);
   }
 
   /**
@@ -1047,7 +1048,7 @@ export class Route {
   /**
    * 未保存ラベル表示／非表示
    */
-  visibleNotYetSaveLabel(visible) {
+  visibleUnsavedLabel(visible) {
     // ルート一覧を取得
     const listItems = document.getElementById('routes').getElementsByClassName('route-item');
 
@@ -1057,10 +1058,13 @@ export class Route {
     })[0];
 
     if (visible) {
-      item?.getElementsByClassName('label-not-yet-save')[0].classList.remove('d-none');
+      item?.getElementsByClassName('label-unsaved')[0].classList.remove('d-none');
     } else {
-      item?.getElementsByClassName('label-not-yet-save')[0].classList.add('d-none');
+      item?.getElementsByClassName('label-unsaved')[0].classList.add('d-none');
     }
+
+    // 未保存状態を保持
+    this.unsaved = visible;
   }
 }
 
@@ -1161,7 +1165,7 @@ class UndoManager {
             this.route.moveMarker(this.route.dotMarkers[1], tmpPos, {pushUndo: false});
           } else {
             // 末尾マーカー
-            this.route.addMarker(undoInfo.position, {init: false, visibleNotYetSaveLabel: false, pushUndo: false});
+            this.route.addMarker(undoInfo.position, {init: false, visibleUnsavedLabel: false, pushUndo: false});
           }
         }
         break;

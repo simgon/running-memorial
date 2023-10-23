@@ -171,6 +171,9 @@
 .route-item-action_nm {
   overflow-x: auto;
   width: 200px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
 .route-name-edit {

@@ -461,7 +461,7 @@ export default class extends Controller {
             // マップ上にマーカーを表示
             data.forEach(loc => {
               const position = new google.maps.LatLng(loc.lat_loc, loc.lon_loc);
-              route.addMarker(position, {init: true, visibleNotYetSaveLabel: false, pushUndo: false});
+              route.addMarker(position, {init: true, visibleUnsavedLabel: false, pushUndo: false});
             });
             this.routeMng.routes[routeId] = route;
 

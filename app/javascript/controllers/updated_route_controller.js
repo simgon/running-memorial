@@ -34,5 +34,8 @@ export default class extends Controller {
         eyeInvisible.classList.add('d-none');
         break;
     }
+
+    // 未保存ラベル
+    routeMng.selectedRoute.visibleUnsavedLabel(routeMng.selectedRoute.unsaved);
   }
 }

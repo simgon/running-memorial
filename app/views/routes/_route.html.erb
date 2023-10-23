@@ -4,9 +4,6 @@
     <%# 並び替え用ドラッグハンドル %>
     <div><%= image_tag("line.svg", alt: "line", class: "drag-handle") %></div>
 
-    <%# 未保存ラベル %>
-    <span class="label-not-yet-save badge text-bg-danger d-none">未保存</span>
-
     <%# ルート項目（通常時／編集時） %>
     <div class="route-item-container">
       <%= render "route_item", route: route %>
