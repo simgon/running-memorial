@@ -205,6 +205,13 @@ export default class extends Controller {
     let routeId = targetItem.getAttribute('data-route-id');
     let visible = targetItem.getAttribute('data-visible');
     
+    // 再度ルート選択された場合 かつ クリックされた範囲がルート名の場合
+    if (this.routeMng.selectedRoute?.routeId == routeId && event.target.classList.contains('route-item-action_nm')) {
+      // 選択ルート位置へマップを移動
+      this.routeMng.map.setCenter(this.routeMng.selectedRoute.dotMarkers[0]?.position);
+      return;
+    }
+
     // ルート一覧を取得
     const listItems = document.getElementById('routes').getElementsByClassName('route-item');
 
