@@ -1058,9 +1058,15 @@ export class Route {
     })[0];
 
     if (visible) {
+      // 未保存ラベルを表示
       item?.getElementsByClassName('label-unsaved')[0].classList.remove('d-none');
+      // 保存ボタンを未保存状態にする
+      document.getElementById('save-marker').classList.add('unsaved');
     } else {
+      // 未保存ラベルを非表示表示
       item?.getElementsByClassName('label-unsaved')[0].classList.add('d-none');
+      // 保存ボタンを通常に戻す
+      document.getElementById('save-marker').classList.remove('unsaved');
     }
 
     // 未保存状態を保持

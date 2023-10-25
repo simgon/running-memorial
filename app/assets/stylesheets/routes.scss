@@ -124,6 +124,23 @@
     height: 100%;
     border-color: #3CB371;
   }
+  &.unsaved {
+    animation: bounce 1.5s ease;
+    transition: filter 1,5s;
+    filter: hue-rotate(180deg);
+  
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-10px);
+      }
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+  }
 }
 
 /* ルート項目 */

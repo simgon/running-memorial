@@ -266,6 +266,15 @@ export default class extends Controller {
       }
     });
 
+    // 保存ボタン
+    if (this.routeMng.selectedRoute?.unsaved) {
+      // 保存ボタンを未保存状態にする
+      document.getElementById('save-marker').classList.add('unsaved');
+    } else {
+      // 保存ボタンを通常に戻す
+      document.getElementById('save-marker').classList.remove('unsaved');
+    }
+
     // 同一地点で重なったルート線と距離ラベルの重複を排除
     this.routeMng.displayMostRelevantRoute();
 
