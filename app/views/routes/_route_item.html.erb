@@ -69,7 +69,6 @@
   <div class="route-item-edit d-none">
     <%= turbo_frame_tag route do %>
       <%= form_with(model: route) do |f| %>
-        <%= f.hidden_field :id, value: route.id %>
         <div class="flex-container">
           <%# ルート名 %>
           <%= f.text_field :name, class: "route-name-edit", style: "margin-right: 10px;" %>

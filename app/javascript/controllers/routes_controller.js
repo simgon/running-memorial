@@ -5,28 +5,27 @@ import { RouteMap, RouteManager, Route, initSortable } from '../custom/route';
 export default class extends Controller {
   static targets = ['optionsMenu', 'optionsBtn'];
 
-  initialize() {
-    // iOSにおけるリンクをロングタップ時の新規タブ表示（コールアウト表示）を無効
-    document.documentElement.style.webkitTouchCallout='none';
-  }
+  initialize() {}
   
   connect() {
     // マップ初期化処理
     this.initMap();
 
+    // メッセージ表示（リダイレクト時）
+    this.showFlashMessage();
+
+    // モバイル対応処理
+    this.configureMobile();
+
     // ルート一覧の並び替えを有効にする
     initSortable();
+  }
 
-    // スマホ画面のステータスバー対応。カスタムプロパティとして画面高さを保持。
-    let height = window.innerHeight;
-    document.documentElement.style.setProperty('--vh', height / 100 + 'px');
+  disconnect() {}
 
-    // モバイルアプリからの場合、「ホーム」ボタンを削除（モバイルアプリの場合、ホーム画面は表示しない）
-    if (Common.getCookie("mobile_device")) {
-      document.querySelector('#home').remove();
-    }
-
-    // メッセージ表示（リダイレクト時）
+  // メッセージ表示（リダイレクト時）
+  // ログイン機能はリダイレクトさせるため、ここでメッセージを表示
+  showFlashMessage() {
     const flash_messages = document.querySelectorAll('.flash_messages');
 
     if (flash_messages) {
@@ -51,17 +50,23 @@ export default class extends Controller {
         }
       });
     }
-
-    // Turbo Frameのロード後
-    document.addEventListener('turbo:frame-load', function(event) {
-      // テキストボックスにフォーカスする
-      const element = event.target.querySelector('#route_name');
-      element?.focus();
-      element?.setSelectionRange(element?.value.length, element?.value.length);
-    });
   }
 
-  disconnect() {}
+  // モバイル対応処理
+  configureMobile() {
+    // モバイルアプリからの場合、「ホーム」ボタンを削除（モバイルアプリの場合、ホーム画面は表示しない）
+    // Cookieに「mobile_device」が設定されている場合は、モバイルアプリからのアクセスと判断する
+    if (Common.getCookie("mobile_device")) {
+      document.querySelector('#home').remove();
+    }
+
+    // iOSにおけるリンクをロングタップ時の新規タブ表示（コールアウト表示）を無効
+    document.documentElement.style.webkitTouchCallout='none';
+
+    // スマホ画面のステータスバー対応。カスタムプロパティとして画面高さを保持。
+    // let height = window.innerHeight;
+    // document.documentElement.style.setProperty('--vh', height / 100 + 'px');
+  }
 
   // -------------------
   // イベント処理
@@ -223,32 +228,46 @@ export default class extends Controller {
     // 選択ルートの一覧項目の背景色を変更
     targetItem.style.backgroundColor = '#343641';
 
-    if (visible == Route.VISIBLE_ALL) {
+    // マップボタン一覧
+    const mapBoard = document.getElementById('map-board');            // マップボード
+    const saveMarker = document.getElementById('save-marker');        // 保存ボタン
+    const switchMarker = document.getElementById('switch-marker');    // 切替ボタン
+    const addMarker = document.getElementById('add-marker');          // マーカー追加ボタン
+    const addLineMarker = document.getElementById('add-line-marker'); // ルート上追加ボタン
+    const removeMarker = document.getElementById('remove-marker');    // マーカー削除ボタン
+    const undoMarker = document.getElementById('undo-marker');        // １つ戻すボタン
+    const clearMarker = document.getElementById('clear-marker');      // クリアボタン
+    const mapButtons = [saveMarker, switchMarker, addMarker, addLineMarker, removeMarker, undoMarker, clearMarker];
+
+    if (visible === Route.VISIBLE_ALL) {
       // 選択ルートを保持
       this.routeMng.selectedRoute = this.routeMng.routes[routeId];
 
       // マップボタン一覧を活性化
-      document.getElementById('map-board').classList.remove('map-board-disabled');
-      document.getElementById('save-marker').removeAttribute('disabled');
-      document.getElementById('switch-marker').removeAttribute('disabled');
-      document.getElementById('add-marker').removeAttribute('disabled');
-      document.getElementById('add-line-marker').setAttribute('disabled', '');
-      document.getElementById('remove-marker').setAttribute('disabled', '');
-      document.getElementById('undo-marker').removeAttribute('disabled');
-      document.getElementById('clear-marker').removeAttribute('disabled');
+      mapBoard.classList.remove('map-board-disabled');
+      mapButtons.forEach(button => {
+         button.removeAttribute('disabled');
+      });
+      addLineMarker.setAttribute('disabled', '');
+      removeMarker.setAttribute('disabled', '');
     } else {
       // 選択ルートを未選択
       this.routeMng.selectedRoute = null;
 
       // マップボタン一覧を非活性化
-      document.getElementById('map-board').classList.add('map-board-disabled');
-      document.getElementById('save-marker').setAttribute('disabled', '');
-      document.getElementById('switch-marker').setAttribute('disabled', '');
-      document.getElementById('add-marker').setAttribute('disabled', '');
-      document.getElementById('add-line-marker').setAttribute('disabled', '');
-      document.getElementById('remove-marker').setAttribute('disabled', '');
-      document.getElementById('undo-marker').setAttribute('disabled', '');
-      document.getElementById('clear-marker').setAttribute('disabled', '');
+      mapBoard.classList.add('map-board-disabled');
+      mapButtons.forEach(button => {
+        button.setAttribute('disabled', '');
+      });
+    }
+
+    // 保存ボタン
+    if (this.routeMng.selectedRoute?.unsaved) {
+      // 保存ボタンを未保存状態にする
+      document.getElementById('save-marker').classList.add('unsaved');
+    } else {
+      // 保存ボタンを通常に戻す
+      document.getElementById('save-marker').classList.remove('unsaved');
     }
     
     // 選択／未選択ルート
@@ -266,15 +285,6 @@ export default class extends Controller {
       }
     });
 
-    // 保存ボタン
-    if (this.routeMng.selectedRoute?.unsaved) {
-      // 保存ボタンを未保存状態にする
-      document.getElementById('save-marker').classList.add('unsaved');
-    } else {
-      // 保存ボタンを通常に戻す
-      document.getElementById('save-marker').classList.remove('unsaved');
-    }
-
     // 同一地点で重なったルート線と距離ラベルの重複を排除
     this.routeMng.displayMostRelevantRoute();
 
@@ -286,41 +296,42 @@ export default class extends Controller {
   clickEye(event) {
     const targetEye = event.currentTarget
 
-    // 表示／非表示
+    // ルート表示／非表示
     const eyeVisibleAll = targetEye.querySelector('.eye-icon');
     const eyeVisibleRoute = targetEye.querySelector('.eye-fill-icon');
     const eyeInvisible = targetEye.querySelector('.eye-slash-icon');
 
     let routeId = targetEye.closest('[data-route-id]').getAttribute('data-route-id');
     let visible = targetEye.closest('[data-visible]');
-    
+
+    let newVisible;
+    let newEyeIcon;
+
     if (!eyeVisibleAll.classList.contains('d-none')) {
       // 表示 → 表示(ルートのみ)
-      eyeVisibleAll.classList.add('d-none');
-      eyeVisibleRoute.classList.remove('d-none');
-      visible.setAttribute('data-visible', Route.VISIBLE_ROUTE);
-      // ルートを表示(ルートのみ)
-      this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ROUTE, {selected: true});
-      this.postRouteVisible(routeId, Route.VISIBLE_ROUTE);
+      newVisible = Route.VISIBLE_ROUTE;
+      newEyeIcon = eyeVisibleRoute;      
     } else if (!eyeVisibleRoute.classList.contains('d-none')) {
       // 表示(ルートのみ) → 非表示
-      eyeVisibleRoute.classList.add('d-none');
-      eyeInvisible.classList.remove('d-none');
-      visible.setAttribute('data-visible', Route.INVISIBLE);
-      // ルートを非表示
-      this.routeMng.routes[routeId].displayMarkers(Route.INVISIBLE, {selected: true});
-      this.postRouteVisible(routeId, Route.INVISIBLE);
+      newVisible = Route.INVISIBLE;
+      newEyeIcon = eyeInvisible;
     } else {
       // 非表示 → 表示
-      eyeInvisible.classList.add('d-none');
-      eyeVisibleAll.classList.remove('d-none');
-      visible.setAttribute('data-visible', Route.VISIBLE_ALL);
-      // ルートを表示
-      this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ALL, {selected: true});
-      this.postRouteVisible(routeId, Route.VISIBLE_ALL);
+      newVisible = Route.VISIBLE_ALL;
+      newEyeIcon = eyeVisibleAll;
     }
-  }
 
+    // アイコン表示／非表示
+    eyeVisibleAll.classList.add('d-none');
+    eyeVisibleRoute.classList.add('d-none');
+    eyeInvisible.classList.add('d-none');
+    newEyeIcon.classList.remove('d-none');
+    visible.setAttribute('data-visible', newVisible);
+    // ルートを表示
+    this.routeMng.routes[routeId].displayMarkers(newVisible, {selected: true});
+    this.postRouteVisible(routeId, newVisible);
+  }
+  
   // ユーザートークン
   clickCopyUserToken(event) {
     // ユーザートークンをクリップボードにコピー
@@ -343,17 +354,17 @@ export default class extends Controller {
     let mapOptions = {
       zoom: 16,
       center: new google.maps.LatLng('34.724789', '135.496594'),
-      clickableIcons: false,        // マップ上アイコン無効化
-      keyboardShortcuts: false,     // キーボードショートカット無効化
-      draggableCursor: 'default',   // ドラッグ時カーソル
-      mapTypeControl: true,         // マップタイプ コントロール
-      fullscreenControl: false,     // 全画面表示 コントロール
-      streetViewControl: true,      // ストリートビュー コントロール
+      clickableIcons: false,                // マップ上アイコン無効化
+      keyboardShortcuts: false,             // キーボードショートカット無効化
+      draggableCursor: 'default',           // ドラッグ時カーソル
+      mapTypeControl: true,                 // マップタイプ コントロール
+      fullscreenControl: false,             // 全画面表示 コントロール
+      streetViewControl: true,              // ストリートビュー コントロール
       streetViewControlOptions: {
         position: (Common.isMobileScreen ? google.maps.ControlPosition.RIGHT_TOP : google.maps.ControlPosition.RIGHT_BOTTOM),
-      },
-      zoomControl: !Common.isMobileScreen, // ズーム コントロール
-      gestureHandling: 'greedy',    // マップ操作ジェスチャー
+      },                                    // ストリートビュー コントロール位置
+      zoomControl: !Common.isMobileScreen,  // ズーム コントロール
+      gestureHandling: 'greedy',            // マップ操作ジェスチャー
     };
     const map = new RouteMap(document.getElementById('map'), mapOptions);
 
@@ -474,7 +485,7 @@ export default class extends Controller {
         RouteManager.fetchLocations(routeId)
           .then((data) => {
             let route = new Route(routeId, map, this.routeMng);
-            // マップ上にマーカーを表示
+            // マップ上にルートを表示
             data.forEach(loc => {
               const position = new google.maps.LatLng(loc.lat_loc, loc.lon_loc);
               route.addMarker(position, {init: true, visibleUnsavedLabel: false, pushUndo: false});
@@ -484,17 +495,18 @@ export default class extends Controller {
             // ルート非活性
             this.routeMng.routes[routeId].disableRoute(true);
 
-            // 表示／非表示
-            const eyeToggle = listItems[i].querySelector('.eye-toggle');
+            // ルート表示／非表示
             const eyeVisibleAll = listItems[i].querySelector('.eye-icon');
             const eyeVisibleRoute = listItems[i].querySelector('.eye-fill-icon');
             const eyeInvisible = listItems[i].querySelector('.eye-slash-icon');
 
+            eyeVisibleAll.classList.add('d-none');
+            eyeVisibleRoute.classList.add('d-none');
+            eyeInvisible.classList.add('d-none');
+
             switch (visible){
               // 非表示
               case Route.INVISIBLE:
-                eyeVisibleAll.classList.add('d-none');
-                eyeVisibleRoute.classList.add('d-none');
                 eyeInvisible.classList.remove('d-none');
                 // ルートを非表示
                 this.routeMng.routes[routeId].displayMarkers(Route.INVISIBLE);
@@ -502,16 +514,12 @@ export default class extends Controller {
               // 表示
               case Route.VISIBLE_ALL:
                 eyeVisibleAll.classList.remove('d-none');
-                eyeVisibleRoute.classList.add('d-none');
-                eyeInvisible.classList.add('d-none');
                 // ルートを表示
                 this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ALL);
                 break;
               // 表示(ルートのみ)
               case Route.VISIBLE_ROUTE:
-                eyeVisibleAll.classList.add('d-none');
                 eyeVisibleRoute.classList.remove('d-none');
-                eyeInvisible.classList.add('d-none');
                 // ルートを表示
                 this.routeMng.routes[routeId].displayMarkers(Route.VISIBLE_ROUTE);
                 break;
@@ -570,6 +578,7 @@ export default class extends Controller {
     return shortestDistance <= collisionThreshold;
   }
 
+  // ルート線と点の最短距離を計算
   calculateShortestDistance(point, lineStart, lineEnd) {
     const A = point.lat() - lineStart.lat();
     const B = point.lng() - lineStart.lng();

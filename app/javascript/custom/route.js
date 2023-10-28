@@ -27,6 +27,7 @@ export class RouteMap extends google.maps.Map {
     const zoomContainer = document.createElement('div');
     zoomContainer.className = 'zoom-map';
 
+    // ズーム（近）アイコン
     const zoomIconNear = document.createElement('div');
     zoomIconNear.className = 'icon near';
     google.maps.event.addDomListener(zoomIconNear, 'click', () => {
@@ -34,6 +35,7 @@ export class RouteMap extends google.maps.Map {
     });
     zoomContainer.appendChild(zoomIconNear);
 
+    // ズーム（中）アイコン
     const zoomIconMedium = document.createElement('div');
     zoomIconMedium.className = 'icon medium';
     google.maps.event.addDomListener(zoomIconMedium, 'click', () => {
@@ -41,6 +43,7 @@ export class RouteMap extends google.maps.Map {
     });
     zoomContainer.appendChild(zoomIconMedium);
 
+    // ズーム（遠）アイコン
     const zoomIconFar = document.createElement('div');
     zoomIconFar.className = 'icon far';
     google.maps.event.addDomListener(zoomIconFar, 'click', () => {
@@ -1148,6 +1151,7 @@ class UndoManager {
   undo() {
     let undoInfo = this.undoList.pop();
     
+    // undo情報がない場合、末尾マーカーを削除
     if (!undoInfo) {
       this.route.delMarker();
       return;

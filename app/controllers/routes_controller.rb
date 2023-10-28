@@ -18,6 +18,7 @@ class RoutesController < ApplicationController
       cookies.delete(:remember_token)
     end
 
+    # ユーザートークンをCookieに保存
     cookies.permanent.encrypted[:user_token] = @user.user_token
 
     # 最終ログイン日時を更新
@@ -61,11 +62,9 @@ class RoutesController < ApplicationController
     @route.order = 0
 
     if @route.save
-      # flash[:info] = "登録しました"
-      # redirect_to routes_url
       flash.now.notice = "登録しました"
     else
-      render :new, status: :unprocessable_entity
+      flash.now.notice = @route.errors.full_messages.first
     end
   end
 
@@ -73,9 +72,6 @@ class RoutesController < ApplicationController
   # Route情報更新
   def update
     if @route.update(route_params_update)
-      # flash[:success] = "更新しました"
-      # redirect_to routes_url
-      # redirect_to @route, notice: "更新しました"
       flash.now.notice = "更新しました"
     else
       flash.now.notice = @route.errors.full_messages.first
@@ -86,9 +82,7 @@ class RoutesController < ApplicationController
   # DELETE /routes/1
   # Route情報削除
   def destroy
-    @route.destroy
-    # flash[:success] = "削除しました"
-    # redirect_to routes_url, status: :see_other
+    @route.destroy!
     flash.now.notice = "削除しました"
   end
 
@@ -113,12 +107,10 @@ class RoutesController < ApplicationController
 
     # 新しいRouteを新規登録
     if new_route.save
-      # flash[:success] = "コピーしました"
-      # redirect_to routes_url
       @route = new_route
       flash.now.notice = "コピーしました"
     else
-      render 'index'
+      flash.now.notice = @route.errors.full_messages.first
     end
   end
 
@@ -151,7 +143,6 @@ class RoutesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_route
       @route = Route.find(params[:id])
     end
@@ -181,6 +172,6 @@ class RoutesController < ApplicationController
 
     # ルート上限数チェック。無効な場合、true
     def invalid_create_route
-      return Route.where(user_id: @user.id).count >= MAX_ROUTE && !@user.admin
+      Route.where(user_id: @user.id).count >= MAX_ROUTE && !@user.admin
     end
 end
