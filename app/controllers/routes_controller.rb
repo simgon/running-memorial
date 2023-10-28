@@ -78,7 +78,8 @@ class RoutesController < ApplicationController
       # redirect_to @route, notice: "更新しました"
       flash.now.notice = "更新しました"
     else
-      render :edit, status: :unprocessable_entity
+      flash.now.notice = @route.errors.full_messages.first
+      @route = Route.find(@route.id)
     end
   end
 
