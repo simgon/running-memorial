@@ -1,36 +1,31 @@
-<%# provide(:title, 'Sign up') %>
-<% provide(:header_display, true) %>
-
+<%# 新規アカウントを作成 %>
 <div class="container mt-4">
-  <h1>新規アカウントを作成</h1>
+  <%# モーダル %>
+  <%= render "modal_frame", title: "新規アカウント作成" do %>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <% flash.each do |message_type, message| %>
+          <%= content_tag(:div, message, class: "alert alert-#{message_type}") %>
+        <% end %>
 
-  <%= render "modal", title: "新規アカウント作成" do %>
+        <%= form_with(model: @user) do |f| %>
+          <%= render 'application/error_messages' %>
 
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <% flash.each do |message_type, message| %>
-        <%= content_tag(:div, message, class: "alert alert-#{message_type}") %>
-      <% end %>
+          <%= f.label :email, "メールアドレス" %>
+          <%= f.email_field :email, class: "form-control" %>
 
-      <%= form_with(model: @user) do |f| %>
-        <%= render 'application/error_messages' %>
+          <%= f.label :password, "パスワード" %>
+          <%= f.password_field :password, class: "form-control" %>
 
-        <%= f.label :email, "メールアドレス" %>
-        <%= f.email_field :email, class: "form-control" %>
+          <%= f.label :password_confirmation, "確認" %>
+          <%= f.password_field :password_confirmation, class: "form-control" %>
 
-        <%= f.label :password, "パスワード" %>
-        <%= f.password_field :password, class: "form-control" %>
-
-        <%= f.label :password_confirmation, "確認" %>
-        <%= f.password_field :password_confirmation, class: "form-control" %>
-
-        <%= f.submit "作成", class: "btn btn-primary", style: "margin-top: 15px;" %>
-      <% end %>
+          <%= f.submit "作成", class: "btn btn-primary mt-3" %>
+        <% end %>
+      </div>
     </div>
-  </div>
 
     <%# data-controller="created_user"経由で更新 %>
     <div id="created_user"></div>
   <% end %>
-
 </div>

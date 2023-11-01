@@ -1,11 +1,7 @@
-<%# provide(:title, "Forgot password") %>
-<% provide(:header_display, true) %>
-
+<%# パスワードを再設定（メール送信） %>
 <div class="container mt-4">
-  <h1>パスワードを再設定</h1>
-
-  <%= render "modal", title: "パスワード再設定" do %>
-
+  <%# モーダル %>
+  <%= render "modal_frame", title: "パスワード再設定" do %>
     <div class="row justify-content-center">
       <div class="col-md-6">
         <% flash.each do |message_type, message| %>
@@ -16,7 +12,7 @@
           <%= f.label :email, "メールアドレス" %>
           <%= f.email_field :email, class: 'form-control' %>
 
-          <%= f.submit "送信", class: "btn btn-primary", style: "margin-top: 15px;" %>
+          <%= f.submit "送信", class: "btn btn-primary mt-3" %>
         <% end %>
       </div>
     </div>

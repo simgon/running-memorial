@@ -1,6 +1,4 @@
-<%# provide(:title, 'Reset password') %>
-<% provide(:header_display, true) %>
-
+<%# パスワードを再設定 %>
 <div class="container mt-4">
   <h1>パスワードを再設定</h1>
 
@@ -17,7 +15,7 @@
         <%= f.label :password_confirmation, "確認" %>
         <%= f.password_field :password_confirmation, class: 'form-control' %>
 
-        <%= f.submit "パスワードを再設定", class: "btn btn-primary", style: "margin-top: 15px;" %>
+        <%= f.submit "パスワードを再設定", class: "btn btn-primary mt-3" %>
       <% end %>
     </div>
   </div>

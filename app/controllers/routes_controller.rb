@@ -1,8 +1,9 @@
 class RoutesController < ApplicationController
-  MAX_ROUTE = 10;          # 登録ルート上限数
-
+  layout "main"
+  before_action :set_user, only: [:index, :create, :show, :edit, :update, :destroy, :copy]
   before_action :set_route, only: [:show, :edit, :update, :destroy]
-  before_action :set_user, only: [:index, :create, :copy]
+  
+  MAX_ROUTE = 10; # 登録ルート上限数
 
   # GET /routes
   # Route一覧を表示
@@ -12,7 +13,7 @@ class RoutesController < ApplicationController
       # ユーザーを新規作成
       @user = User.new
       @user.password = "tmp_password"
-      @user.save
+      @user.save!
 
       cookies.delete(:user_id)
       cookies.delete(:remember_token)
@@ -26,13 +27,13 @@ class RoutesController < ApplicationController
 
     # Route情報を取得
     @routes = Route.where(user_id: @user.id).order(:order, created_at: :desc)
-    @route = Route.new
-    @route.user_id = @user.id
-    
+
     respond_to do |format|
       format.html # HTML形式のビューを表示
       format.json { render json: @routes.to_json() } # JSON形式でデータを返す
     end
+
+    # logger.info "ルート一覧: #{@routes.to_yaml}"
   end
 
   # GET /routes/1
@@ -65,7 +66,11 @@ class RoutesController < ApplicationController
       flash.now.notice = "登録しました"
     else
       flash.now.notice = @route.errors.full_messages.first
+      @route = nil
     end
+    
+    # 暗黙的に`render :create`でビューがレンダリングされる(create.turbo_stream.erb)
+    # render :create
   end
 
   # PATCH/PUT /routes/1
@@ -100,6 +105,8 @@ class RoutesController < ApplicationController
     # Routeを複製
     new_route = @org_route.dup
     new_route.name += "_コピー"
+    # nameが最大文字数を超える場合、最大文字数に切り詰める
+    new_route.name = new_route.name[0...Route.validators_on(:name).first.options[:maximum]]
     new_route.order = 0
 
     # コピー元のRouteに紐づくLocationモデルを複製して、新しいRouteに紐づける
@@ -120,11 +127,11 @@ class RoutesController < ApplicationController
 
     @route = Route.find(route_param[:routeId])
     @route.visible = route_param[:visible]
-    unless @route.save
+    if @route.save
+      render json: { result: 'Success' }
+    else
       render json: { result: 'Failure' }
-    end
-
-    render json: { result: 'Success' }
+    end    
   end
 
   # Routeの並び順を更新
@@ -136,6 +143,7 @@ class RoutesController < ApplicationController
       @route.order = index + 1
       unless @route.save
         render json: { result: 'Failure' }
+        return
       end
     end
 
@@ -143,21 +151,23 @@ class RoutesController < ApplicationController
   end
 
   private
-    def set_route
-      @route = Route.find(params[:id])
-    end
-
+    # User情報を取得
     def set_user
       @user = current_user
 
       # 未ログインの場合
       if !@user
         # ユーザートークンが保持されている場合
-        if (user_token = cookies.encrypted[:user_token])
+        if (user_token = get_cookies_value(:user_token))
           # ユーザートークンからユーザーを取得
           @user = User.find_by(user_token: user_token)
         end
       end
+    end
+
+    # Route情報を取得
+    def set_route
+      @route = @user.routes.find(params[:id])
     end
 
     # ルート登録時のストロングパラメータ

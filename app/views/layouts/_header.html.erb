@@ -1,0 +1,14 @@
+<%# ヘッダー %>
+<div class="container-fluid sticky-top navbar bg-light border px-2">
+  <%# ロゴ %>
+  <%= link_to "/", style: "text-decoration: none;" do %>
+    <span id="logo-icon"><%= image_tag("icon_t.png") %></span>
+    <span id="title-icon"><%= image_tag("title_t.png") %></span>
+  <% end %>
+  <%# ログイン／ログアウトボタン %>
+  <% if logged_in? %>
+    <%= link_to "ログアウト", logout_path, data: { "turbo-method": :delete }, class: "btn btn-danger" %>
+  <% else %>
+    <%= link_to "ログイン", login_path, class: "btn btn-primary", data: { turbo_frame: "modal_frame" } %>
+  <% end %>
+</div>

@@ -1,0 +1,48 @@
+<head>
+  <%
+    description = "ランニング・メモリアルは、ランニングルートを簡単に作成・保存できるアプリです。マップ上にマーカーを設置してルートを作成し、その軌跡を記録します。複数のルートを視覚的に比較もでき、ランニングの思い出を振り返りましょう。"
+  %>
+
+  <title>ランニング・メモリアル</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="description" content="<%= description %>" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <!-- ogp -->
+  <meta property="og:site_name" content="ランニング・メモリアル" />
+  <meta property="og:url" content="https://running-memorial.com" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ランニング・メモリアル" />
+  <meta property="og:description" content="<%= description %>" />
+  <meta property="og:image" content="/assets/icon.png" />
+  <meta property="og:locale" content="ja_JP" />
+  <!-- <meta property="fb:app_id" content="AppID"> -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <!-- <meta name="twitter:site" content="@" /> -->
+  <meta name="twitter:description" content="<%= description %>" />
+  <meta name="twitter:image:src" content="/assets/icon.png" />
+
+  <%# Turbo %>
+  <%# Turboのキャッシュの無効化 %>
+  <%# <meta name="turbo-cache-control" content="no-cache"> %>
+  <%# プレビューだけ無効にする %>
+  <meta name="turbo-cache-control" content="no-preview">
+  <%# 強制リロード（window.location.reload()） %>
+  <%# <meta name="turbo-visit-control" content="reload"> %>
+
+  <%# favicon/webclipicon %>
+  <%= favicon_link_tag "/assets/icon.png" %>
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icon_org.png">
+
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+
+  <%# Google Maps API %>
+  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>"></script>
+  <%# SortableJSのCDNリンク %>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+</head>

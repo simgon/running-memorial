@@ -1,11 +1,7 @@
-<%# provide(:title, "Log in") %>
-<% provide(:header_display, true) %>
-
+<%# ログイン %>
 <div class="container mt-4">
-  <h1>ログイン</h1>
-
-  <%= render "modal", title: "ログイン" do %>
-
+  <%# モーダル %>
+  <%= render "modal_frame", title: "ログイン" do %>
     <div class="row justify-content-center">
       <div class="col-md-6">
         <% flash.each do |message_type, message| %>
@@ -20,8 +16,8 @@
           <%= link_to "パスワードを忘れた場合", new_password_reset_path, style: "color:#000000" %>
           <%= f.password_field :password, class: "form-control" %>
 
-          <%#= f.submit "ログイン", class: "btn btn-primary", style: "margin-top: 15px;", "data-turbo": "false" %>
-          <%= f.submit "ログイン", class: "btn btn-primary", style: "margin-top: 15px;" %>
+          <%#= f.submit "ログイン", class: "btn btn-primary mt-3", "data-turbo": "false" %>
+          <%= f.submit "ログイン", class: "btn btn-primary mt-3" %>
         <% end %>
 
         <%= link_to "新規アカウントを作成", signup_path, style: "color:#000000" %>
@@ -31,5 +27,4 @@
     <%# data-controller="created_session"経由で更新 %>
     <div id="created_session"></div>
   <% end %>
-
 </div>

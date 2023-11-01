@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <%# head %>
+  <%= render 'layouts/head' %>
+
+  <body>
+    <%# コンテンツ %>
+    <%= yield %>
+
+    <%# メッセージ表示（turbo_stream更新時） %>
+    <div id="flash">
+      <div id="notification-popup" class="d-none">
+        <div class="d-flex">
+          <span id="notification-message"></span>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" id="notification-close"></button>
+        </div>
+      </div>
+    </div>
+
+    <%# メッセージ表示（リダイレクト時（routes_controller.jsにて表示）） %>
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+      <div id="toast_message" class="toast w-auto" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body"></div>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+    <% flash.each do |message_type, message| %>
+      <div class="flash_messages">
+        <input type="hidden" class="message_type" value="<%= message_type %>">
+        <input type="hidden" class="message" value="<%= message %>">
+      </div>
+    <% end %>
+
+    <%# Turbo Framesのターゲット、モーダル %>
+    <%= turbo_frame_tag "modal_frame" %>
+
+    <%#= debug(params) if Rails.env.development? %>
+  </body>
+</html>
