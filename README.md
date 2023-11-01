@@ -1,12 +1,18 @@
 # ランニング・メモリアル（ルート記録サイト）
+
+![android_fg2 (2)](https://github.com/simgon/running-memorial/assets/23553796/705fca7e-fbd1-4eef-880a-360c2ab08655)
+
+ランニングルートを作成・記録できるアプリです。
+
+マップ上にマーカーを設置してルートを作成します。
+
+複数のルートを視覚的に比較もでき、ランニングの思い出の振り返りができます。
+
 https://running-memorial.com/
 
-ランニングルートを作成・記録できるアプリ。<br>
-マップ上にマーカーを設置してルートを作成する。複数のルートを視覚的に比較もできる。
+[App Store](https://apps.apple.com/us/app/%E3%83%A9%E3%83%B3%E3%83%8B%E3%83%B3%E3%82%B0-%E3%83%A1%E3%83%A2%E3%83%AA%E3%82%A2%E3%83%AB/id6469449965)
 
-## 画面
-![map1_圧縮](https://github.com/simgon/running-memorial/assets/23553796/335ba5ff-8bce-46f6-aeec-333102e1bd3f)
-![map2_圧縮](https://github.com/simgon/running-memorial/assets/23553796/328a9280-f436-4a2c-a802-e2383301f60b)
+[Google Play](https://play.google.com/store/apps/details?id=com.simgon.runningmemorial)
 
 ## 使用技術
 - プログラミング言語
@@ -15,11 +21,15 @@ https://running-memorial.com/
 - フレームワーク
   - Ruby on Rails 7.0.4
 - ライブラリ
-  - Hotwire(Turbo, Stimulus)
+  - Hotwire(Turbo & Stimulus)
 - API
   - Google Maps API
 - デプロイメント
   - Render.com
+
+## 画面
+![map1_圧縮](https://github.com/simgon/running-memorial/assets/23553796/335ba5ff-8bce-46f6-aeec-333102e1bd3f)
+![map2_圧縮](https://github.com/simgon/running-memorial/assets/23553796/328a9280-f436-4a2c-a802-e2383301f60b)
 
 ## アプリの使用方法
 ### マップ操作
