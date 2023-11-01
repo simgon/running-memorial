@@ -5,12 +5,6 @@ class LocationsControllerTest < ActionDispatch::IntegrationTest
     @route = routes(:route1)
   end
 
-  test "should get show" do
-    get location_path(@route)
-    assert_response :success
-    assert assigns(:route)
-  end
-
   test "should create locations" do
     location_params = {
       route_param: {

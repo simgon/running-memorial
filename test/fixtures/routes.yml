@@ -6,3 +6,10 @@ route2:
   name: route_name2
   order: 2
   user: user1
+
+<% 10.times do |n| %>
+route<%= n %>_user_with_max_routes:
+  name: <%= "route_name#{n}" %>
+  order: n
+  user: user_with_max_routes
+<% end %>

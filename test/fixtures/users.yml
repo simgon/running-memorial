@@ -1,13 +1,23 @@
 user1:
   user_token: user-token1
   allow_session_user_id_setting: true
+  email: admin@example.com
   admin: true
   password_digest: <%= User.digest('password') %>
   activated: true
   activated_at: <%= Time.zone.now %>
 user2:
   user_token: user-token2
+  email: user2@example.com
+  admin: false
+  password_digest: <%= User.digest('password') %>
 user3:
   user_token: user-token3
+  email: user3@example.com
 user4:
   user_token: user-token4
+  email: user4@example.com
+user_with_max_routes:
+  user_token: user_with_max_routes
+  email: user_with_max_routes@example.com
+  admin: false
