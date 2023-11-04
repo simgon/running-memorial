@@ -62,7 +62,10 @@ export class RouteMap extends google.maps.Map {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           function (position) {
-            resolve(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+            resolve({
+              location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+              heading: position.coords.heading
+            });
           },
           function (error) {
             reject(error);
@@ -82,11 +85,11 @@ export class RouteMap extends google.maps.Map {
       .then((position) => {
         // 位置情報を取得できた場合の処理
         // マップの中心をユーザーの現在位置に移動
-        this.setCenter(position);
+        this.setCenter(position.location);
 
         // Cookieに現在位置を保存
-        Common.setCookie('user_lat', position.lat());
-        Common.setCookie('user_lng', position.lng());
+        Common.setCookie('user_lat', position.location.lat());
+        Common.setCookie('user_lng', position.location.lng());
 
         // 現在位置マーカーを表示
         this.setCurrentLocationMaker(this, position);
@@ -102,7 +105,7 @@ export class RouteMap extends google.maps.Map {
   setCurrentLocationMaker(map, position){
     // 現在位置マーカーを表示
     const currentLocationMarker = new google.maps.Marker({
-      position: position,
+      position: position.location,
       map: map,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
@@ -118,10 +121,10 @@ export class RouteMap extends google.maps.Map {
     let headingMarker;
 
     // 端末の移動方向を取得できる場合
-    if (position.coords?.heading) {    
+    if (position.heading) {    
       // 移動方向矢印を表示
       headingMarker = new google.maps.Marker({
-        position: position,
+        position: position.location,
         icon: {
           path: 'M -1,0 -5,-10 5,-10, 1,0',
           scale: 5,
@@ -129,7 +132,7 @@ export class RouteMap extends google.maps.Map {
           fillOpacity: 0.2,
           strokeColor: '#5383EC',
           strokeWeight: 0,
-          rotation: position.coords?.heading || 0, // 回転角度（度）
+          rotation: position.heading || 0, // 回転角度（度）
         },
         animation: google.maps.Animation.DROP,
         map: map,
