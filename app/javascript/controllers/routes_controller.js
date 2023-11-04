@@ -19,6 +19,12 @@ export default class extends Controller {
 
     // ルート一覧の並び替えを有効にする
     initSortable();
+
+    // キー押下時
+    document.addEventListener('keydown', e => {
+      // 上矢印／下矢印キー押下時
+      this.keydownArrowUpDown(e);
+    });
   }
 
   disconnect() {}
@@ -105,6 +111,36 @@ export default class extends Controller {
 
       if (event.target.id.includes('route-item-action-menu-btn')) {
         this.prevRouteMenu = event.target;
+      }
+    }
+  }
+
+  // 上矢印／下矢印キー押下時
+  keydownArrowUpDown(event) {
+    // 上矢印／下矢印キー押下時
+    if (event.code == 'ArrowUp' || event.code == 'ArrowDown') {
+      // ルート選択済みの場合
+      if (this.routeMng.selectedRoute?.routeId) {
+        const selectedRouteElement = document.getElementById('routes-list').querySelector(`[data-route-id="${this.routeMng.selectedRoute?.routeId}"]`);
+        
+        if (event.code == 'ArrowUp') {
+          // 上矢印キー押下時
+          if (selectedRouteElement.previousElementSibling) {
+            selectedRouteElement.previousElementSibling.click();
+          } else {
+            document.getElementById('routes-list').lastElementChild.click();
+          }
+        } else {
+          // 下矢印キー押下時
+          if (selectedRouteElement.nextElementSibling) {
+            selectedRouteElement.nextElementSibling.click();
+          } else {
+            document.getElementById('routes-list').firstElementChild.click();
+          }
+        }
+      // ルート未選択の場合
+      } else {
+        document.getElementById('routes-list').firstElementChild?.click();
       }
     }
   }
