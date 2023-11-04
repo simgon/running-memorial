@@ -84,14 +84,79 @@ export class RouteMap extends google.maps.Map {
         // マップの中心をユーザーの現在位置に移動
         this.setCenter(position);
 
+        // Cookieに現在位置を保存
         Common.setCookie('user_lat', position.lat());
         Common.setCookie('user_lng', position.lng());
+
+        // 現在位置マーカーを表示
+        this.setCurrentLocationMaker(this, position);
       })
       .catch((error) => {
         // 位置情報の取得に失敗した場合の処理
         console.error('Error:', error);
         Common.showNotification('位置情報を取得できませんでした。');
       });
+  }
+
+  // 現在位置マーカーを表示
+  setCurrentLocationMaker(map, position){
+    // 現在位置マーカーを表示
+    const currentLocationMarker = new google.maps.Marker({
+      position: position,
+      map: map,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: '#5383EC',
+        fillOpacity: 1,
+        strokeColor: 'white',
+        strokeWeight: 2,
+        scale: 7
+      },
+      animation: google.maps.Animation.DROP,
+    });
+
+    let headingMarker;
+
+    // 端末の移動方向を取得できる場合
+    if (position.coords?.heading) {    
+      // 移動方向矢印を表示
+      headingMarker = new google.maps.Marker({
+        position: position,
+        icon: {
+          path: 'M -1,0 -5,-10 5,-10, 1,0',
+          scale: 5,
+          fillColor: '#5383EC',
+          fillOpacity: 0.2,
+          strokeColor: '#5383EC',
+          strokeWeight: 0,
+          rotation: position.coords?.heading || 0, // 回転角度（度）
+        },
+        animation: google.maps.Animation.DROP,
+        map: map,
+      });
+    }
+
+    // 5秒後にマーカーをフェードアウト
+    setTimeout(function () {
+      fadeOutMarker(currentLocationMarker);
+      fadeOutMarker(headingMarker);
+    }, 5000);
+
+    // マーカーをフェードアウト
+    function fadeOutMarker(marker) {
+      if (!marker) return;
+
+      let opacity = 1;
+      const fadeInterval = setInterval(function () {
+        opacity -= 0.05;
+        marker.setOpacity(opacity);
+
+        if (opacity <= 0) {
+          clearInterval(fadeInterval);
+          marker.setMap(null);
+        }
+      }, 100);
+    }
   }
 }
 
