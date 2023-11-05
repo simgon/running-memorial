@@ -64,7 +64,7 @@ export class RouteMap extends google.maps.Map {
           function (position) {
             resolve({
               location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-              heading: position.coords.heading
+              // heading: position.coords.heading
             });
           },
           function (error) {
@@ -91,12 +91,19 @@ export class RouteMap extends google.maps.Map {
         Common.setCookie('user_lat', position.location.lat());
         Common.setCookie('user_lng', position.location.lng());
 
-        // 現在位置マーカーを表示
-        this.setCurrentLocationMaker(this, position);
+        // 端末方位を取得
+        this.getCompassHeading()
+          .then((heading) => {
+            // 端末方位をセット
+            position.heading = heading;
+            // 現在位置マーカーを表示
+            this.setCurrentLocationMaker(this, position);
+          });
       })
       .catch((error) => {
         // 位置情報の取得に失敗した場合の処理
         console.error('Error:', error);
+        // alert(error);
         Common.showNotification('位置情報を取得できませんでした。');
       });
   }
@@ -120,7 +127,7 @@ export class RouteMap extends google.maps.Map {
 
     let headingMarker;
 
-    // 端末の移動方向を取得できる場合
+    // 端末方位を取得できた場合
     if (position.heading) {    
       // 移動方向矢印を表示
       headingMarker = new google.maps.Marker({
@@ -141,26 +148,159 @@ export class RouteMap extends google.maps.Map {
 
     // 5秒後にマーカーをフェードアウト
     setTimeout(function () {
+      // マーカーをフェードアウト
+      const fadeOutMarker = function(marker) {
+        if (!marker) return;
+
+        let opacity = 1;
+        const fadeInterval = setInterval(function () {
+          opacity -= 0.05;
+          marker.setOpacity(opacity);
+
+          if (opacity <= 0) {
+            clearInterval(fadeInterval);
+            marker.setMap(null);
+          }
+        }, 100);
+      }
+
       fadeOutMarker(currentLocationMarker);
       fadeOutMarker(headingMarker);
     }, 5000);
-
-    // マーカーをフェードアウト
-    function fadeOutMarker(marker) {
-      if (!marker) return;
-
-      let opacity = 1;
-      const fadeInterval = setInterval(function () {
-        opacity -= 0.05;
-        marker.setOpacity(opacity);
-
-        if (opacity <= 0) {
-          clearInterval(fadeInterval);
-          marker.setMap(null);
-        }
-      }, 100);
-    }
   }
+
+  // 端末方位を取得
+  getCompassHeading() {
+    return new Promise((resolve, reject) => {
+      // OS判定
+      let os = this.detectOS();
+      let eventType;
+    
+      if (os == "iphone") {
+        // safari用。DeviceOrientation APIの使用をユーザに許可して貰う
+        this.permitDeviceOrientationForSafari();
+        eventType = "deviceorientation";
+      } else if (os == "android") {
+        eventType = "deviceorientationabsolute";
+      } else {
+        resolve(null);
+        return;
+      }
+
+      let degrees;
+    
+      // ジャイロスコープと地磁気をセンサーから取得
+      const orientationHandler = (event) => {
+        if (os == "iphone") {
+          // webkitCompasssHeading値を採用
+          degrees = event.webkitCompassHeading;
+        } else {
+          // deviceorientationabsoluteイベントのalphaを補正
+          degrees = this.compassHeading(event.alpha, event.beta, event.gamma);
+        }
+      };
+    
+      // イベントリスナーを登録
+      window.addEventListener(eventType, orientationHandler, true);
+
+      let retry = 1;
+
+      // 端末方位を取得できたかを検知
+      const degreesInterval = setInterval(() => {
+        // 端末方位を取得できた場合
+        if (degrees) {
+          // タイマーを停止
+          clearInterval(degreesInterval);
+          // イベントリスナーを削除
+          window.removeEventListener(eventType, orientationHandler, true);
+          resolve(degrees);
+        }
+        // 3回までリトライ
+        if (retry >= 3) {
+          // タイマーを停止
+          clearInterval(degreesInterval);
+          // イベントリスナーを削除
+          window.removeEventListener(eventType, orientationHandler, true);
+          resolve(null);
+        }
+        retry++;
+      }, 100);
+    });
+  }
+  
+  // 端末の傾き補正（Android用）
+  // https://www.w3.org/TR/orientation-event/
+  compassHeading(alpha, beta, gamma) {
+    var degtorad = Math.PI / 180; // Degree-to-Radian conversion
+
+    var _x = beta ? beta * degtorad : 0; // beta value
+    var _y = gamma ? gamma * degtorad : 0; // gamma value
+    var _z = alpha ? alpha * degtorad : 0; // alpha value
+
+    var cX = Math.cos(_x);
+    var cY = Math.cos(_y);
+    var cZ = Math.cos(_z);
+    var sX = Math.sin(_x);
+    var sY = Math.sin(_y);
+    var sZ = Math.sin(_z);
+
+    // Calculate Vx and Vy components
+    var Vx = -cZ * sY - sZ * sX * cY;
+    var Vy = -sZ * sY + cZ * sX * cY;
+
+    // Calculate compass heading
+    var compassHeading = Math.atan(Vx / Vy);
+
+    // Convert compass heading to use whole unit circle
+    if (Vy < 0) {
+      compassHeading += Math.PI;
+    } else if (Vx < 0) {
+      compassHeading += 2 * Math.PI;
+    }
+
+    return compassHeading * (180 / Math.PI); // Compass Heading (in degrees)
+  }
+
+  // OS判定
+  detectOS() {
+    let ret;
+    if (
+      navigator.userAgent.indexOf("iPhone") > 0 ||
+      navigator.userAgent.indexOf("iPad") > 0 ||
+      navigator.userAgent.indexOf("iPod") > 0
+    ) {
+      // iPad OS13のsafariはデフォルト「Macintosh」なので別途要対応
+      ret = "iphone";
+    } else if (navigator.userAgent.indexOf("Android") > 0) {
+      ret = "android";
+    } else {
+      ret = "pc";
+    }
+
+    return ret;
+  }
+
+  // iPhone + Safariの場合はDeviceOrientation APIの使用許可をユーザに求める
+  permitDeviceOrientationForSafari() {
+    DeviceOrientationEvent.requestPermission()
+      .then(response => {
+        if (response === "granted") {
+          document.addEventListener(
+            "deviceorientation",
+            detectDirection
+          );
+        }
+      })
+      .catch(console.error);
+  }
+
+
+
+
+
+
+
+
 }
 
 /**
