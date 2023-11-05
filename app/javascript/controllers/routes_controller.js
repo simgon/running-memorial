@@ -70,8 +70,8 @@ export default class extends Controller {
     document.documentElement.style.webkitTouchCallout='none';
 
     // スマホ画面のステータスバー対応。カスタムプロパティとして画面高さを保持。
-    // let height = window.innerHeight;
-    // document.documentElement.style.setProperty('--vh', height / 100 + 'px');
+    let height = window.innerHeight;
+    document.documentElement.style.setProperty('--vh', height / 100 + 'px');
   }
 
   // -------------------

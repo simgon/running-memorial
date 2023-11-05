@@ -461,7 +461,11 @@
   background-color: $sub-color;
 }
 
-@include media-breakpoint-down(xl) { 
+@include media-breakpoint-down(xl) {
+  #main {
+    height: calc(var(--vh) * 100) !important; // カスタムプロパティ
+  }
+
   #navbar-container {
     height: 255px !important;
   }
