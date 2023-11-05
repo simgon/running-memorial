@@ -29,6 +29,7 @@
 }
 
 #map-contents {
+  width: calc(100% - 300px);
   padding: 0;
   position: relative;
 }
@@ -475,6 +476,7 @@
   }
   
   #map-contents {
+    width: 100%;
     flex-grow: 1;
   }
 
