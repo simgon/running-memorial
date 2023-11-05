@@ -81,6 +81,12 @@ export class RouteMap extends google.maps.Map {
    * マップをユーザーの現在位置に設定
    */
   setMapMyLocation() {
+    // iOSの場合
+    if (this.detectOS() == "iphone") {
+      // safari用。DeviceOrientation APIの使用をユーザに許可して貰う
+      this.permitDeviceOrientationForSafari();
+    }
+
     this.getMyLocation()
       .then((position) => {
         // 位置情報を取得できた場合の処理
@@ -177,8 +183,6 @@ export class RouteMap extends google.maps.Map {
       let eventType;
     
       if (os == "iphone") {
-        // safari用。DeviceOrientation APIの使用をユーザに許可して貰う
-        this.permitDeviceOrientationForSafari();
         eventType = "deviceorientation";
       } else if (os == "android") {
         eventType = "deviceorientationabsolute";
@@ -293,14 +297,6 @@ export class RouteMap extends google.maps.Map {
       })
       .catch(console.error);
   }
-
-
-
-
-
-
-
-
 }
 
 /**
