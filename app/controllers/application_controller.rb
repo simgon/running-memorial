@@ -29,12 +29,12 @@ class ApplicationController < ActionController::Base
   end
 
   # クッキーからユーザーIDを取得
-  def get_cookies_user_id
+  def cookies_user_id
     get_cookies_value(:user_id)
   end
 
   # クッキーにユーザーIDをセット
-  def set_cookies_user_id(user)
+  def cookies_user_id=(user)
     set_cookies_value(:user_id, user.id)
   end
 end

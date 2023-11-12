@@ -1,7 +1,7 @@
-ENV["RAILS_ENV"] ||= "test"
-require_relative "../config/environment"
-require "rails/test_help"
-require "minitest/reporters"
+ENV['RAILS_ENV'] ||= 'test'
+require_relative '../config/environment'
+require 'rails/test_help'
+require 'minitest/reporters'
 Minitest::Reporters.use!
 
 class ActiveSupport::TestCase
@@ -25,12 +25,11 @@ class ActiveSupport::TestCase
 end
 
 class ActionDispatch::IntegrationTest
-
   # テストユーザーとしてログインする
   def log_in_as(user, password: 'password')
     post login_path, params: { session: { email: user.email,
-                                          password: password }, 
-                               format: "" }
+                                          password: },
+                               format: '' }
   end
 end
 
@@ -38,7 +37,7 @@ class Rack::Test::CookieJar
   def signed
     self
   end
-  
+
   def encrypted
     self
   end

@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   attr_accessor :remember_token, :activation_token, :reset_token
+
   has_many :routes, dependent: :destroy
   before_create :create_user_token
   before_save { self.email = email.downcase if email.present? }
@@ -12,17 +13,20 @@ class User < ApplicationRecord
   validates :password, presence: true, length: { minimum: 6 }
 
   # 渡された文字列のハッシュ値を返す
-  def User.digest(string)
-    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
-                                                  BCrypt::Engine.cost
-    BCrypt::Password.create(string, cost: cost)
+  def self.digest(string)
+    cost = if ActiveModel::SecurePassword.min_cost
+             BCrypt::Engine::MIN_COST
+           else
+             BCrypt::Engine.cost
+           end
+    BCrypt::Password.create(string, cost:)
   end
 
   # ランダムなトークンを返す
-  def User.new_token
+  def self.new_token
     SecureRandom.urlsafe_base64
   end
-  
+
   # 永続的セッションのためにユーザーをデータベースに記憶する
   def remember
     self.remember_token = User.new_token
@@ -46,6 +50,7 @@ class User < ApplicationRecord
   def authenticated?(attribute, token)
     digest = send("#{attribute}_digest")
     return false if digest.nil?
+
     BCrypt::Password.new(digest).is_password?(token)
   end
 
@@ -95,9 +100,8 @@ class User < ApplicationRecord
 
   private
 
-    # ユーザートークンを作成および代入する
-    def create_user_token
-      self.user_token = User.new_token
-    end
-
+  # ユーザートークンを作成および代入する
+  def create_user_token
+    self.user_token = User.new_token
+  end
 end

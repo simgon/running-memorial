@@ -1,5 +1,44 @@
 ---
 ja:
+  messages:
+    common:
+      create:
+        success: 登録しました
+        failure: 登録できませんでした
+      update:
+        success: 更新しました
+        failure: 更新できませんでした
+      destroy:
+        success: 削除しました
+        failure: 削除できませんでした
+    routes:
+      copy:
+        success: コピーしました
+    users:
+      create:
+        success: アカウントを有効にするには、メールをご確認ください
+      account_destroy:
+        success: アカウントを削除しました
+    sessions:
+      create:
+        success: ログインしました
+        failure: ログインできませんでした
+        warning: アカウントが有効化されていません。メールをご確認ください
+        danger: メールアドレスまたはパスワードが間違っています
+      destroy:
+        success: ログアウトしました
+    account_activations:
+      edit:
+        success: アカウントが有効化されました
+        failure: 無効なリンクです
+    password_resets:
+      create:
+        success: パスワードの再設定リンクを記載したメールを送信しました
+        danger: アカウント未登録のメールアドレスです
+      update:
+        success: パスワードを再設定しました
+      check_expiration:
+        danger: パスワード再設定の有効期限が切れています
   activerecord:
     errors:
       messages:
